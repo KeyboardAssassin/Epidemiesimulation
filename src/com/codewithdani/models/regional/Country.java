@@ -1,8 +1,10 @@
 package com.codewithdani.models.regional;
 
+import com.codewithdani.models.threats.Virus;
+
 public class Country {
     private String name;
-    private State[] states;
+    public State[] states;
 
     public Country(String name) {
         this.name = name;
@@ -18,5 +20,9 @@ public class Country {
 
     public int getAmountOfStates(){
         return states.length;
+    }
+
+    public State[] getStates() {
+        return states;
     }
 }

@@ -3,11 +3,17 @@ package com.codewithdani.functionality;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
+import com.codewithdani.models.threats.Virus;
 
 
 public class Main {
 
     public static void main(String[] args) {
+
+        // Viren
+        Virus beta  = new Virus("beta", 100, 0.00216);
+        Virus delta = new Virus("delta", 100, 0.003);
+        Virus omicron = new Virus("omicron", 100, 0.0041);
 
         // Städte
         // Bayern
@@ -152,10 +158,15 @@ public class Main {
 
         munchen.reloadCity();
 
-        for (int i = 0; i < 100; i++){
-            stuttgart.addNewEntryToHistory(i * (i * 2));
+
+
+        // growth algorithm for 1 year
+        for (int day = 0; day < 365; day++){
+            // TODO check how long these virusses were prevailing
+            // change virus after the 100th day
+            if (day > 100) stuttgart.setCurrentVirus(beta);
+            stuttgart.addNewEntryToHistory(day * (day * 2));
             stuttgart.reloadCity();
-            int b = 0;
         }
 
 

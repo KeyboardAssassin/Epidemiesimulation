@@ -1,5 +1,7 @@
 package com.codewithdani.models.regional;
 
+import com.codewithdani.models.threats.Virus;
+
 public class City {
     private String name;
     private int population;
@@ -12,6 +14,8 @@ public class City {
     private double sevenDaysIncidence;
     private double rValue;
     private int[] caseHistory;
+    private Virus currentVirus;
+
 
     public City(String name, int population, int populationDensity) {
         this.name = name;
@@ -21,6 +25,7 @@ public class City {
         this.rValue = 0.0;
         this.caseHistory = new int[]{-1, -1, -1, -1, -1, -1, -1};
         this.populationLeftToInfect = -1;
+        this.currentVirus = new Virus("alpha", 100, 0.009);
     }
 
     public String getName() {
@@ -85,8 +90,8 @@ public class City {
             }
         }
         // todo verschiebe alle und auf 6 kommt neuer Wert
-        this.updateHealedCases((int)(caseHistory[0] * 0.8));
-        this.updateDeadCases((int)(caseHistory[0] * 0.2));
+        this.updateHealedCases((int)(caseHistory[0] * (1 - currentVirus.getMortalityRate())));
+        this.updateDeadCases((int)(caseHistory[0] * currentVirus.getMortalityRate()));
 
         caseHistory[0] = caseHistory[1];
         caseHistory[1] = caseHistory[2];
@@ -134,5 +139,13 @@ public class City {
 
     public void setNewCases(int newCases) {
         this.newCases = newCases;
+    }
+
+    public Virus getCurrentVirus() {
+        return currentVirus;
+    }
+
+    public void setCurrentVirus(Virus currentVirus) {
+        this.currentVirus = currentVirus;
     }
 }
