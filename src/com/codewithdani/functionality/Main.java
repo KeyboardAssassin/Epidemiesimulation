@@ -1,8 +1,8 @@
 package com.codewithdani.functionality;
 
-import com.codewithdani.models.City;
-import com.codewithdani.models.Country;
-import com.codewithdani.models.State;
+import com.codewithdani.models.regional.City;
+import com.codewithdani.models.regional.Country;
+import com.codewithdani.models.regional.State;
 
 
 public class Main {
@@ -110,8 +110,8 @@ public class Main {
                 saarland, berlin, brandenburg, bremen, nordrheinwestfahlen, hamburg, mecklenburgvorpommern, sachsenanhalt};
 
         // Städte setzten
-        bayern.setCities(citiesOfBayern);
         thuringen.setCities(citiesOfThuringen);
+        bayern.setCities(citiesOfBayern);
         hessen.setCities(citiesOfHessen);
         badenWurttemberg.setCities(citiesOfBadenwurttemberg);
         sachsen.setCities(citiesOfSachsen);
@@ -135,6 +135,7 @@ public class Main {
         System.out.println(germany.getAmountOfStates() + " Bundesländer");
         System.out.println(citiesOfBayern.length + " Städte vom Bundesland " + bayern.getName());
 
+        // set days precisely
         ingolstadt.setHistoryDay(1, 100);
         ingolstadt.setHistoryDay(2, 200);
         ingolstadt.setHistoryDay(3, 300);
@@ -151,10 +152,10 @@ public class Main {
 
         munchen.reloadCity();
 
-        for (int i = 0; i < 14; i++){
+        for (int i = 0; i < 100; i++){
             stuttgart.addNewEntryToHistory(i * (i * 2));
             stuttgart.reloadCity();
-            int b = 1;
+            int b = 0;
         }
 
 

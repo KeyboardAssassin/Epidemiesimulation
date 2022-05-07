@@ -1,4 +1,4 @@
-package com.codewithdani.models;
+package com.codewithdani.models.regional;
 
 public class Country {
     private String name;

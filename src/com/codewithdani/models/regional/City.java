@@ -1,8 +1,9 @@
-package com.codewithdani.models;
+package com.codewithdani.models.regional;
 
 public class City {
     private String name;
     private int population;
+    private int populationLeftToInfect;
     private int populationDensity;
     private int activeCases;
     private int newCases;
@@ -19,6 +20,7 @@ public class City {
         this.sevenDaysIncidence = 0.0;
         this.rValue = 0.0;
         this.caseHistory = new int[]{-1, -1, -1, -1, -1, -1, -1};
+        this.populationLeftToInfect = -1;
     }
 
     public String getName() {
@@ -75,6 +77,10 @@ public class City {
         for (int i = 0; i < caseHistory.length; i++){
             if (caseHistory[i] == -1){
                 caseHistory[i] = amountOfCases;
+
+                this.setNewCases(amountOfCases);
+                this.updatePopulationLeftToInfect();
+
                 return;
             }
         }
@@ -89,6 +95,9 @@ public class City {
         caseHistory[4] = caseHistory[5];
         caseHistory[5] = caseHistory[6];
         caseHistory[6] = amountOfCases;
+
+        this.setNewCases(amountOfCases);
+        this.updatePopulationLeftToInfect();
     }
 
     public void updateSevenDaysIncidence(){
@@ -108,5 +117,22 @@ public class City {
         this.updateNewCases();
         this.updateRValue();
         this.updateSevenDaysIncidence();
+    }
+
+    public int calculateNextDayInfections(){
+
+        return 0;
+    }
+
+    public void updatePopulationLeftToInfect(){
+        if (populationLeftToInfect == -1){
+            this.populationLeftToInfect = this.population;
+            return;
+        }
+        this.populationLeftToInfect = populationLeftToInfect - newCases;
+    }
+
+    public void setNewCases(int newCases) {
+        this.newCases = newCases;
     }
 }
