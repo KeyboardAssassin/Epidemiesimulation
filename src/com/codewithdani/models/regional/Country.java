@@ -3,8 +3,8 @@ package com.codewithdani.models.regional;
 import com.codewithdani.models.threats.Virus;
 
 public class Country {
-    private String name;
-    public State[] states;
+    private final String name;
+    private State[] states;
 
     public Country(String name) {
         this.name = name;

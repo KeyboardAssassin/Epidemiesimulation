@@ -1,7 +1,7 @@
 package com.codewithdani.models.regional;
 
 public class State {
-    private String name;
+    private final String name;
     private City[] cities;
 
     public State(String name) {

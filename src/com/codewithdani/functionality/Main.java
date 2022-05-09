@@ -158,18 +158,34 @@ public class Main {
 
         munchen.reloadCity();
 
+        int averagePandemicTime = 0;
+        int amountOfSimulations = 100;
+        int dayOfVirusChange = 108; // 01.09.2020 (alpha) -> 18.12.2020 (beta) | currently hard cut TODO Soft transition
+        int daysOfTestingPerPandemic = 365;
+        City currentTestedCity = stuttgart;
 
+        for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
+            // growth algorithm for 1 year
+            for (int day = 0; day < daysOfTestingPerPandemic; day++){
+                // TODO check how long these viruses were prevailing
 
-        // growth algorithm for 1 year
-        for (int day = 0; day < 365; day++){
-            // TODO check how long these virusses were prevailing
-            // change virus after the 100th day
-            if (day > 100) stuttgart.setCurrentVirus(beta);
-            stuttgart.addNewEntryToHistory(day * (day * 2));
-            stuttgart.reloadCity();
+                // change virus after the 100th day (3 Months change from alpha -> beta)
+                if (day > dayOfVirusChange) currentTestedCity.setCurrentVirus(beta);
+
+                currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(day));
+                currentTestedCity.reloadCity();
+
+                // end the pandemic + logging
+                if (currentTestedCity.getEntryFromHistory(6) == 0){
+                    // System.out.println("Pandemie beendet an Tag: " + day);
+                    currentTestedCity = new City("Stuttgart", 634830, 3040);
+                    averagePandemicTime += day;
+                    break;
+                }
+            }
         }
+        System.out.println("");
+        System.out.println("Durchschnittliche Dauer einer Pandemie: " + averagePandemicTime / amountOfSimulations + " Tage");
 
-
-        System.out.println("Beende Programm");
     }
 }
