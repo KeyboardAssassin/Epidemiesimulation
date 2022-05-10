@@ -1,5 +1,6 @@
 package com.codewithdani.models.regional;
 
+import com.codewithdani.models.histories.HealedHistory;
 import com.codewithdani.models.threats.Virus;
 
 import java.util.Arrays;
@@ -17,6 +18,7 @@ public class City {
     private double sevenDaysIncidence;
     private double rValue;
     private int[] caseHistory;
+    private HealedHistory healedHistory;
     private Virus currentVirus;
 
     // min and max amount a persons meets other persons per day (random)
@@ -37,6 +39,7 @@ public class City {
         this.caseHistory = new int[]{-1, -1, -1, -1, -1, -1, -1};
         this.populationLeftToInfect = -1;
         this.currentVirus = new Virus("alpha", 100, 0.009);
+        this.healedHistory = new HealedHistory();
     }
 
     public String getName() {
@@ -52,21 +55,15 @@ public class City {
     }
 
     public int calculateSum(){
-        int sum = 0;
-
-        for (int i = 0; i < caseHistory.length; i++){
-            if (caseHistory[i] != -1){
-                sum += caseHistory[i];
-            }
-        }
-        return sum;
+        return Arrays.stream(caseHistory).filter(x -> x != -1).sum();
     }
 
     public void updateActiveCases(){
-        // todo check stream
-        // this.activeCases = Arrays.stream(caseHistory).sum();                             // -> kalkuliert -1 mit ein
-        // this.activeCases = Arrays.stream(caseHistory).filter(x -> x.value != -1).sum();  // -> x.value funktioniert nicht
         this.activeCases = calculateSum();
+    }
+
+    public void addActiveCases(int newCases){
+        this.activeCases += newCases;
     }
 
     public void updateNewCases() {
@@ -104,6 +101,7 @@ public class City {
         this.updateDeadCases((int)(caseHistory[0] * currentVirus.getMortalityRate()));
 
         // todo smartere Lösung finden
+        healedHistory.addEntry(caseHistory[0]);
         caseHistory[0] = caseHistory[1];
         caseHistory[1] = caseHistory[2];
         caseHistory[2] = caseHistory[3];
@@ -139,11 +137,15 @@ public class City {
         // Average amount of People a person meets every day
         double amountOfAveragePeopleMeetings = minAmountOfMeetingsPerDay + (maxAmountOfMeetingsPerDay - minAmountOfMeetingsPerDay) * r.nextDouble();
 
+        // Probability someone in the 7 days history infects someone
         double infectingCases = calculateActiveCasesInfectingSomeone();
+
+        int amountOfPeopleWithAnotherInfection = this.healedHistory.calculateProbabilityOfAnotherInfection();
+        this.addActiveCases(amountOfPeopleWithAnotherInfection);
 
         // TODO Maßnahmen wie Isolation und Kontaktbeschränkungen auf aktive Fälle multiplizieren (einbeziehen)
         // calculation of the infections for the current day of the infection
-        int infections = (int)(infectingCases * ((populationProbabilty + 1 ) * decreasingProbabiltyGrowingRateofHealedCases * amountOfAveragePeopleMeetings));
+        int infections = (int)(infectingCases * ((populationProbabilty + 1 ) * decreasingProbabiltyGrowingRateofHealedCases * amountOfAveragePeopleMeetings) + amountOfPeopleWithAnotherInfection);
 
         if (newCases > populationLeftToInfect)
         {
@@ -219,22 +221,15 @@ public class City {
             return infectingRate;
         }
 
-        int amountOfDaysFilled = 0;
-
         for (int i = 6; i > 0; i--)
         {
             if (this.caseHistory[i] == -1 && this.caseHistory[i - 1] != -1){
-                // amountOfDaysFilled = i;
-                // System.out.println(amountOfDaysFilled + " SO VIELE TAGE ALLÄÄ");
                 int day = 0;
-
-
                 for (int amountOfElements = i; amountOfElements > 0; amountOfElements--){
                     infectingRate += this.caseHistory[amountOfElements - 1] * daysLeft[day];
                     day++;
                 }
                 return infectingRate;
-
             }
         }
         return 111.111;
