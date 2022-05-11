@@ -12,6 +12,10 @@ public class State {
         this.cities = cities;
     }
 
+    public City[] getCities() {
+        return cities;
+    }
+
     public String getName() {
         return name;
     }

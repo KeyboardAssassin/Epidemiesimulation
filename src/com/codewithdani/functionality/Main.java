@@ -72,7 +72,7 @@ public class Main {
 
         // Mecklenburg-Vorpommern
         City schwerin = new City("Schwerin", 95818, 733);
-        City rostrock = new City("Rostrock", 208886, 1153);
+        City rostock = new City("Rostock", 208886, 1153);
 
         // Sachsen-Anhalt
         City magdeburg = new City("Magdeburg", 238697, 1173);
@@ -92,7 +92,7 @@ public class Main {
         City[] citiesOfBremen                   = {bremenCity};
         City[] citiesOfNordrheinwestfahlen      = {duesseldorf, koeln};
         City[] citiesOfHamburg                  = {hamburgCity};
-        City[] citiesOfMecklenburgvorpommern    = {schwerin, rostrock};
+        City[] citiesOfMecklenburgvorpommern    = {schwerin, rostock};
         City[] citiesOfSachsenanhalt            = {magdeburg, halle};
 
         State thuringen             = new State("Thüringen");
@@ -142,19 +142,19 @@ public class Main {
         System.out.println(citiesOfBayern.length + " Städte vom Bundesland " + bayern.getName());
 
         // set days precisely
-        ingolstadt.setHistoryDay(1, 100);
-        ingolstadt.setHistoryDay(2, 200);
-        ingolstadt.setHistoryDay(3, 300);
-        ingolstadt.setHistoryDay(4, 400);
-        ingolstadt.setHistoryDay(5, 500);
-        ingolstadt.setHistoryDay(6, 600);
-        ingolstadt.setHistoryDay(7, 700);
+        halle.setHistoryDay(1, 100);
+        halle.setHistoryDay(2, 200);
+        halle.setHistoryDay(3, 300);
+        halle.setHistoryDay(4, 400);
+        halle.setHistoryDay(5, 500);
+        halle.setHistoryDay(6, 600);
+        halle.setHistoryDay(7, 700);
 
-        ingolstadt.reloadCity();
+        halle.reloadCity();
 
-        munchen.addNewEntryToHistory(10);
-        munchen.addNewEntryToHistory(100);
-        munchen.addNewEntryToHistory(500);
+        rostock.addNewEntryToHistory(10);
+        rostock.addNewEntryToHistory(100);
+        rostock.addNewEntryToHistory(500);
 
         munchen.reloadCity();
 
@@ -162,25 +162,39 @@ public class Main {
         int amountOfSimulations = 100;
         int dayOfVirusChange = 108; // 01.09.2020 (alpha) -> 18.12.2020 (beta) | currently hard cut TODO Soft transition
         int daysOfTestingPerPandemic = 365;
-        City currentTestedCity = stuttgart;
+        State currentTestedState = states[0];
+        City currentTestedCity = states[0].getCities()[0];
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
             // growth algorithm for 1 year
             for (int day = 0; day < daysOfTestingPerPandemic; day++){
                 // TODO check how long these viruses were prevailing
 
-                // change virus after the 100th day (3 Months change from alpha -> beta)
-                if (day > dayOfVirusChange) currentTestedCity.setCurrentVirus(beta);
+                // run the simulation for every state of germany
+                for (int numberOfCurrentState = 0; numberOfCurrentState < states.length; numberOfCurrentState++){
+                    currentTestedState = states[numberOfCurrentState];
 
-                currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(day));
-                currentTestedCity.reloadCity();
+                    // run the simulation for every city of the current state
+                    for (int numberOfCurrentCity = 0; numberOfCurrentCity < currentTestedState.getCities().length; numberOfCurrentCity++){
+                        // set the current City
+                        currentTestedCity = currentTestedState.getCities()[numberOfCurrentCity];
 
-                // end the pandemic + logging
-                if (currentTestedCity.getEntryFromHistory(6) == 0){
-                    // System.out.println("Pandemie beendet an Tag: " + day);
-                    currentTestedCity = new City("Stuttgart", 634830, 3040);
-                    averagePandemicTime += day;
-                    break;
+                        // change virus after the 100th day (3 Months change from alpha -> beta)
+                        if (day > dayOfVirusChange) currentTestedCity.setCurrentVirus(beta);
+
+                        currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(day));
+                        currentTestedCity.reloadCity();
+
+                        // end the pandemic + logging
+                        if (currentTestedCity.getEntryFromHistory(6) == 0){
+                            // System.out.println("Pandemie beendet an Tag: " + day);
+                            // currentTestedCity = new City("Stuttgart", 634830, 3040);
+                            // averagePandemicTime += day;
+                            // break;
+                            // TODO Ersetzen durch Funktion die checkt ob alle Städte keine Neuinfektionen mehr haben (3 Tage hintereinander)
+                        }
+                    }
+                    System.out.println("Tag: " + day + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
                 }
             }
         }
