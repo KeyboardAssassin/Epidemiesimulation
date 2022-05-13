@@ -8,14 +8,12 @@ import com.codewithdani.models.threats.Virus;
 
 public class Main {
 
+    // viruses
+    static Virus beta  = new Virus("beta", 100, 0.00216);
+    static Virus delta = new Virus("delta", 100, 0.003);
+    static Virus omicron = new Virus("omicron", 100, 0.0041);
     public static void main(String[] args) {
-
-        // Viren
-        Virus beta  = new Virus("beta", 100, 0.00216);
-        Virus delta = new Virus("delta", 100, 0.003);
-        Virus omicron = new Virus("omicron", 100, 0.0041);
-
-        // Städte
+        // cities
         // Bayern
         City ingolstadt = new City("Ingolstadt", 136981, 1027);
         City munchen = new City("München", 1472000, 4790);
@@ -112,10 +110,10 @@ public class Main {
         State mecklenburgvorpommern = new State("Mecklenburg-Vorpommern");
         State sachsenanhalt         = new State("Sachsen-Anhalt");
 
-        State[] states = {thuringen, bayern, hessen, badenWurttemberg, sachsen, niedersachsen, rheinlandpfalz, schleswigholstein,
+        State[] germanStates = {thuringen, bayern, hessen, badenWurttemberg, sachsen, niedersachsen, rheinlandpfalz, schleswigholstein,
                 saarland, berlin, brandenburg, bremen, nordrheinwestfahlen, hamburg, mecklenburgvorpommern, sachsenanhalt};
 
-        // Städte setzten
+        // set cities
         thuringen.setCities(citiesOfThuringen);
         bayern.setCities(citiesOfBayern);
         hessen.setCities(citiesOfHessen);
@@ -134,7 +132,7 @@ public class Main {
         sachsenanhalt.setCities(citiesOfSachsenanhalt);
 
         Country germany = new Country("Deutschland");
-        germany.setStates(states);
+        germany.setStates(germanStates);
 
         System.out.println("Erfolgreich gestartet");
         System.out.println("Geladenes Land: " + germany.getName());
@@ -160,10 +158,9 @@ public class Main {
 
         int averagePandemicTime = 0;
         int amountOfSimulations = 100;
-        int dayOfVirusChange = 108; // 01.09.2020 (alpha) -> 18.12.2020 (beta) | currently hard cut TODO Soft transition
         int daysOfTestingPerPandemic = 365;
-        State currentTestedState = states[0];
-        City currentTestedCity = states[0].getCities()[0];
+        State currentTestedState;
+        City currentTestedCity;
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
             // growth algorithm for 1 year
@@ -171,35 +168,67 @@ public class Main {
                 // TODO check how long these viruses were prevailing
 
                 // run the simulation for every state of germany
-                for (int numberOfCurrentState = 0; numberOfCurrentState < states.length; numberOfCurrentState++){
-                    currentTestedState = states[numberOfCurrentState];
+                for (State state : germanStates) {
+                    currentTestedState = state;
 
                     // run the simulation for every city of the current state
-                    for (int numberOfCurrentCity = 0; numberOfCurrentCity < currentTestedState.getCities().length; numberOfCurrentCity++){
+                    for (int numberOfCurrentCity = 0; numberOfCurrentCity < currentTestedState.getCities().length; numberOfCurrentCity++) {
                         // set the current City
                         currentTestedCity = currentTestedState.getCities()[numberOfCurrentCity];
 
-                        // change virus after the 100th day (3 Months change from alpha -> beta)
-                        if (day > dayOfVirusChange) currentTestedCity.setCurrentVirus(beta);
+                        // change virus over the days
+                        virusEvolution(day, currentTestedCity);
 
                         currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(day));
                         currentTestedCity.reloadCity();
 
                         // end the pandemic + logging
-                        if (currentTestedCity.getEntryFromHistory(6) == 0){
-                            // System.out.println("Pandemie beendet an Tag: " + day);
-                            // currentTestedCity = new City("Stuttgart", 634830, 3040);
-                            // averagePandemicTime += day;
-                            // break;
-                            // TODO Ersetzen durch Funktion die checkt ob alle Städte keine Neuinfektionen mehr haben (3 Tage hintereinander)
+                        if (checkIfEveryCityHasNoNewInfections(germany)) {
+                            System.out.println("Pandemie beendet an Tag: " + day);
+
+                            // reset all cities to start a new simulation
+                            resetAllCities();
+                            averagePandemicTime += day;
+                            break;
                         }
                     }
                     System.out.println("Tag: " + day + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
                 }
             }
         }
-        System.out.println("");
+        System.out.println();
         System.out.println("Durchschnittliche Dauer einer Pandemie: " + averagePandemicTime / amountOfSimulations + " Tage");
 
     }
+
+    static void virusEvolution(int day, City currentTestedCity){
+        int amountOfActiveAlphaDays = 108;  // 01.09.2020 (alpha) -> 18.12.2020 (beta) | currently hard cut TODO Soft transition
+        int amountOfActiveBetaDays  = 195;  // (beta) -> (delta)
+        int amountOfActiveDeltaDays = 148;  // (delta) -> (omicron)
+
+        // change virus after the 108th day (3 Months change from alpha -> beta)
+        if (day > amountOfActiveAlphaDays) currentTestedCity.setCurrentVirus(beta);
+        if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays) currentTestedCity.setCurrentVirus(delta);
+        if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays + amountOfActiveDeltaDays) currentTestedCity.setCurrentVirus(omicron);
+    }
+
+    static boolean checkIfEveryCityHasNoNewInfections(Country country){
+        for (State state : country.getStates()){
+            for (City city: state.getCities()){
+                if (city.getEntryFromHistory(7) == 0 && city.getEntryFromHistory(6) == 0){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    static void initialiseAllCities(){
+
+    }
+
+    static void resetAllCities(){
+
+    }
+
 }

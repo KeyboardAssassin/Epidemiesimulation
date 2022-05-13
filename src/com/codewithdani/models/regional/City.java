@@ -126,13 +126,13 @@ public class City {
             return (r.nextInt(firstDayInfectedPeopleMax - firstDayInfectedPeopleMin) + firstDayInfectedPeopleMin);
         }
 
-        // Propability between 0% and 30% depending on the density of the city (min/max: city with lowest/highest density)
+        // Probability between 0% and 30% depending on the density of the city (min/max: city with lowest/highest density)
         int differenceHighestAndLowestDensity = 4790 - 596; // Densities Cottbus and München (min/max)
         double normalizedDensity = (this.populationDensity - 596);
-        double populationProbabilty =  (normalizedDensity / differenceHighestAndLowestDensity) * 0.3; // 4790 Density (München) equals factor of 30% = 0.3
+        double populationProbability =  (normalizedDensity / differenceHighestAndLowestDensity) * 0.3; // 4790 Density (München) equals factor of 30% = 0.3
 
-        // Probabilty depending on the proportion of healed or vaccinated cases to the total population
-        double decreasingProbabiltyGrowingRateofHealedCases = (double)this.populationLeftToInfect / (double)population;
+        // Probability depending on the proportion of healed or vaccinated cases to the total population
+        double decreasingProbabilityGrowingRateOfCuredCases = (double)this.populationLeftToInfect / (double)population;
 
         // Average amount of People a person meets every day
         double amountOfAveragePeopleMeetings = minAmountOfMeetingsPerDay + (maxAmountOfMeetingsPerDay - minAmountOfMeetingsPerDay) * r.nextDouble();
@@ -145,7 +145,7 @@ public class City {
 
         // TODO Maßnahmen wie Isolation und Kontaktbeschränkungen auf aktive Fälle multiplizieren (einbeziehen)
         // calculation of the infections for the current day of the infection
-        int infections = (int)(infectingCases * ((populationProbabilty + 1 ) * decreasingProbabiltyGrowingRateofHealedCases * amountOfAveragePeopleMeetings) + amountOfPeopleWithAnotherInfection);
+        int infections = (int)(infectingCases * ((populationProbability + 1 ) * decreasingProbabilityGrowingRateOfCuredCases * amountOfAveragePeopleMeetings) + amountOfPeopleWithAnotherInfection);
 
         if (newCases > populationLeftToInfect)
         {
