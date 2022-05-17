@@ -215,7 +215,7 @@ public class Main {
     static boolean checkIfEveryCityHasNoNewInfections(Country country){
         for (State state : country.getStates()){
             for (City city: state.getCities()){
-                if (city.getEntryFromHistory(7) == 0 && city.getEntryFromHistory(6) == 0){
+                if (city.getEntryFromHistory(6) == 0 && city.getEntryFromHistory(5) == 0){
                     return true;
                 }
             }
