@@ -1,6 +1,11 @@
 package com.codewithdani.models.regional;
 
 import com.codewithdani.models.threats.Virus;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.File;
+import java.io.FileWriter;
 
 public class Country {
     private final String name;
@@ -25,4 +30,16 @@ public class Country {
     public State[] getStates() {
         return states;
     }
+
+    public City getCityByName(String name){
+        for (State state : states){
+            for (City city : state.getCities()){
+             if (city.getName().equals(name)) return city;
+            }
+        }
+        return null;
+    }
+
+
+
 }

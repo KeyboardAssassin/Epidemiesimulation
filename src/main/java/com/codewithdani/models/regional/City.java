@@ -186,10 +186,6 @@ public class City {
         this.newCases = newCases;
     }
 
-    public Virus getCurrentVirus() {
-        return currentVirus;
-    }
-
     public void setCurrentVirus(Virus currentVirus) {
         this.currentVirus = currentVirus;
     }
