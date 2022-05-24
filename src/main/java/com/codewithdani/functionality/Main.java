@@ -1,6 +1,7 @@
 package com.codewithdani.functionality;
 
 import com.codewithdani.json.Json;
+import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
@@ -14,7 +15,11 @@ public class Main {
     static Virus delta = new Virus("delta", 100, 0.003);
     static Virus omicron = new Virus("omicron", 100, 0.0041);
     public static void main(String[] args) {
+        // create the json Reader/Writer Object
         Json json = new Json();
+
+        // create the ability to create Measures
+        Measure measure = new Measure();
 
         // create an empty Country
         Country germany = new Country("Deutschland");
@@ -29,6 +34,7 @@ public class Main {
         System.out.println("Geladenes Land: " + germany.getName());
         System.out.println(germany.getAmountOfStates() + " Bundesländer");
 
+        // TODO Introduce JUNIT and move there
         // set days precisely
         germany.getCityByName("Halle").setHistoryDay(1, 100);
         germany.getCityByName("Halle").setHistoryDay(2, 200);
@@ -49,16 +55,21 @@ public class Main {
         int averagePandemicTime = 0;
         int amountOfSimulations = 100;
         int daysOfTestingPerPandemic = 365;
+        int dayOfVaccinationDevelopmentStart = 30;
+        Country currentTestedCountry = germany;
         State currentTestedState;
         City currentTestedCity;
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
             // growth algorithm for 1 year
-            for (int day = 0; day < daysOfTestingPerPandemic; day++){
+            for (int currentDay = 0; currentDay < daysOfTestingPerPandemic; currentDay++){
                 // TODO check how long these viruses were prevailing
 
+                if (currentDay == dayOfVaccinationDevelopmentStart) measure.startDevelopingVaccination(currentTestedCountry, currentDay);
+                measure.checkIfVaccinationIsDeveloped(currentDay);
+
                 // run the simulation for every state of germany
-                for (State state : germany.getStates()) {
+                for (State state : currentTestedCountry.getStates()) {
                     currentTestedState = state;
 
                     // run the simulation for every city of the current state
@@ -67,22 +78,22 @@ public class Main {
                         currentTestedCity = currentTestedState.getCities()[numberOfCurrentCity];
 
                         // change virus over the days
-                        virusEvolution(day, currentTestedCity);
+                        virusEvolution(currentDay, currentTestedCity);
 
-                        currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(day));
+                        currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(currentDay));
                         currentTestedCity.reloadCity();
 
                         // end the pandemic + logging
-                        if (checkIfEveryCityHasNoNewInfections(germany)) {
-                            System.out.println("Pandemie beendet an Tag: " + day);
+                        if (checkIfEveryCityHasNoNewInfections(currentTestedCountry)) {
+                            System.out.println("Pandemie beendet an Tag: " + currentDay);
 
                             // reset all cities to start a new simulation
                             resetAllCities();
-                            averagePandemicTime += day;
+                            averagePandemicTime += currentDay;
                             break;
                         }
                     }
-                    System.out.println("Tag: " + day + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
+                    System.out.println("Tag: " + currentDay + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
                 }
             }
         }
@@ -114,7 +125,7 @@ public class Main {
     }
 
     static void resetAllCities(){
-
+        // TODO replace with JSON loading again
     }
 
 }

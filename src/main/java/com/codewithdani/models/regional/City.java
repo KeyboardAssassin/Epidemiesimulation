@@ -46,10 +46,6 @@ public class City {
         return name;
     }
 
-    public double getrValue() {
-        return rValue;
-    }
-
     public void setHistoryDay(int day, int value){
         this.caseHistory[day - 1] = value;
     }
