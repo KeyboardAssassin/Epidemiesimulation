@@ -111,7 +111,7 @@ public class City {
     }
 
     public int getEntryFromHistory(int day){
-        return caseHistory[day];
+        return caseHistory[day - 1];
     }
 
     public int calculateNextDayInfections(int day){

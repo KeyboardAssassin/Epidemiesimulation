@@ -34,24 +34,6 @@ public class Main {
         System.out.println("Geladenes Land: " + germany.getName());
         System.out.println(germany.getAmountOfStates() + " Bundesländer");
 
-        // TODO Introduce JUNIT and move there
-        // set days precisely
-        germany.getCityByName("Halle").setHistoryDay(1, 100);
-        germany.getCityByName("Halle").setHistoryDay(2, 200);
-        germany.getCityByName("Halle").setHistoryDay(3, 300);
-        germany.getCityByName("Halle").setHistoryDay(4, 400);
-        germany.getCityByName("Halle").setHistoryDay(5, 500);
-        germany.getCityByName("Halle").setHistoryDay(6, 600);
-        germany.getCityByName("Halle").setHistoryDay(7, 700);
-
-        germany.getCityByName("Halle").reloadCity();
-
-        germany.getCityByName("Rostock").addNewEntryToHistory(10);
-        germany.getCityByName("Rostock").addNewEntryToHistory(100);
-        germany.getCityByName("Rostock").addNewEntryToHistory(500);
-
-        germany.getCityByName("München").reloadCity();
-
         int averagePandemicTime = 0;
         int amountOfSimulations = 100;
         int daysOfTestingPerPandemic = 365;
