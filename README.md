@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-Hierbei handelt es sich um eine interaktive Virussimulation, bei welcher der Nutzer Maßnahmen zur Eindämmung wählen kann.
+Hierbei handelt es sich um eine interaktive Virussimulation, bei welcher der Nutzer Maßnahmen zur Eindämmung selbst wählen kann.
 
 - Entwicklung mit Java 15
 - Gradle Projektstruktur mit externen Libraries und JUnit Testing
@@ -24,7 +24,7 @@ Corona Simulation currently uses:
 - [Gradle 7.4.2] - project structure - build tool
 - [gson 2.9.0] - Better JSON Handling library
 - [Junit 5.8.2] - great testing library
-- 
+
 ## Installation
 
 Corona-Simulation doesn't need anything to be compiled other than a Java SDK.

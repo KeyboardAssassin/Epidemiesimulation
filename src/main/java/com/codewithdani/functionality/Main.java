@@ -15,6 +15,7 @@ public class Main {
     static Virus delta = new Virus("delta", 100, 0.003);
     static Virus omicron = new Virus("omicron", 100, 0.0041);
     public static void main(String[] args) {
+
         // create the json Reader/Writer Object
         Json json = new Json();
 
@@ -47,8 +48,7 @@ public class Main {
             for (int currentDay = 0; currentDay < daysOfTestingPerPandemic; currentDay++){
                 // TODO check how long these viruses were prevailing
 
-                if (currentDay == dayOfVaccinationDevelopmentStart) measure.startDevelopingVaccination(currentTestedCountry, currentDay);
-                measure.checkIfVaccinationIsDeveloped(currentDay);
+                if (currentDay == dayOfVaccinationDevelopmentStart) measure.getVaccination().startDevelopingVaccination(currentDay);
 
                 // run the simulation for every state of germany
                 for (State state : currentTestedCountry.getStates()) {
@@ -58,6 +58,11 @@ public class Main {
                     for (int numberOfCurrentCity = 0; numberOfCurrentCity < currentTestedState.getCities().length; numberOfCurrentCity++) {
                         // set the current City
                         currentTestedCity = currentTestedState.getCities()[numberOfCurrentCity];
+
+                        // try to vaccinate people if the vaccination is developed
+                        if (measure.getVaccination().isVaccinationApproved()){
+                            measure.getVaccination().vaccinatePeople(currentTestedCity);
+                        }
 
                         // change virus over the days
                         virusEvolution(currentDay, currentTestedCity);
@@ -70,9 +75,9 @@ public class Main {
                             System.out.println("Pandemie beendet an Tag: " + currentDay);
 
                             // reset all cities to start a new simulation
-                            resetAllCities();
+                            resetCountry(germany, json);
                             averagePandemicTime += currentDay;
-                            break;
+                            break; // only breaking out of if statement? TODO
                         }
                     }
                     System.out.println("Tag: " + currentDay + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
@@ -106,8 +111,9 @@ public class Main {
         return false;
     }
 
-    static void resetAllCities(){
+    static void resetCountry(Country country, Json json){
         // TODO replace with JSON loading again
+        country = json.importCountryFromJson(country);
     }
 
 }

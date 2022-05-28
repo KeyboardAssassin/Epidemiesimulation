@@ -20,6 +20,7 @@ public class City {
     private int[] caseHistory;
     private HealedHistory healedHistory;
     private Virus currentVirus;
+    private float vaccinationProportion;
 
     // min and max amount a persons meets other persons per day (random)
     private static double minAmountOfMeetingsPerDay = 0.1;
@@ -40,6 +41,7 @@ public class City {
         this.populationLeftToInfect = -1;
         this.currentVirus = new Virus("alpha", 100, 0.009);
         this.healedHistory = new HealedHistory();
+        this.vaccinationProportion = 0.0f;
     }
 
     public String getName() {
@@ -225,5 +227,14 @@ public class City {
             }
         }
         return 111.111;
+    }
+
+    public void addToVaccinationProportion(float vaccinationGrowth) {
+        if (this.vaccinationProportion + vaccinationGrowth < 100){
+            this.vaccinationProportion += vaccinationGrowth;
+        }
+        else {
+            this.vaccinationProportion = 100f;
+        }
     }
 }
