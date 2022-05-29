@@ -12,6 +12,11 @@ public class Measure {
     Tracing tracing;
     Distancing distancing;
 
+    public Measure() {
+        vaccination = new Vaccination();
+        medicine = new Medicine();
+    }
+
     public Vaccination getVaccination() {
         return vaccination;
     }

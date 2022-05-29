@@ -80,18 +80,17 @@ public class Main {
 
                         currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(currentDay));
                         currentTestedCity.reloadCity();
-
-                        // end the pandemic + logging
-                        if (checkIfEveryCityHasNoNewInfections(currentTestedCountry)) {
-                            System.out.println("Pandemie beendet an Tag: " + currentDay);
-
-                            // reset all cities to start a new simulation
-                            germany = resetCountry(germany, json);
-                            averagePandemicTime += currentDay;
-                            break; // only breaking out of if statement? TODO
-                        }
                     }
                     // System.out.println("Tag: " + currentDay + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
+                }
+                // end the pandemic + logging
+                if (checkIfEveryCityHasNoNewInfections(currentTestedCountry)) {
+                    System.out.println("Pandemie beendet an Tag: " + currentDay);
+
+                    // reset all cities to start a new simulation
+                    germany = resetCountry(germany, json);
+                    averagePandemicTime += currentDay;
+                    break; // only breaking out of if statement? TODO
                 }
             }
         }
@@ -114,12 +113,12 @@ public class Main {
     static boolean checkIfEveryCityHasNoNewInfections(Country country){
         for (State state : country.getStates()){
             for (City city: state.getCities()){
-                if (city.getEntryFromHistory(6) == 0 && city.getEntryFromHistory(5) == 0){
-                    return true;
+                if (city.getEntryFromHistory(6) != 0 || city.getEntryFromHistory(5) != 0){
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
     static Country resetCountry(Country country, Json json){
