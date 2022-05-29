@@ -96,7 +96,7 @@ public class City {
             }
         }
         this.updateHealedCases((int)(caseHistory[0] * (1 - currentVirus.getMortalityRate())));
-        this.updateDeadCases((int)(caseHistory[0] * currentVirus.getMortalityRate()));
+        this.updateDeadCases((int)(caseHistory[0] * currentVirus.getMortalityRate()));  // TODO usage of medicine
 
         // todo smartere Lösung finden
         healedHistory.addEntry(caseHistory[0]);
@@ -125,8 +125,8 @@ public class City {
         }
 
         // Probability between 0% and 30% depending on the density of the city (min/max: city with lowest/highest density)
-        int differenceHighestAndLowestDensity = 4790 - 596; // Densities Cottbus and München (min/max)
-        double normalizedDensity = (this.populationDensity - 596);
+        int differenceHighestAndLowestDensity = 4790 - 596; // Densities Cottbus and München (min/max) TODO remove Magic Numbers
+        double normalizedDensity = (this.populationDensity - 596); // TODO Same
         double populationProbability =  (normalizedDensity / differenceHighestAndLowestDensity) * 0.3; // 4790 Density (München) equals factor of 30% = 0.3
 
         // Probability depending on the proportion of healed or vaccinated cases to the total population
