@@ -40,11 +40,13 @@ public class Main {
         int daysOfTestingPerPandemic = 365;
         int dayOfVaccinationDevelopmentStart = 30;
         int dayOfMedicineDevelopmentStart = 60;
-        Country currentTestedCountry = germany;
+        Country currentTestedCountry;
         State currentTestedState;
         City currentTestedCity;
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
+            currentTestedCountry = germany;
+
             // growth algorithm for 1 year
             for (int currentDay = 0; currentDay < daysOfTestingPerPandemic; currentDay++){
                 // TODO check how long these viruses were prevailing

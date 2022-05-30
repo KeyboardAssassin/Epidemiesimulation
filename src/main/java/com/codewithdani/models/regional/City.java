@@ -143,7 +143,10 @@ public class City {
 
         // TODO Maßnahmen wie Isolation und Kontaktbeschränkungen auf aktive Fälle multiplizieren (einbeziehen)
         // calculation of the infections for the current day of the infection
-        int infections = (int)(infectingCases * ((populationProbability + 1 ) * decreasingProbabilityGrowingRateOfCuredCases * amountOfAveragePeopleMeetings) + amountOfPeopleWithAnotherInfection);
+        int infections = (int)(infectingCases * ((populationProbability + 1 ) * decreasingProbabilityGrowingRateOfCuredCases * amountOfAveragePeopleMeetings));
+        if (populationLeftToInfect != 0){
+            infections += amountOfPeopleWithAnotherInfection;
+        }
 
         if (newCases > populationLeftToInfect)
         {
