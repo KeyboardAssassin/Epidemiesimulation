@@ -1,4 +1,5 @@
 import com.codewithdani.models.regional.City;
+import com.codewithdani.models.regional.Country;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,11 +31,12 @@ public class CityTest {
 
     @Test
     void addingNewDataToHistoryTest() {
+        Country testCountry = new Country("Testcountry");
         City testCity = new City("Testcity", 100000, 100);
 
-        testCity.addNewEntryToHistory(10);
-        testCity.addNewEntryToHistory(100);
-        testCity.addNewEntryToHistory(500);
+        testCity.addNewEntryToHistory(10, testCountry);
+        testCity.addNewEntryToHistory(100, testCountry);
+        testCity.addNewEntryToHistory(500, testCountry);
 
         testCity.reloadCity();
 

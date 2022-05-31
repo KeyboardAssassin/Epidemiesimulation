@@ -1,12 +1,12 @@
 package com.codewithdani.models.actions.goverment;
 
-import com.codewithdani.models.regional.Country;
-
 public class Medicine {
     private int dayOfDevelopmentStart = -1;
     private boolean medicineApproved = false;
     private final int daysOfDevelopment = 730; // Source: Code 001
     private int medicineInStock = 0;
+
+    private double effectivityOfMedicine = 0.2;
 
     public void setMedicineApproved(boolean medicineApproved) {
         this.medicineApproved = medicineApproved;
@@ -28,5 +28,21 @@ public class Medicine {
 
     public boolean isMedicineApproved() {
         return medicineApproved;
+    }
+
+    public int getMedicineInStock() {
+        return medicineInStock;
+    }
+
+    public void useMedicine(int numberOfUsedDoses){
+        this.medicineInStock -= numberOfUsedDoses;
+    }
+
+    public double getEffectivityOfMedicine() {
+        return effectivityOfMedicine;
+    }
+
+    public void setEffectivityOfMedicine(double effectivityOfMedicine) {
+        this.effectivityOfMedicine = effectivityOfMedicine;
     }
 }

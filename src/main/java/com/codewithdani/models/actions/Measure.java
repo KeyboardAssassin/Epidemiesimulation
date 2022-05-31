@@ -13,8 +13,8 @@ public class Measure {
     Distancing distancing;
 
     public Measure() {
-        vaccination = new Vaccination();
-        medicine = new Medicine();
+        this.vaccination = new Vaccination();
+        this.medicine = new Medicine();
     }
 
     public Vaccination getVaccination() {

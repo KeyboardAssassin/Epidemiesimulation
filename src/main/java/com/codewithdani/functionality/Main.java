@@ -49,7 +49,6 @@ public class Main {
 
             // growth algorithm for 1 year
             for (int currentDay = 0; currentDay < daysOfTestingPerPandemic; currentDay++){
-                // TODO check how long these viruses were prevailing
 
                 if (currentDay == dayOfVaccinationDevelopmentStart) measure.getVaccination().startDevelopingVaccination(currentDay);
                 if (currentDay == dayOfMedicineDevelopmentStart) measure.getMedicine().startDevelopingMedicine(currentDay);
@@ -80,9 +79,10 @@ public class Main {
                         // change virus over the days
                         virusEvolution(currentDay, currentTestedCity);
 
-                        currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(currentDay));
+                        currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(currentDay), currentTestedCountry);
                         currentTestedCity.reloadCity();
                     }
+                    // Logging of every day if wanted
                     // System.out.println("Tag: " + currentDay + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
                 }
                 // end the pandemic + logging
@@ -92,7 +92,8 @@ public class Main {
                     // reset all cities to start a new simulation
                     germany = resetCountry(germany, json);
                     averagePandemicTime += currentDay;
-                    break; // only breaking out of if statement? TODO
+                    // start a new simulation
+                    break;
                 }
             }
         }
@@ -113,9 +114,11 @@ public class Main {
     }
 
     static boolean checkIfEveryCityHasNoNewInfections(Country country){
+
         for (State state : country.getStates()){
             for (City city: state.getCities()){
-                if (city.getEntryFromHistory(6) != 0 || city.getEntryFromHistory(5) != 0){
+                // TODO Das ist nicht smart
+                if (city.getEntryFromHistory(7) != 0 || city.getEntryFromHistory(6) != 0 || city.getEntryFromHistory(5) != 0 || city.getEntryFromHistory(4) != 0 || city.getEntryFromHistory(3) != 0 || city.getEntryFromHistory(2) != 0 || city.getEntryFromHistory(1) != 0){
                     return false;
                 }
             }

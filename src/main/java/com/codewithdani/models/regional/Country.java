@@ -1,5 +1,6 @@
 package com.codewithdani.models.regional;
 
+import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.threats.Virus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,8 +12,11 @@ public class Country {
     private final String name;
     private State[] states;
 
+    public Measure measure;
+
     public Country(String name) {
         this.name = name;
+        this.measure = new Measure();
     }
 
     public void setStates(State[] states) {
@@ -40,6 +44,7 @@ public class Country {
         return null;
     }
 
-
-
+    public Measure getMeasure() {
+        return measure;
+    }
 }
