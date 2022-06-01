@@ -1,6 +1,9 @@
+package com.codewithdani.functionality;
+
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CityTest {

@@ -302,4 +302,20 @@ public class City {
     public int getFristInfectionNewCases() {
         return fristInfectionNewCases;
     }
+
+    public double getSevenDaysIncidence() {
+        return sevenDaysIncidence;
+    }
+
+    public double getrValue() {
+        return rValue;
+    }
+
+    public int getPopulation() {
+        return population;
+    }
+
+    public int getPopulationDensity() {
+        return populationDensity;
+    }
 }
