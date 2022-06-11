@@ -8,7 +8,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.*;
 
-public class Json {
+public class JsonHandler {
 
 
     public Country importCountryFromJson(Country country){

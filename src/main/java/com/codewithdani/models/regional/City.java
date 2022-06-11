@@ -163,7 +163,7 @@ public class City {
 
         int highestCityDensity = 4790; // TODO Methode, welche diese Daten setzt erstellen?
         int lowestCityDensity = 596;
-        double maxPopulationDensityBoost = 0.3;
+        double maxPopulationDensityBoost = 0.2;
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
 
         // first day

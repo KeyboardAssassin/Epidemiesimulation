@@ -1,5 +1,7 @@
 package com.codewithdani.models.regional;
 
+import java.text.DecimalFormat;
+
 public class State {
     private final String name;
     private City[] cities;
@@ -18,5 +20,17 @@ public class State {
 
     public String getName() {
         return name;
+    }
+
+    public String calculateSevenDaysIncidence(){
+        DecimalFormat df = new DecimalFormat("0.00");
+        double totalIncidence = 0.0;
+        for (City city : cities){
+            totalIncidence += city.getSevenDaysIncidence();
+        }
+
+        String resultIncidenceString = df.format(totalIncidence / cities.length);
+
+        return resultIncidenceString;
     }
 }

@@ -39,6 +39,16 @@ public class Country {
         return null;
     }
 
+
+    // TODO Ebenfalls
+    public State getStateByName(String name){
+        for (State state : states){
+            if (state.getName().toLowerCase().equals(name)) return state;
+        }
+
+        return null;
+    }
+
     public Measure getMeasure() {
         return measure;
     }

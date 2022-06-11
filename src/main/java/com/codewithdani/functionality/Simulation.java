@@ -1,6 +1,6 @@
 package com.codewithdani.functionality;
 
-import com.codewithdani.json.Json;
+import com.codewithdani.json.JsonHandler;
 import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
@@ -12,13 +12,14 @@ public class Simulation {
     static Virus delta = new Virus("delta", 100, 0.003);
     static Virus omicron = new Virus("omicron", 100, 0.0041);
     int sleepTime = 2000;
+    int day = 0;
 
     Country simulatedCountry;
 
 
-    public void startSimulation(){
+    public void startSimulation(int amountOfSimulations){
         // create the json Reader/Writer Object
-        Json json = new Json();
+        JsonHandler jsonHandler = new JsonHandler();
 
         // create the ability to create Measures
         Measure measure = new Measure();
@@ -27,17 +28,16 @@ public class Simulation {
         Country germany = new Country("Deutschland");
 
         // check if a json file of that country already exists
-        if (!json.checkIfCountryJsonExists("germany")) {
-            json.createPreExistingGermany();
+        if (!jsonHandler.checkIfCountryJsonExists("germany")) {
+            jsonHandler.createPreExistingGermany();
         }
-        germany = json.importCountryFromJson(germany);
+        germany = jsonHandler.importCountryFromJson(germany);
 
         System.out.println("Erfolgreich gestartet");
         System.out.println("Geladenes Land: " + germany.getName());
         System.out.println(germany.getAmountOfStates() + " Bundesländer");
 
         int averagePandemicTime = 0;
-        int amountOfSimulations = 100;
         int daysOfTestingPerPandemic = 365;
         int dayOfVaccinationDevelopmentStart = 30;
         int dayOfMedicineDevelopmentStart = 60;
@@ -50,6 +50,8 @@ public class Simulation {
 
             // growth algorithm for 1 year
             for (int currentDay = 0; currentDay < daysOfTestingPerPandemic; currentDay++){
+
+                this.setDay(currentDay);
 
                 if (currentDay == dayOfVaccinationDevelopmentStart) measure.getVaccination().startDevelopingVaccination(currentDay);
                 if (currentDay == dayOfMedicineDevelopmentStart) measure.getMedicine().startDevelopingMedicine(currentDay);
@@ -98,7 +100,7 @@ public class Simulation {
                     // System.out.println("Pandemie beendet an Tag: " + currentDay);
 
                     // reset all cities to start a new simulation
-                    germany = resetCountry(germany, json);
+                    germany = resetCountry(germany, jsonHandler);
                     averagePandemicTime += currentDay;
                     // start a new simulation
                     break;
@@ -128,14 +130,16 @@ public class Simulation {
                 if (city.getEntryFromHistory(7) != 0 || city.getEntryFromHistory(6) != 0 || city.getEntryFromHistory(5) != 0 || city.getEntryFromHistory(4) != 0 || city.getEntryFromHistory(3) != 0 || city.getEntryFromHistory(2) != 0 || city.getEntryFromHistory(1) != 0){
                     return false;
                 }
+
+                // city.getSevenDaysIncidence() == 0
             }
         }
         return true;
     }
 
-    static Country resetCountry(Country country, Json json){
+    static Country resetCountry(Country country, JsonHandler jsonHandler){
         // TODO replace with JSON loading again
-        return json.importCountryFromJson(country);
+        return jsonHandler.importCountryFromJson(country);
     }
 
     public void setSleepTime(int sleepTime) {
@@ -144,5 +148,13 @@ public class Simulation {
 
     public Country getSimulatedCountry() {
         return simulatedCountry;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getDay() {
+        return day;
     }
 }

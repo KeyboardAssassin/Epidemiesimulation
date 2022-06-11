@@ -1,0 +1,14 @@
+### Startsimulation
+GET localhost:3000/startsimulation?amountofsimulations=1
+
+### Change Speed
+GET localhost:3000/changespeed
+
+### Get incidence by state name
+GET localhost:3000/getincidenceByState?statename="bayern"
+
+### Get incidence by city name
+GET localhost:3000/getincidence?cityname="erfurt"
+
+### Get a city summary
+GET localhost:3000/getdetailed?cityname="erfurt"
