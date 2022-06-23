@@ -33,4 +33,14 @@ public class State {
 
         return resultIncidenceString;
     }
+
+    public double getSevenDaysIncidence(){
+        // TODO Redundancy
+        double totalIncidence = 0.0;
+        for (City city : cities){
+            totalIncidence += city.getSevenDaysIncidence();
+        }
+
+        return totalIncidence / cities.length;
+    }
 }

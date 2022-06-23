@@ -8,6 +8,4 @@ public class StateSummary {
     private int infectedPeople;
     private double rValue;
     private double sevenDaysIncidence;
-
-
 }

@@ -20,9 +20,4 @@ public class StateController {
     public String getIncidenceByState(@RequestParam(name="statename") String name){
         return simulationService.getIncidenceByState(name);
     }
-
-    @GetMapping("/getincidenceofeverystate")
-    public StateListSummary getIncidenceOfEveryState(){
-        return simulationService.getIncidenceOfEveryState();
-    }
 }

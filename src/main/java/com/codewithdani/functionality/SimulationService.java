@@ -1,8 +1,6 @@
 package com.codewithdani.functionality;
 
 import com.codewithdani.models.summaries.CitySummary;
-import com.codewithdani.models.summaries.StateListSummary;
-import com.codewithdani.models.summaries.StateSummary;
 
 public interface SimulationService {
 
@@ -10,8 +8,8 @@ public interface SimulationService {
 
     /**
      *
-     * @param cityName
-     * @return
+     * @param cityName - name of the requested city
+     * @return summary of the requested City
      */
     CitySummary getSummary(String cityName);
 
@@ -23,5 +21,7 @@ public interface SimulationService {
 
     int getDay();
 
-    StateListSummary getIncidenceOfEveryState();
+    String getIncidenceOfEveryState();
+
+    String getIncidenceOfEveryCity();
 }
