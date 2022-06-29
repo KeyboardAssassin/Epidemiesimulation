@@ -103,7 +103,7 @@ public class City {
         }
 
         // calculate Deaths
-        int deadCasesWithOutMedicine = this.calculateDeaths(country);
+        int deadCasesWithOutMedicine = this.calculateDeaths();
         int deadCasesAfterMedicine = this.tryToHealWithMedicine(country, deadCasesWithOutMedicine);
         int healedThroughMedicine = deadCasesWithOutMedicine - deadCasesAfterMedicine;
 
@@ -128,7 +128,7 @@ public class City {
         this.updatePopulationLeftToInfect(amountOfFirstCases);
     }
 
-    public int calculateDeaths(Country country){
+    public int calculateDeaths(){
         // TODO usage of medicine
         int peopleDying = (int)(caseHistory[0] * currentVirus.getMortalityRate());
 
@@ -159,40 +159,43 @@ public class City {
     }
 
     public int calculateNextDayInfections(int day){
-        Random r = new Random();
+        Random random = new Random();
 
-        int highestCityDensity = 4790; // TODO Methode, welche diese Daten setzt erstellen?
+        int highestCityDensity = 4790; // TODO Methode, welche diese Daten setzt erstellen? Aber nur einmal ausführen (Membervariable)
         int lowestCityDensity = 596;
         double maxPopulationDensityBoost = 0.2;
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
 
         // first day
         if (day == 0){
-            return (r.nextInt(firstDayInfectedPeopleMax - firstDayInfectedPeopleMin) + firstDayInfectedPeopleMin);
+            return (random.nextInt(firstDayInfectedPeopleMax - firstDayInfectedPeopleMin) + firstDayInfectedPeopleMin);
         }
 
-        // Probability between 0% and 30% depending on the density of the city (min/max: city with lowest/highest density)
+        // Probability between 0% and 20% depending on the density of the city (min/max: city with lowest/highest density)
         int differenceHighestAndLowestDensity = highestCityDensity - lowestCityDensity; // Densities Cottbus and München (min/max)
         double normalizedDensity = (this.populationDensity - lowestCityDensity);
-        double populationDensityProbability =  (normalizedDensity / differenceHighestAndLowestDensity) * maxPopulationDensityBoost; // 4790 Density (München) equals factor of 30% = 0.3
+        double populationDensityProbability =  (normalizedDensity / differenceHighestAndLowestDensity) * maxPopulationDensityBoost; // 4790 Density (München) equals factor of 20% = 0.2
 
         // Probability depending on the proportion of healed or vaccinated cases to the total population
         // every person who had the infection at least 1 time is 10% more protected
         double decreasingProbabilityGrowingRateOfCuredCases = (((this.populationLeftFirstInfection / (double)population) * protectionAfterFirstInfection) + (1 - protectionAfterFirstInfection));
 
         // Average amount of People a person meets every day
-        double amountOfAveragePeopleMeetings = minAmountOfMeetingsPerDay + (maxAmountOfMeetingsPerDay - minAmountOfMeetingsPerDay) * r.nextDouble();
+        double amountOfAveragePeopleMeetings = minAmountOfMeetingsPerDay + (maxAmountOfMeetingsPerDay - minAmountOfMeetingsPerDay) * random.nextDouble();
 
         // Probability someone in the 7 days history infects someone
         double infectingCases = calculateActiveCasesInfectingSomeone();
 
         int amountOfPeopleWithAnotherInfection = this.healedHistory.calculateProbabilityOfAnotherInfection();
 
+        float vaccinationProtection = this.getVaccinationProportion();
+
         // TODO Maßnahmen wie Isolation und Kontaktbeschränkungen auf aktive Fälle multiplizieren (einbeziehen)
         // TODO newFirstInfections sind mehr als totalNewInfections
         // calculation of the infections for the current day of the infection
-        int newFirstInfections = (int)(infectingCases * ((populationDensityProbability + 1 ) * amountOfAveragePeopleMeetings));
-        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + amountOfPeopleWithAnotherInfection;
+        // TODO Kalkulation korrigieren
+        int newFirstInfections = (int)(infectingCases * ((populationDensityProbability + 1 ) * amountOfAveragePeopleMeetings) * vaccinationProtection);
+        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAnotherInfection * vaccinationProtection);
 
         this.setFirstInfectionNewCases(newFirstInfections);
 
@@ -317,5 +320,9 @@ public class City {
 
     public int getPopulationDensity() {
         return populationDensity;
+    }
+
+    public float getVaccinationProportion() {
+        return vaccinationProportion;
     }
 }
