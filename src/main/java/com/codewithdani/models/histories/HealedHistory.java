@@ -5,17 +5,19 @@ import java.util.Arrays;
 public class HealedHistory {
     private int[] history;
 
+    public final static int NOT_INITIALISED = -1;
+
     public HealedHistory() {
         this.history = new int[200];
         initializeHistory();
     }
 
     public void initializeHistory(){
-        Arrays.fill(this.history, -1);
+        Arrays.fill(this.history, NOT_INITIALISED);
     }
 
     public void addEntry(int cases){
-        if (this.history[this.history.length - 1] != -1){
+        if (this.history[this.history.length - 1] != NOT_INITIALISED){
             this.history = this.shiftElements();
         }
 
@@ -39,10 +41,10 @@ public class HealedHistory {
         for (int elementOfTheHistory = history.length - 1; elementOfTheHistory > 0; elementOfTheHistory--)
         {
             if (history[elementOfTheHistory] != -1){
+                // TODO Warum 0.001666?
                 int amountOfPeopleInfectedOnThisDay = (int)(history[elementOfTheHistory] * 0.001666);
                 history[elementOfTheHistory] -= amountOfPeopleInfectedOnThisDay;
                 amountOfPeopleAgainInfected += amountOfPeopleInfectedOnThisDay;
-                int b = 5;
             }
         }
         return amountOfPeopleAgainInfected;

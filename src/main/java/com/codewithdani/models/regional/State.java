@@ -22,21 +22,16 @@ public class State {
         return name;
     }
 
-    public String calculateSevenDaysIncidence(){
+    public String outputSevenDaysIncidenceAsString(){
+        double totalIncidence = this.getSevenDaysIncidence();
         DecimalFormat df = new DecimalFormat("0.00");
-        double totalIncidence = 0.0;
-        for (City city : cities){
-            totalIncidence += city.getSevenDaysIncidence();
-        }
-
-        String resultIncidenceString = df.format(totalIncidence / cities.length);
+        String resultIncidenceString = df.format(totalIncidence);
 
         return resultIncidenceString;
     }
 
     public double getSevenDaysIncidence(){
-        // TODO Redundancy
-        double totalIncidence = 0.0;
+        double totalIncidence = 0;
         for (City city : cities){
             totalIncidence += city.getSevenDaysIncidence();
         }

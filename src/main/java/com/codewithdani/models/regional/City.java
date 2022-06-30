@@ -174,7 +174,7 @@ public class City {
         // Probability between 0% and 20% depending on the density of the city (min/max: city with lowest/highest density)
         int differenceHighestAndLowestDensity = highestCityDensity - lowestCityDensity; // Densities Cottbus and München (min/max)
         double normalizedDensity = (this.populationDensity - lowestCityDensity);
-        double populationDensityProbability =  (normalizedDensity / differenceHighestAndLowestDensity) * maxPopulationDensityBoost; // 4790 Density (München) equals factor of 20% = 0.2
+        double populationDensityProbability =  ((normalizedDensity / differenceHighestAndLowestDensity) * maxPopulationDensityBoost) + 1; // 4790 Density (München) equals factor of 20% = 0.2
 
         // Probability depending on the proportion of healed or vaccinated cases to the total population
         // every person who had the infection at least 1 time is 10% more protected
@@ -188,14 +188,21 @@ public class City {
 
         int amountOfPeopleWithAnotherInfection = this.healedHistory.calculateProbabilityOfAnotherInfection();
 
-        float vaccinationProtection = this.getVaccinationProportion();
+        // TODO Proportion zwischen 0 (0) und 1 (100%)
+        // Protection zwischen 0.9 - 1
+        float vaccinationProtectionProbability = this.getVaccinationProportion();
 
         // TODO Maßnahmen wie Isolation und Kontaktbeschränkungen auf aktive Fälle multiplizieren (einbeziehen)
         // TODO newFirstInfections sind mehr als totalNewInfections
         // calculation of the infections for the current day of the infection
         // TODO Kalkulation korrigieren
-        int newFirstInfections = (int)(infectingCases * ((populationDensityProbability + 1 ) * amountOfAveragePeopleMeetings) * vaccinationProtection);
-        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAnotherInfection * vaccinationProtection);
+
+        int totalMeetings = (int)(infectingCases * amountOfAveragePeopleMeetings);
+
+        int newFirstInfections = (int)(totalMeetings * ((populationDensityProbability + vaccinationProtectionProbability)) / 2);
+        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAnotherInfection * vaccinationProtectionProbability);
+
+
 
         this.setFirstInfectionNewCases(newFirstInfections);
 

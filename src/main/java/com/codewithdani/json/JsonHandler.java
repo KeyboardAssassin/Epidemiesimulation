@@ -14,10 +14,8 @@ public class JsonHandler {
     public Country importCountryFromJson(Country country){
         Gson gson = new Gson();
         File filePath = new File("/Users/Dani/Desktop/germany.json");
+        FileReader reader;
 
-
-        FileReader reader = null;
-        // Country country = new Country("Test");
         try {
             reader = new FileReader(filePath);
         } catch (FileNotFoundException e) {
@@ -40,7 +38,7 @@ public class JsonHandler {
 
         File filePath = new File("/Users/Dani/Desktop/germany.json");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        FileWriter writer = null;
+        FileWriter writer;
         try {
             writer = new FileWriter(filePath);
         } catch (IOException e) {
@@ -59,7 +57,7 @@ public class JsonHandler {
     public void createPreExistingGermany(){
         File filePath = new File("/Users/Dani/Desktop/germany.json");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        FileWriter writer = null;
+        FileWriter writer;
 
         // cities
         // Bayern
@@ -192,7 +190,7 @@ public class JsonHandler {
         }
 
         try{
-                gson.toJson(germany, writer);
+            gson.toJson(germany, writer);
             writer.flush();
             writer.close();
         }catch (Exception e){

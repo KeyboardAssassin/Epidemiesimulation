@@ -27,7 +27,7 @@ public class SimulationServiceImpl implements SimulationService {
             summary.setName(simulation.getSimulatedCountry().getCityByName(cityName).getName());
             summary.setPopulation(simulation.getSimulatedCountry().getCityByName(cityName).getPopulation());
             summary.setPopulationDensity(simulation.getSimulatedCountry().getCityByName(cityName).getPopulationDensity());
-            //TODO nicht nur die neusten Erstinfektionen
+            // TODO nicht nur die neusten Erstinfektionen
             summary.setInfectedPeople(simulation.getSimulatedCountry().getCityByName(cityName).getFristInfectionNewCases());
             summary.setrValue(simulation.getSimulatedCountry().getCityByName(cityName).getrValue());
             summary.setSevenDaysIncidence(simulation.getSimulatedCountry().getCityByName(cityName).getSevenDaysIncidence());
@@ -44,7 +44,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public String getIncidenceByState(String stateName) {
-        return simulation.getSimulatedCountry().getStateByName(stateName).calculateSevenDaysIncidence();
+        return simulation.getSimulatedCountry().getStateByName(stateName).outputSevenDaysIncidenceAsString();
     }
 
     @Override

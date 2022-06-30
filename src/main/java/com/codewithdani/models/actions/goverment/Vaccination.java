@@ -29,6 +29,7 @@ public class Vaccination {
 
     public void vaccinatePeople(City city){
         Random r = new Random();
+        // TODO final variables in interface?
         float minVaccinatedOnOneDay = 0.1f; // in percent
         float maxVaccinatedOnOneDay = 0.8f;
 

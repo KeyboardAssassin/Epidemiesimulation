@@ -1,7 +1,6 @@
 package com.codewithdani.models.summaries;
 
 import com.codewithdani.models.regional.City;
-import com.codewithdani.models.regional.State;
 
 public class CityListElement {
     private String name;

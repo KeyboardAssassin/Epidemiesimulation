@@ -82,7 +82,9 @@ public class Simulation {
                         // change virus over the days
                         virusEvolution(currentDay, currentTestedCity);
 
-                        currentTestedCity.addNewEntryToHistory(currentTestedCity.calculateNextDayInfections(currentDay), simulatedCountry);
+                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay);
+
+                        currentTestedCity.addNewEntryToHistory(nextDayInfections, simulatedCountry);
                         currentTestedCity.reloadCity();
                     }
                     // Logging of every day if wanted
@@ -96,13 +98,14 @@ public class Simulation {
                 }
 
                 // end the pandemic + logging
-                if (checkIfEveryCityHasNoNewInfections(simulatedCountry)) {
+                if (checkIfEveryCityHasNoNewInfections(simulatedCountry) && this.day > 10) {
                     // System.out.println("Pandemie beendet an Tag: " + currentDay);
 
                     // reset all cities to start a new simulation
-                    germany = resetCountry(germany, jsonHandler);
+                    jsonHandler.createPreExistingGermany();
+                    germany = jsonHandler.importCountryFromJson(germany);
                     averagePandemicTime += currentDay;
-                    // start a new simulation
+                    // TODO start a new simulation
                     break;
                 }
             }
@@ -124,22 +127,15 @@ public class Simulation {
 
     static boolean checkIfEveryCityHasNoNewInfections(Country country){
 
+        // check if every city has no new infections over the last 7 days
         for (State state : country.getStates()){
             for (City city: state.getCities()){
-                // TODO Das ist nicht smart
-                if (city.getEntryFromHistory(7) != 0 || city.getEntryFromHistory(6) != 0 || city.getEntryFromHistory(5) != 0 || city.getEntryFromHistory(4) != 0 || city.getEntryFromHistory(3) != 0 || city.getEntryFromHistory(2) != 0 || city.getEntryFromHistory(1) != 0){
+                if (city.getSevenDaysIncidence() != 0){
                     return false;
                 }
-
-                // city.getSevenDaysIncidence() == 0
             }
         }
         return true;
-    }
-
-    static Country resetCountry(Country country, JsonHandler jsonHandler){
-        // TODO replace with JSON loading again
-        return jsonHandler.importCountryFromJson(country);
     }
 
     public void setSleepTime(int sleepTime) {
