@@ -39,7 +39,7 @@ public class City {
         this.sevenDaysIncidence = 0.0;
         this.rValue = 0.0;
         this.caseHistory = new int[]{-1, -1, -1, -1, -1, -1, -1};
-        this.populationLeftFirstInfection = -1;
+        this.populationLeftFirstInfection = population;
         this.currentVirus = new Virus("alpha", 100, 0.009);
         this.healedHistory = new HealedHistory();
         this.vaccinationProportion = 0.0f;
@@ -164,43 +164,55 @@ public class City {
         int highestCityDensity = 4790; // TODO Methode, welche diese Daten setzt erstellen? Aber nur einmal ausführen (Membervariable)
         int lowestCityDensity = 596;
         double maxPopulationDensityBoost = 0.2;
+        double populationDensityModifier = 0.2; // + Boost for the largest city and - brake for the smallest city
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
+
+        double densityOffset = 0; // offset 0 = no offset, 0.1 moves the bounds of the highest and smallest city
+        double densityWeight = 1; // increases the importance of this measure
+
+        double contactRestriction = 1; // can only go higher e.g. 1 = 100% 2 = 50% 4 = 25%
+        double obedience = 1;
 
         // first day
         if (day == 0){
             return (random.nextInt(firstDayInfectedPeopleMax - firstDayInfectedPeopleMin) + firstDayInfectedPeopleMin);
         }
 
+        // TODO In Setup Methode auslagern - immer gleiches Ergebnis -> Membervariable
         // Probability between 0% and 20% depending on the density of the city (min/max: city with lowest/highest density)
         int differenceHighestAndLowestDensity = highestCityDensity - lowestCityDensity; // Densities Cottbus and München (min/max)
-        double normalizedDensity = (this.populationDensity - lowestCityDensity);
-        double populationDensityProbability =  ((normalizedDensity / differenceHighestAndLowestDensity) * maxPopulationDensityBoost) + 1; // 4790 Density (München) equals factor of 20% = 0.2
+        double normalizedDensity = (this.populationDensity - lowestCityDensity) / differenceHighestAndLowestDensity;
+        double populationDensityProbability =  (((normalizedDensity * 2) - 1) * populationDensityModifier * densityWeight) + (1 + densityOffset); // 4790 Density (München) equals factor of 20% = 0.2
 
         // Probability depending on the proportion of healed or vaccinated cases to the total population
         // every person who had the infection at least 1 time is 10% more protected
+        // Example: (10.000 / 100000) * 0.1 + (1 - 0.1) => 0.99 (1% less probability of infection)
         double decreasingProbabilityGrowingRateOfCuredCases = (((this.populationLeftFirstInfection / (double)population) * protectionAfterFirstInfection) + (1 - protectionAfterFirstInfection));
 
         // Average amount of People a person meets every day
         double amountOfAveragePeopleMeetings = minAmountOfMeetingsPerDay + (maxAmountOfMeetingsPerDay - minAmountOfMeetingsPerDay) * random.nextDouble();
+        amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, contactRestriction) * obedience)); // TODO this.state.getObedience();
 
         // Probability someone in the 7 days history infects someone
         double infectingCases = calculateActiveCasesInfectingSomeone();
 
-        int amountOfPeopleWithAnotherInfection = this.healedHistory.calculateProbabilityOfAnotherInfection();
+        int amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain = this.healedHistory.calculateProbabilityOfAnotherInfection();
+
+        double vaccinationProtection = 0.9;
 
         // TODO Proportion zwischen 0 (0) und 1 (100%)
         // Protection zwischen 0.9 - 1
-        float vaccinationProtectionProbability = this.getVaccinationProportion();
+        double vaccinationProtectionRatio = this.getVaccinationProportion() * vaccinationProtection;
 
         // TODO Maßnahmen wie Isolation und Kontaktbeschränkungen auf aktive Fälle multiplizieren (einbeziehen)
         // TODO newFirstInfections sind mehr als totalNewInfections
         // calculation of the infections for the current day of the infection
         // TODO Kalkulation korrigieren
 
-        int totalMeetings = (int)(infectingCases * amountOfAveragePeopleMeetings);
+        int totalMeetingsWithInfectedPeople = (int)(infectingCases * amountOfAveragePeopleMeetings);
 
-        int newFirstInfections = (int)(totalMeetings * ((populationDensityProbability + vaccinationProtectionProbability)) / 2);
-        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAnotherInfection * vaccinationProtectionProbability);
+        int newFirstInfections = (int)(totalMeetingsWithInfectedPeople * populationDensityProbability * vaccinationProtectionRatio);
+        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain * vaccinationProtectionRatio);
 
 
 
@@ -235,10 +247,6 @@ public class City {
     }
 
     public void updatePopulationLeftToInfect(int amountOfFirstCases){
-        if (populationLeftFirstInfection == -1){
-            this.populationLeftFirstInfection = this.population;
-            return;
-        }
         this.populationLeftFirstInfection = populationLeftFirstInfection - amountOfFirstCases;
     }
 
@@ -255,6 +263,7 @@ public class City {
         double infectingRate = 0;
 
         // risks over the days to infect someone
+        // TODO Move Array in Virus class
         double firstDay     = 0.9;
         double secondDay    = 0.8;
         double thirdDay     = 0.7;
@@ -263,10 +272,13 @@ public class City {
         double sixthDay     = 0.3;
         double seventhDay   = 0.2;
 
+
+
         double[] daysLeft = {firstDay, secondDay, thirdDay, fourthDay, fifthDay, sixthDay, seventhDay};
 
         // if case history is filled with 6 elements
         // calculate infections for each day
+        // TODO foreach Schleife -> vll Smarter
         if (this.caseHistory[6] != -1){
             infectingRate += this.caseHistory[0] * seventhDay;  // 20% probability on day 7
             infectingRate += this.caseHistory[1] * sixthDay;    // 30% probability on day 6
@@ -276,6 +288,7 @@ public class City {
             infectingRate += this.caseHistory[5] * secondDay;
             infectingRate += this.caseHistory[6] * firstDay;
 
+            // TODO Multiplier für Abstandsregeln, Hygieneregeln
             return infectingRate;
         }
 
@@ -302,6 +315,15 @@ public class City {
         }
         else {
             this.vaccinationProportion = 100f;
+        }
+    }
+
+    public void removeVaccinationProportion(float amountOfDecrease){
+        if (this.vaccinationProportion - amountOfDecrease < 0){
+            this.vaccinationProportion = 0;
+        }
+        else {
+            this.vaccinationProportion -= amountOfDecrease;
         }
     }
 

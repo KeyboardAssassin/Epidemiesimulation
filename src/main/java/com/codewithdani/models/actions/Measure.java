@@ -7,6 +7,8 @@ import com.codewithdani.models.actions.self.contact.Tracing;
 
 public class Measure {
 
+    // TODO nur Datenklasse (Distancing, Restrictions und co löschen, weil nur ein Faktor als Membervariable)
+
     Vaccination vaccination;
     Medicine medicine;
     Tracing tracing;

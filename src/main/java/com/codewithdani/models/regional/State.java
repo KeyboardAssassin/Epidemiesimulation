@@ -6,6 +6,8 @@ public class State {
     private final String name;
     private City[] cities;
 
+    private double obedience = 1;
+
     public State(String name) {
         this.name = name;
     }
@@ -37,5 +39,9 @@ public class State {
         }
 
         return totalIncidence / cities.length;
+    }
+
+    public double getObedience() {
+        return obedience;
     }
 }

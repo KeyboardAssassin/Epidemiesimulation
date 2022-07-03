@@ -8,7 +8,7 @@ public class HealedHistory {
     public final static int NOT_INITIALISED = -1;
 
     public HealedHistory() {
-        this.history = new int[200];
+        this.history = new int[200]; // TODO auf 30 Tage -> danach populationLeftToInfekt
         initializeHistory();
     }
 
@@ -36,17 +36,15 @@ public class HealedHistory {
     }
 
     public int calculateProbabilityOfAnotherInfection(){
-        int amountOfPeopleAgainInfected = 0;
+        double amountOfPeopleCouldBeInfectedAgain = 0;
+        double lessProtectionPerDay = 0.001666;
 
-        for (int elementOfTheHistory = history.length - 1; elementOfTheHistory > 0; elementOfTheHistory--)
+        for (int indexOfHistory = history.length - 1; indexOfHistory > 0; indexOfHistory--)
         {
-            if (history[elementOfTheHistory] != -1){
-                // TODO Warum 0.001666?
-                int amountOfPeopleInfectedOnThisDay = (int)(history[elementOfTheHistory] * 0.001666);
-                history[elementOfTheHistory] -= amountOfPeopleInfectedOnThisDay;
-                amountOfPeopleAgainInfected += amountOfPeopleInfectedOnThisDay;
+            if (history[indexOfHistory] != -1){
+                amountOfPeopleCouldBeInfectedAgain += history[indexOfHistory] * (history.length - indexOfHistory) * lessProtectionPerDay;
             }
         }
-        return amountOfPeopleAgainInfected;
+        return (int)amountOfPeopleCouldBeInfectedAgain;
     }
 }

@@ -67,7 +67,7 @@ public class Simulation {
 
                         // try to vaccinate people if the vaccination is developed
                         if (measure.getVaccination().isVaccinationApproved()){
-                            measure.getVaccination().vaccinatePeople(currentTestedCity);
+                            measure.getVaccination().updateVaccination(currentTestedCity);
                         } else {
                             measure.getVaccination().checkIfVaccinationIsDeveloped(currentDay);
                         }
