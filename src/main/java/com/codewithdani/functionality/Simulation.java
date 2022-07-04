@@ -82,6 +82,7 @@ public class Simulation {
                         // change virus over the days
                         virusEvolution(currentDay, currentTestedCity);
 
+
                         int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay);
 
                         currentTestedCity.addNewEntryToHistory(nextDayInfections, simulatedCountry);

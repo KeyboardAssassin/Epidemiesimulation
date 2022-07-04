@@ -2,6 +2,7 @@ package com.codewithdani.functionality;
 
 import com.codewithdani.models.summaries.CityListSummary;
 import com.codewithdani.models.summaries.CitySummary;
+import com.codewithdani.models.summaries.CountrySummary;
 import com.codewithdani.models.summaries.StateListSummary;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class SimulationServiceImpl implements SimulationService {
     public CitySummary getSummary(String cityName) {
         CitySummary summary = new CitySummary();
 
+        // TODO Move everything into setter and just give country as argument
         try{
             summary.setName(simulation.getSimulatedCountry().getCityByName(cityName).getName());
             summary.setPopulation(simulation.getSimulatedCountry().getCityByName(cityName).getPopulation());
@@ -76,5 +78,11 @@ public class SimulationServiceImpl implements SimulationService {
         CityListSummary summary = new CityListSummary();
         summary.fillEveryCity(simulation.getSimulatedCountry());
         return gson.toJson((summary.getCitiesListElements()));
+    }
+
+    @Override
+    public String getCountrySummary(){
+        simulation.getSimulatedCountry().updateData();
+        return gson.toJson(new CountrySummary(simulation.getSimulatedCountry()));
     }
 }

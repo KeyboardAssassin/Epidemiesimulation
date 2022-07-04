@@ -20,7 +20,7 @@ public class CityController {
     }
 
     @GetMapping("/getdetailed")
-    public CitySummary getSummary(@RequestParam(name = "cityname") String name){
+    public CitySummary getCitySummary(@RequestParam(name = "cityname") String name){
         return simulationService.getSummary(name);
     }
 

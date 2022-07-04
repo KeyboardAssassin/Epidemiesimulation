@@ -28,8 +28,8 @@ public class City {
     private static double maxAmountOfMeetingsPerDay = 2.4;
 
     // min and max amount of infected people for the first day (random)
-    private static int firstDayInfectedPeopleMin = 1;
-    private static int firstDayInfectedPeopleMax = 7;
+    private static int firstDayInfectedPeopleMin = 3;
+    private static int firstDayInfectedPeopleMax = 8;
 
 
     public City(String name, int population, int populationDensity) {
@@ -61,10 +61,6 @@ public class City {
         this.activeCases = calculateSum();
     }
 
-    public void addActiveCases(int newCases){
-        this.activeCases += newCases;
-    }
-
     public void updateNewCases() {
         // go through every element backwards and set the first found at member variable newCase
         for (int elementOfHistory = 6; elementOfHistory > 0; elementOfHistory--) {
@@ -76,15 +72,18 @@ public class City {
     }
 
     public void updateRValue(){
-        // if history contains less than 7 days
-        for (int numberOfEntry = 6; numberOfEntry > 0; numberOfEntry--){
-            if (caseHistory[numberOfEntry] != -1 && caseHistory[numberOfEntry - 1] != -1){
-                this.rValue = (double)caseHistory[numberOfEntry] / (double)caseHistory[numberOfEntry - 1];
+            if (caseHistory[0] != -1 && caseHistory[1] == -1){
+                setrValue(caseHistory[0]);
                 return;
             }
-        }
-        // if history is fully filled
-        this.rValue = (double)caseHistory[6] / (double)caseHistory[5];
+            // if at least 2 days are filled
+            else if (caseHistory[0] != -1 && caseHistory[1] != -1 && caseHistory[1] != 0) {
+                setrValue(caseHistory[0] / caseHistory[1]);
+            }
+            // if no day is filled or the second entry is 0 (cannot be devided by 0)
+            else {
+                setrValue(-1);
+            }
     }
 
     public void addNewEntryToHistory(int amountOfCases, Country country){
@@ -202,7 +201,7 @@ public class City {
 
         // TODO Proportion zwischen 0 (0) und 1 (100%)
         // Protection zwischen 0.9 - 1
-        double vaccinationProtectionRatio = this.getVaccinationProportion() * vaccinationProtection;
+        double vaccinationProtectionRatio = 1 - (this.getVaccinationProportion() * vaccinationProtection);
 
         // TODO Maßnahmen wie Isolation und Kontaktbeschränkungen auf aktive Fälle multiplizieren (einbeziehen)
         // TODO newFirstInfections sind mehr als totalNewInfections
@@ -353,5 +352,13 @@ public class City {
 
     public float getVaccinationProportion() {
         return vaccinationProportion;
+    }
+
+    public int getDeadCases() {
+        return deadCases;
+    }
+
+    public void setrValue(double rValue) {
+        this.rValue = rValue;
     }
 }

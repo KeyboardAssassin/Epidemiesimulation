@@ -1,6 +1,7 @@
 package com.codewithdani.functionality;
 
 import com.codewithdani.models.summaries.CitySummary;
+import com.codewithdani.models.summaries.CountrySummary;
 
 public interface SimulationService {
 
@@ -57,4 +58,11 @@ public interface SimulationService {
      * @return returns json object with format ({city, incidence}) of every state and every city
      */
     String getIncidenceOfEveryCity();
+
+    /**
+     * Method to return a country summary including incidence, rValue, newInfections and deathCases
+     *
+     * @return return json object with format {incidence, rValue, newInfections, deathCases}
+     */
+    String getCountrySummary();
 }
