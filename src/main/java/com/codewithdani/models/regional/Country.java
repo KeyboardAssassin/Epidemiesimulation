@@ -91,10 +91,15 @@ public class Country {
     }
 
     public void updateData(){
-        setIncidence(this.calculateSummaryInfo("incidence"));
-        setrValue(this.calculateSummaryInfo("rvalue"));
-        setNewInfections((int)this.calculateSummaryInfo("newcases"));
-        setNewDeathCases((int)this.calculateSummaryInfo("deadcases"));
+        try{
+            setIncidence(this.calculateSummaryInfo("incidence"));
+            setrValue(this.calculateSummaryInfo("rvalue"));
+            setNewInfections((int)this.calculateSummaryInfo("newcases"));
+            setNewDeathCases((int)this.calculateSummaryInfo("deadcases"));
+        }
+        catch (Exception e){
+            System.out.println("Request from frontend to update country but country is not yet set!");
+        }
     }
 
     public double calculateSummaryInfo(String type){
@@ -103,12 +108,16 @@ public class Country {
         int sumOfAllNewInfections = 0;
         int sumOfAllNewDeathCases = 0;
         int amountOfCities = 0;
+        int amountOfCitiesWithPositiveRValues = 0;
 
         // loops through every state and every city
         for (State state: states) {
             for(City city : state.getCities()){
                 sumOfAllSevenDaysIncidences += city.getSevenDaysIncidence();
-                sumOfAllRValues += city.getrValue();
+                if (city.getrValue() > 0){
+                    sumOfAllRValues += city.getrValue();
+                    amountOfCitiesWithPositiveRValues++;
+                }
                 sumOfAllNewInfections += city.getFristInfectionNewCases(); // TODO richtige membervariable? Oder braucht es noch eine new cases
                 sumOfAllNewDeathCases += city.getDeadCases();
             }
@@ -120,7 +129,7 @@ public class Country {
             case "incidence":
                 return sumOfAllSevenDaysIncidences / amountOfCities;
             case "rvalue":
-                return sumOfAllRValues / amountOfCities;
+                return sumOfAllRValues / amountOfCitiesWithPositiveRValues;
             case "newcases":
                 return sumOfAllNewInfections / amountOfCities;
             case "deadcases":
