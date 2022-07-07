@@ -131,9 +131,9 @@ public class Country {
             case "rvalue":
                 return sumOfAllRValues / amountOfCitiesWithPositiveRValues;
             case "newcases":
-                return sumOfAllNewInfections / amountOfCities;
+                return sumOfAllNewInfections;
             case "deadcases":
-                return sumOfAllNewDeathCases / amountOfCities;
+                return sumOfAllNewDeathCases;
             default:
                 return -1.0;
         }
