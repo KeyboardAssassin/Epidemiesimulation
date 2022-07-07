@@ -3,11 +3,12 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-Hierbei handelt es sich um eine interaktive Virussimulation, bei welcher der Nutzer Maßnahmen zur Eindämmung selbst wählen kann.
+Hierbei handelt es sich um eine interaktive Epidemiesimulation, bei welcher der Nutzer Maßnahmen zur Eindämmung dynamisch selbst wählen kann. 
 
-- Entwicklung mit Java 15
+- Entwicklung mit Java 17 (17.0.3)
 - Gradle Projektstruktur mit externen Libraries und JUnit Testing
 - Betreut durch Herrn. Prof. Dr. Jörg Sahm & Frau. Anja Haußen
+- Darstellung/Interaktion im Browser durch Vue.js ([Frontend](https://github.com/KeyboardAssassin/Corona-Simulation-Frontend))
 
 ## Features
 
@@ -16,14 +17,15 @@ Hierbei handelt es sich um eine interaktive Virussimulation, bei welcher der Nut
 - Possibility to activate Measures (vaccination development, vaccination deployment ...)
 
 
-## Tech
+## Technologies
 
 Corona Simulation currently uses:
 
-- [Java 15] - Backend!
-- [Gradle 7.4.2] - project structure - build tool
-- [gson 2.9.0] - Better JSON Handling library
-- [Junit 5.8.2] - great testing library
+- [Java 17] - Backend technology!
+- [Gradle 7.4.2] - Project structure - Build tool
+- [Gson 2.9.0] - Better JSON Handling library
+- [Spring] - Framework for API Requests (data transfer with [Frontend](https://github.com/KeyboardAssassin/Corona-Simulation-Frontend))
+- [Junit 5.8.2] - Great testing library
 
 ## Installation
 
