@@ -17,6 +17,9 @@ public class Vaccination {
     public boolean checkIfVaccinationIsDeveloped(int currentDay){
         // Source: Code 002 & Code 003
         int daysOfDevelopment = 330;
+
+        // temporary value because of short simulations
+        daysOfDevelopment = 7;
         if (currentDay > (dayOfDevelopmentStart + daysOfDevelopment) && dayOfDevelopmentStart != -1) setVaccinationApproved(true);
         return vaccinationApproved;
     }

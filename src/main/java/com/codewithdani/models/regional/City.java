@@ -162,7 +162,6 @@ public class City {
 
         int highestCityDensity = 4790; // TODO Methode, welche diese Daten setzt erstellen? Aber nur einmal ausführen (Membervariable)
         int lowestCityDensity = 596;
-        double maxPopulationDensityBoost = 0.2;
         double populationDensityModifier = 0.2; // + Boost for the largest city and - brake for the smallest city
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
 
@@ -212,7 +211,6 @@ public class City {
 
         int newFirstInfections = (int)(totalMeetingsWithInfectedPeople * populationDensityProbability * vaccinationProtectionRatio);
         int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain * vaccinationProtectionRatio);
-
 
 
         this.setFirstInfectionNewCases(newFirstInfections);

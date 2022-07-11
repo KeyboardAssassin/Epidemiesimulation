@@ -21,9 +21,6 @@ public class Simulation {
         // create the json Reader/Writer Object
         JsonHandler jsonHandler = new JsonHandler();
 
-        // create the ability to create Measures
-        Measure measure = new Measure();
-
         // create an empty Country
         Country germany = new Country("Deutschland");
 
@@ -39,8 +36,6 @@ public class Simulation {
 
         int averagePandemicTime = 0;
         int daysOfTestingPerPandemic = 365;
-        int dayOfVaccinationDevelopmentStart = 30;
-        int dayOfMedicineDevelopmentStart = 60;
         simulatedCountry = germany;
         State currentTestedState;
         City currentTestedCity;
@@ -53,9 +48,6 @@ public class Simulation {
 
                 this.setDay(currentDay);
 
-                if (currentDay == dayOfVaccinationDevelopmentStart) measure.getVaccination().startDevelopingVaccination(currentDay);
-                if (currentDay == dayOfMedicineDevelopmentStart) measure.getMedicine().startDevelopingMedicine(currentDay);
-
                 // run the simulation for every state of germany
                 for (State state : simulatedCountry.getStates()) {
                     currentTestedState = state;
@@ -66,17 +58,18 @@ public class Simulation {
                         currentTestedCity = currentTestedState.getCities()[numberOfCurrentCity];
 
                         // try to vaccinate people if the vaccination is developed
-                        if (measure.getVaccination().isVaccinationApproved()){
-                            measure.getVaccination().updateVaccination(currentTestedCity);
+                        // TODO Notification to frontend that vaccination is developed
+                        if (simulatedCountry.getMeasure().getVaccination().isVaccinationApproved()){
+                            simulatedCountry.getMeasure().getVaccination().updateVaccination(currentTestedCity);
                         } else {
-                            measure.getVaccination().checkIfVaccinationIsDeveloped(currentDay);
+                            simulatedCountry.getMeasure().getVaccination().checkIfVaccinationIsDeveloped(currentDay);
                         }
 
                         // try to produce medicine for severe cases
-                        if (measure.getMedicine().isMedicineApproved()){
-                            measure.getMedicine().produceMedicine();
+                        if (simulatedCountry.getMeasure().getMedicine().isMedicineApproved()){
+                            simulatedCountry.getMeasure().getMedicine().produceMedicine();
                         } else {
-                            measure.getMedicine().checkIfMedicineIsDeveloped(currentDay);
+                            simulatedCountry.getMeasure().getMedicine().checkIfMedicineIsDeveloped(currentDay);
                         }
 
                         // change virus over the days

@@ -85,4 +85,27 @@ public class SimulationServiceImpl implements SimulationService {
         simulation.getSimulatedCountry().updateData();
         return gson.toJson(new CountrySummary(simulation.getSimulatedCountry()));
     }
+
+    @Override
+    public void startVaccinationDevelopment(){
+        int dayOfDevelopmentStart = simulation.getDay();
+        simulation.getSimulatedCountry().getMeasure().getVaccination().startDevelopingVaccination(dayOfDevelopmentStart);
+    }
+
+    @Override
+    public void startMedicationDevelopment(){
+        int dayOfDevelopmentStart = simulation.getDay();
+        simulation.getSimulatedCountry().getMeasure().getMedicine().startDevelopingMedicine(dayOfDevelopmentStart);
+    }
+
+    @Override
+    public void activateContactRestrictions(int amountOfDays){
+
+    }
+
+    @Override
+    public void activateSocialDistancing(int amountOfDays){
+
+    }
+
 }

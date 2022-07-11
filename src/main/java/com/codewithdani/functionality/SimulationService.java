@@ -5,7 +5,36 @@ import com.codewithdani.models.summaries.CountrySummary;
 
 public interface SimulationService {
 
+    /**
+     * Method to start the simulation
+     *
+     * @param amountOfSimulations - how many simulations should run behind each other
+     */
     void startSimulation(int amountOfSimulations);
+
+    /**
+     * Method to start the internal vaccination development
+     */
+    void startVaccinationDevelopment();
+
+    /**
+     * Method to start the internal medication development
+     */
+    void startMedicationDevelopment();
+
+    /**
+     * Method to activate a contact restriction measure
+     *
+     * @param amountOfDays - amount of Days the contact restriction should last
+     */
+    void activateContactRestrictions(int amountOfDays);
+
+    /**
+     * Method to activate a social distancing measure
+     *
+     * @param amountOfDays - amount of Days the social distancing restriction should last
+     */
+    void activateSocialDistancing(int amountOfDays);
 
     /**
      * Method to create a CitySummary of a certain city
