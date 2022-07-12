@@ -14,6 +14,7 @@ public class City {
     private int activeCases;
     private int newCases;
     private int fristInfectionNewCases;
+    private int totalNewCases;
     private int healedCases;
     private int deadCases;
     private double sevenDaysIncidence;
@@ -22,6 +23,7 @@ public class City {
     private HealedHistory healedHistory;
     private Virus currentVirus;
     private float vaccinationProportion;
+    double cityInfectionRatio;
 
     // min and max amount a persons meets other persons per day (random)
     private static double minAmountOfMeetingsPerDay = 0.1;
@@ -43,6 +45,7 @@ public class City {
         this.currentVirus = new Virus("alpha", 100, 0.009);
         this.healedHistory = new HealedHistory();
         this.vaccinationProportion = 0.0f;
+        this.cityInfectionRatio = 0.0;
     }
 
     public String getName() {
@@ -53,12 +56,12 @@ public class City {
         this.caseHistory[day - 1] = value;
     }
 
-    public int calculateSum(){
+    public int getTotalActiveCases(){
         return Arrays.stream(caseHistory).filter(x -> x != -1).sum();
     }
 
     public void updateActiveCases(){
-        this.activeCases = calculateSum();
+        this.activeCases = getTotalActiveCases();
     }
 
     public void updateNewCases() {
@@ -73,16 +76,16 @@ public class City {
 
     public void updateRValue(){
             if (caseHistory[0] != -1 && caseHistory[1] == -1){
-                setrValue(caseHistory[0]);
+                setRValue(caseHistory[0]);
                 return;
             }
             // if at least 2 days are filled
             else if (caseHistory[0] != -1 && caseHistory[1] != -1 && caseHistory[1] != 0) {
-                setrValue(caseHistory[0] / caseHistory[1]);
+                setRValue(caseHistory[0] / caseHistory[1]);
             }
             // if no day is filled or the second entry is 0 (cannot be devided by 0)
             else {
-                setrValue(-1);
+                setRValue(-1);
             }
     }
 
@@ -128,7 +131,6 @@ public class City {
     }
 
     public int calculateDeaths(){
-        // TODO usage of medicine
         int peopleDying = (int)(caseHistory[0] * currentVirus.getMortalityRate());
 
         // return calculated deaths
@@ -157,7 +159,7 @@ public class City {
         return caseHistory[day - 1];
     }
 
-    public int calculateNextDayInfections(int day){
+    public int calculateNextDayInfections(int day, double stateInfectionRatio){
         Random random = new Random();
 
         int highestCityDensity = 4790; // TODO Methode, welche diese Daten setzt erstellen? Aber nur einmal ausführen (Membervariable)
@@ -189,7 +191,7 @@ public class City {
 
         // Average amount of People a person meets every day
         double amountOfAveragePeopleMeetings = minAmountOfMeetingsPerDay + (maxAmountOfMeetingsPerDay - minAmountOfMeetingsPerDay) * random.nextDouble();
-        amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, contactRestriction) * obedience)); // TODO this.state.getObedience();
+        amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, contactRestriction) * obedience)); // TODO this.state.getObedience(); super.super.obedience;
 
         // Probability someone in the 7 days history infects someone
         double infectingCases = calculateActiveCasesInfectingSomeone();
@@ -204,16 +206,28 @@ public class City {
 
         // TODO Maßnahmen wie Isolation und Kontaktbeschränkungen auf aktive Fälle multiplizieren (einbeziehen)
         // TODO newFirstInfections sind mehr als totalNewInfections
-        // calculation of the infections for the current day of the infection
-        // TODO Kalkulation korrigieren
 
+        // calculation of the infections for the current day of the infection
         int totalMeetingsWithInfectedPeople = (int)(infectingCases * amountOfAveragePeopleMeetings);
 
+        // add infections depending on the ratio of infectedCases and totalPopulation of the State it belongs to
+        // the less the infection ratio the more chance of an outbreak
+        double infectionRatioBetweenStateAndCity = stateInfectionRatio / this.cityInfectionRatio;
+
+        int additionalOutBreakTotalInfections = 0;
+
+        if (infectionRatioBetweenStateAndCity > 1){
+            // TODO Berechnung mit sinnvollem Faktor ausstatten - außerdem Magic Number auslagern
+            additionalOutBreakTotalInfections = (int)(0.5 * infectionRatioBetweenStateAndCity);
+        }
+
+
         int newFirstInfections = (int)(totalMeetingsWithInfectedPeople * populationDensityProbability * vaccinationProtectionRatio);
-        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain * vaccinationProtectionRatio);
+        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain * vaccinationProtectionRatio) + additionalOutBreakTotalInfections;
 
 
         this.setFirstInfectionNewCases(newFirstInfections);
+        this.setTotalNewCases(totalNewInfections);
 
         if (newFirstInfections > populationLeftFirstInfection)
         {
@@ -225,7 +239,7 @@ public class City {
     }
 
     public void updateSevenDaysIncidence(){
-        this.sevenDaysIncidence = calculateSum() / caseHistory.length;
+        this.sevenDaysIncidence = getTotalActiveCases() / caseHistory.length;
     }
 
     public void updateHealedCases(int amountOfCases){
@@ -356,7 +370,19 @@ public class City {
         return deadCases;
     }
 
-    public void setrValue(double rValue) {
+    public void setRValue(double rValue) {
         this.rValue = rValue;
+    }
+
+    public void setTotalNewCases(int totalNewCases) {
+        this.totalNewCases = totalNewCases;
+    }
+
+    public int getTotalNewCases() {
+        return totalNewCases;
+    }
+
+    public void calculateAndSetInfectionRatio(){
+        this.cityInfectionRatio = this.getTotalActiveCases() / this.population;
     }
 }

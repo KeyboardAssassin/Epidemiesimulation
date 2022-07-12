@@ -1,7 +1,6 @@
 package com.codewithdani.functionality;
 
 import com.codewithdani.json.JsonHandler;
-import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
@@ -37,7 +36,6 @@ public class Simulation {
         int averagePandemicTime = 0;
         int daysOfTestingPerPandemic = 365;
         simulatedCountry = germany;
-        State currentTestedState;
         City currentTestedCity;
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
@@ -49,8 +47,15 @@ public class Simulation {
                 this.setDay(currentDay);
 
                 // run the simulation for every state of germany
-                for (State state : simulatedCountry.getStates()) {
-                    currentTestedState = state;
+                for (State currentTestedState : simulatedCountry.getStates()) {
+
+                    if (currentDay == 0){
+                        currentTestedState.calculateStatePopulation();
+                    }
+
+                    // calculate infection ratio for current state
+                    currentTestedState.calculateAndSetInfectedPopulation();
+                    currentTestedState.calculateAndSetInfectionRatio();
 
                     // run the simulation for every city of the current state
                     for (int numberOfCurrentCity = 0; numberOfCurrentCity < currentTestedState.getCities().length; numberOfCurrentCity++) {
@@ -75,8 +80,9 @@ public class Simulation {
                         // change virus over the days
                         virusEvolution(currentDay, currentTestedCity);
 
+                        currentTestedCity.calculateAndSetInfectionRatio();
 
-                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay);
+                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio());
 
                         currentTestedCity.addNewEntryToHistory(nextDayInfections, simulatedCountry);
                         currentTestedCity.reloadCity();
@@ -120,7 +126,6 @@ public class Simulation {
     }
 
     static boolean checkIfEveryCityHasNoNewInfections(Country country){
-
         // check if every city has no new infections over the last 7 days
         for (State state : country.getStates()){
             for (City city: state.getCities()){

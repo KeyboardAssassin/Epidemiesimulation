@@ -5,11 +5,16 @@ import java.text.DecimalFormat;
 public class State {
     private final String name;
     private City[] cities;
+    protected double obedience = 1;
+    private int stateTotalPopulation;
+    private int stateInfectedPopulation;
+    private double stateInfectionRatio = 0.0;
 
-    private double obedience = 1;
-
-    public State(String name) {
+    public State(String name, City[] citiesOfState) {
         this.name = name;
+        this.cities = citiesOfState;
+        this.stateTotalPopulation = this.calculateStatePopulation();
+        this.stateInfectedPopulation = 0;
     }
 
     public void setCities(City[] cities) {
@@ -44,5 +49,38 @@ public class State {
 
     public double getObedience() {
         return obedience;
+    }
+
+    public void calculateAndSetInfectedPopulation(){
+        int totalPeopleInfected = 0;
+        for (City city: this.getCities()) {
+            totalPeopleInfected += city.getTotalActiveCases();
+        }
+        this.setStateInfectedPopulation(totalPeopleInfected);
+    }
+
+    public void setStateInfectedPopulation(int stateInfectedPopulation) {
+        this.stateInfectedPopulation = stateInfectedPopulation;
+    }
+
+    public void calculateAndSetInfectionRatio(){
+        this.stateInfectionRatio = this.stateInfectedPopulation / this.stateTotalPopulation ;
+    }
+
+    /**
+     * Calculates and sets the total population of a state
+     *
+     * @return total population of all states - e.g. 500000
+     */
+    public int calculateStatePopulation(){
+        int totalPopulation = 0;
+        for (City city: this.getCities()) {
+            totalPopulation += city.getPopulation();
+        }
+        return totalPopulation;
+    }
+
+    public double getStateInfectionRatio() {
+        return stateInfectionRatio;
     }
 }

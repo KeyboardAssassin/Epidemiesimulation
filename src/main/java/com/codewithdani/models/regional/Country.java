@@ -2,6 +2,8 @@ package com.codewithdani.models.regional;
 
 import com.codewithdani.models.actions.Measure;
 
+import java.text.DecimalFormat;
+
 public class Country {
     private final String name;
     private State[] states;
@@ -60,6 +62,26 @@ public class Country {
 
     public double getIncidence() {
         return incidence;
+    }
+
+    public String getIncidenceAsString(){
+        double totalIncidence = this.getIncidence();
+        return convertValueToStringWithDecimalFormat(totalIncidence);
+    }
+
+    // TODO Redundant otra vez?
+    public String getRValueAsString(){
+        double rValue = this.getrValue();
+        return convertValueToStringWithDecimalFormat(rValue);
+    }
+
+    // TODO Redundant mit StatetListElement Methode?
+    public String convertValueToStringWithDecimalFormat(double incidence){
+        DecimalFormat df = new DecimalFormat("0.00");
+        if (incidence % 1 == 0) return  String.valueOf((int)incidence); // TODO Smart?
+        String resultIncidenceString = df.format(incidence);
+
+        return resultIncidenceString;
     }
 
     public double getrValue() {

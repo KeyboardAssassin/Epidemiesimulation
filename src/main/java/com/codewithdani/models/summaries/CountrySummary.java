@@ -4,14 +4,14 @@ import com.codewithdani.models.regional.Country;
 
 public class CountrySummary {
 
-    private double incidence;
-    private double rValue;
+    private String incidence;
+    private String rValue;
     private int newInfections;
     private int newDeathCases;
 
     public CountrySummary(Country country) {
-        incidence = country.getIncidence();
-        rValue = country.getrValue();
+        incidence = country.getIncidenceAsString();
+        rValue = country.getRValueAsString();
         newInfections = country.getNewInfections();
         newDeathCases = country.getNewDeathCases();
     }

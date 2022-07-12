@@ -134,47 +134,28 @@ public class JsonHandler {
         City[] citiesOfBerlin                   = {berlinCity};
         City[] citiesOfBrandenburg              = {potsdam, cottbus};
         City[] citiesOfBremen                   = {bremenCity};
-        City[] citiesOfNordrheinwestfahlen      = {duesseldorf, koeln};
+        City[] citiesOfNordrheinwestfalen      = {duesseldorf, koeln};
         City[] citiesOfHamburg                  = {hamburgCity};
         City[] citiesOfMecklenburgvorpommern    = {schwerin, rostock};
         City[] citiesOfSachsenanhalt            = {magdeburg, halle};
 
-        State thuringen             = new State("Thüringen");
-        State bayern                = new State("Bayern");
-        State hessen                = new State("Hessen");
-        State badenWurttemberg      = new State("Baden-Württemberg");
-        State sachsen               = new State("Sachsen");
-        State niedersachsen         = new State("Niedersachsen");
-        State rheinlandpfalz        = new State("Rheinland-Pfalz");
-        State schleswigholstein     = new State("Schleswig-Holstein");
-        State saarland              = new State("Saarland");
-        State berlin                = new State("Berlin");
-        State brandenburg           = new State("Brandenburg");
-        State bremen                = new State("Bremen");
-        State nordrheinwestfahlen   = new State("Nordrhein-Westfahlen");
-        State hamburg               = new State("Hamburg");
-        State mecklenburgvorpommern = new State("Mecklenburg-Vorpommern");
-        State sachsenanhalt         = new State("Sachsen-Anhalt");
+        State thuringen             = new State("Thüringen", citiesOfThuringen);
+        State bayern                = new State("Bayern", citiesOfBayern);
+        State hessen                = new State("Hessen", citiesOfHessen);
+        State badenWurttemberg      = new State("Baden-Württemberg", citiesOfBadenwurttemberg);
+        State sachsen               = new State("Sachsen", citiesOfSachsen);
+        State niedersachsen         = new State("Niedersachsen", citiesOfNiedersachsen);
+        State rheinlandpfalz        = new State("Rheinland-Pfalz", citiesOfRheinlandpfalz);
+        State schleswigholstein     = new State("Schleswig-Holstein", citiesOfSchleswigholstein);
+        State saarland              = new State("Saarland", citiesOfSaarland);
+        State berlin                = new State("Berlin", citiesOfBerlin);
+        State brandenburg           = new State("Brandenburg", citiesOfBrandenburg);
+        State bremen                = new State("Bremen", citiesOfBremen);
+        State nordrheinwestfahlen   = new State("Nordrhein-Westfalen", citiesOfNordrheinwestfalen);
+        State hamburg               = new State("Hamburg", citiesOfHamburg);
+        State mecklenburgvorpommern = new State("Mecklenburg-Vorpommern", citiesOfMecklenburgvorpommern);
+        State sachsenanhalt         = new State("Sachsen-Anhalt", citiesOfSachsenanhalt);
 
-
-
-        // set cities
-        thuringen.setCities(citiesOfThuringen);
-        bayern.setCities(citiesOfBayern);
-        hessen.setCities(citiesOfHessen);
-        badenWurttemberg.setCities(citiesOfBadenwurttemberg);
-        sachsen.setCities(citiesOfSachsen);
-        niedersachsen.setCities(citiesOfNiedersachsen);
-        rheinlandpfalz.setCities(citiesOfRheinlandpfalz);
-        schleswigholstein.setCities(citiesOfSchleswigholstein);
-        saarland.setCities(citiesOfSaarland);
-        berlin.setCities(citiesOfBerlin);
-        brandenburg.setCities(citiesOfBrandenburg);
-        bremen.setCities(citiesOfBremen);
-        nordrheinwestfahlen.setCities(citiesOfNordrheinwestfahlen);
-        hamburg.setCities(citiesOfHamburg);
-        mecklenburgvorpommern.setCities(citiesOfMecklenburgvorpommern);
-        sachsenanhalt.setCities(citiesOfSachsenanhalt);
 
         State[] germanStates = {thuringen, bayern, hessen, badenWurttemberg, sachsen, niedersachsen, rheinlandpfalz, schleswigholstein,
                 saarland, berlin, brandenburg, bremen, nordrheinwestfahlen, hamburg, mecklenburgvorpommern, sachsenanhalt};

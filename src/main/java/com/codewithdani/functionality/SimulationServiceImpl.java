@@ -1,5 +1,6 @@
 package com.codewithdani.functionality;
 
+import com.codewithdani.models.regional.City;
 import com.codewithdani.models.summaries.CityListSummary;
 import com.codewithdani.models.summaries.CitySummary;
 import com.codewithdani.models.summaries.CountrySummary;
@@ -22,26 +23,16 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public CitySummary getSummary(String cityName) {
-        CitySummary summary = new CitySummary();
+        City requestedCity = simulation.getSimulatedCountry().getCityByName(cityName);
+        CitySummary summary = new CitySummary(requestedCity);
 
-        // TODO Move everything into setter and just give country as argument
         try{
-            summary.setName(simulation.getSimulatedCountry().getCityByName(cityName).getName());
-            summary.setPopulation(simulation.getSimulatedCountry().getCityByName(cityName).getPopulation());
-            summary.setPopulationDensity(simulation.getSimulatedCountry().getCityByName(cityName).getPopulationDensity());
-            // TODO nicht nur die neusten Erstinfektionen
-            summary.setInfectedPeople(simulation.getSimulatedCountry().getCityByName(cityName).getFristInfectionNewCases());
-            summary.setrValue(simulation.getSimulatedCountry().getCityByName(cityName).getrValue());
-            summary.setSevenDaysIncidence(simulation.getSimulatedCountry().getCityByName(cityName).getSevenDaysIncidence());
-
             return summary;
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
         // TODO Handling falls null benötigt
         return null;
-
-
     }
 
     @Override
@@ -66,11 +57,15 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public String getIncidenceOfEveryState(){
-        // TODO muss der Code hier weg?
-        StateListSummary summary = new StateListSummary();
-        summary.fillEveryState(simulation.getSimulatedCountry());
-        // TODO Dataformat (2 Nachkommastellen)
-        return gson.toJson(summary.getStateListElements());
+        try{
+            StateListSummary summary = new StateListSummary();
+            summary.fillEveryState(simulation.getSimulatedCountry());
+            
+            return gson.toJson(summary.getStateListElements());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
     @Override
