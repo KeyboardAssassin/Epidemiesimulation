@@ -15,6 +15,8 @@ public class Country {
     private int newInfections;
     private int newDeathCases;
 
+    private int countryTotalPopulation;
+
     public Country(String name) {
         this.name = name;
         this.measure = new Measure();
@@ -71,7 +73,7 @@ public class Country {
 
     // TODO Redundant otra vez?
     public String getRValueAsString(){
-        double rValue = this.getrValue();
+        double rValue = this.getRValue();
         return convertValueToStringWithDecimalFormat(rValue);
     }
 
@@ -84,7 +86,7 @@ public class Country {
         return resultIncidenceString;
     }
 
-    public double getrValue() {
+    public double getRValue() {
         return rValue;
     }
 
@@ -100,7 +102,7 @@ public class Country {
         this.incidence = incidence;
     }
 
-    public void setrValue(double rValue) {
+    public void setRValue(double rValue) {
         this.rValue = rValue;
     }
 
@@ -115,7 +117,7 @@ public class Country {
     public void updateData(){
         try{
             setIncidence(this.calculateSummaryInfo("incidence"));
-            setrValue(this.calculateSummaryInfo("rvalue"));
+            setRValue(this.calculateSummaryInfo("rvalue"));
             setNewInfections((int)this.calculateSummaryInfo("newcases"));
             setNewDeathCases((int)this.calculateSummaryInfo("deadcases"));
         }
@@ -149,7 +151,7 @@ public class Country {
         // outputs the median value of a requested value
         switch (type){
             case "incidence":
-                return sumOfAllSevenDaysIncidences / amountOfCities;
+                return ((sumOfAllSevenDaysIncidences / amountOfCities) / this.getCountryTotalPopulation()) * 100000;
             case "rvalue":
                 return sumOfAllRValues / amountOfCitiesWithPositiveRValues;
             case "newcases":
@@ -159,5 +161,21 @@ public class Country {
             default:
                 return -1.0;
         }
+    }
+
+    public void setCountryTotalPopulation() {
+        int totalPopulation = 0;
+
+        for (State state: this.getStates()) {
+            for (City city: state.getCities()) {
+                totalPopulation += city.getPopulation();
+            }
+        }
+
+        this.countryTotalPopulation = totalPopulation;
+    }
+
+    public int getCountryTotalPopulation() {
+        return countryTotalPopulation;
     }
 }

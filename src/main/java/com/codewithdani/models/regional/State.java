@@ -44,7 +44,10 @@ public class State {
             totalIncidence += city.getSevenDaysIncidence();
         }
 
-        return totalIncidence / cities.length;
+        double sevenDaysIncidence =  totalIncidence / cities.length;
+        double sevenDaysIncidenceOn100k = (sevenDaysIncidence / this.getStateTotalPopulation()) * 100000;
+
+        return sevenDaysIncidenceOn100k;
     }
 
     public double getObedience() {
@@ -64,7 +67,7 @@ public class State {
     }
 
     public void calculateAndSetInfectionRatio(){
-        this.stateInfectionRatio = this.stateInfectedPopulation / this.stateTotalPopulation ;
+        this.stateInfectionRatio = this.stateInfectedPopulation / (double)this.stateTotalPopulation ;
     }
 
     /**
@@ -82,5 +85,9 @@ public class State {
 
     public double getStateInfectionRatio() {
         return stateInfectionRatio;
+    }
+
+    public int getStateTotalPopulation() {
+        return stateTotalPopulation;
     }
 }

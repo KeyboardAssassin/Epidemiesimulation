@@ -28,6 +28,7 @@ public class Simulation {
             jsonHandler.createPreExistingGermany();
         }
         germany = jsonHandler.importCountryFromJson(germany);
+        germany.setCountryTotalPopulation();
 
         System.out.println("Erfolgreich gestartet");
         System.out.println("Geladenes Land: " + germany.getName());

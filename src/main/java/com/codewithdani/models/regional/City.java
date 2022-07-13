@@ -77,7 +77,6 @@ public class City {
     public void updateRValue(){
             if (caseHistory[0] != -1 && caseHistory[1] == -1){
                 setRValue(caseHistory[0]);
-                return;
             }
             // if at least 2 days are filled
             else if (caseHistory[0] != -1 && caseHistory[1] != -1 && caseHistory[1] != 0) {
@@ -85,8 +84,9 @@ public class City {
             }
             // if no day is filled or the second entry is 0 (cannot be devided by 0)
             else {
-                setRValue(-1);
+                setRValue(0);
             }
+            return;
     }
 
     public void addNewEntryToHistory(int amountOfCases, Country country){
@@ -210,36 +210,47 @@ public class City {
         // calculation of the infections for the current day of the infection
         int totalMeetingsWithInfectedPeople = (int)(infectingCases * amountOfAveragePeopleMeetings);
 
-        // add infections depending on the ratio of infectedCases and totalPopulation of the State it belongs to
-        // the less the infection ratio the more chance of an outbreak
-        double infectionRatioBetweenStateAndCity = stateInfectionRatio / this.cityInfectionRatio;
-
-        int additionalOutBreakTotalInfections = 0;
-
-        if (infectionRatioBetweenStateAndCity > 1){
-            // TODO Berechnung mit sinnvollem Faktor ausstatten - außerdem Magic Number auslagern
-            additionalOutBreakTotalInfections = (int)(0.5 * infectionRatioBetweenStateAndCity);
-        }
-
-
         int newFirstInfections = (int)(totalMeetingsWithInfectedPeople * populationDensityProbability * vaccinationProtectionRatio);
-        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain * vaccinationProtectionRatio) + additionalOutBreakTotalInfections;
+        int totalNewInfections = (int)(newFirstInfections * decreasingProbabilityGrowingRateOfCuredCases) + (int)(amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain * vaccinationProtectionRatio);
 
+        // add infections depending on the ratio of infectedCases (city) and totalPopulation to the state it belongs to
+        // the less the infection ratio the more chance of an outbreak
+        int additionalOutBreakTotalInfections = (int)((totalNewInfections + 1) * (getFactorBetweenStateAndCity(totalNewInfections, stateInfectionRatio)  / 10) + 1 );
 
         this.setFirstInfectionNewCases(newFirstInfections);
-        this.setTotalNewCases(totalNewInfections);
+        this.setTotalNewCases(totalNewInfections + additionalOutBreakTotalInfections);
 
-        if (newFirstInfections > populationLeftFirstInfection)
-        {
+        if (newFirstInfections > populationLeftFirstInfection) {
             this.setFirstInfectionNewCases(populationLeftFirstInfection);
-            return populationLeftFirstInfection;
-        } else {
-            return totalNewInfections;
         }
+
+        if (this.name == "München"){
+            int b = 5;
+        }
+
+        return totalNewInfections + additionalOutBreakTotalInfections;
     }
 
+    public double getFactorBetweenStateAndCity(int totalNewInfections, double stateInfectionRatio){
+        double ratio;
+        double RATIO_MAX = 10;
+
+        if (totalNewInfections == 0){
+            ratio = RATIO_MAX;
+        } else if (stateInfectionRatio / this.cityInfectionRatio > RATIO_MAX) {
+            ratio = RATIO_MAX;
+        } else {
+            ratio = stateInfectionRatio / this.cityInfectionRatio;
+        }
+        return Math.pow(ratio, 2) / Math.pow(RATIO_MAX, 2);
+    }
+
+    // TODO Redundancy with State seven Days Incidence Calculation?
     public void updateSevenDaysIncidence(){
-        this.sevenDaysIncidence = getTotalActiveCases() / caseHistory.length;
+        double sevenDaysIncidence =  getTotalActiveCases() / caseHistory.length;
+        double sevenDaysIncidenceOn100k = (sevenDaysIncidence / this.getPopulation()) * 100000;
+
+        this.sevenDaysIncidence = sevenDaysIncidenceOn100k;
     }
 
     public void updateHealedCases(int amountOfCases){
@@ -275,13 +286,13 @@ public class City {
 
         // risks over the days to infect someone
         // TODO Move Array in Virus class
-        double firstDay     = 0.9;
-        double secondDay    = 0.8;
-        double thirdDay     = 0.7;
-        double fourthDay    = 0.5;
-        double fifthDay     = 0.4;
-        double sixthDay     = 0.3;
-        double seventhDay   = 0.2;
+        double firstDay     = 0.8;
+        double secondDay    = 0.7;
+        double thirdDay     = 0.6;
+        double fourthDay    = 0.4;
+        double fifthDay     = 0.3;
+        double sixthDay     = 0.2;
+        double seventhDay   = 0.1;
 
 
 
@@ -383,6 +394,6 @@ public class City {
     }
 
     public void calculateAndSetInfectionRatio(){
-        this.cityInfectionRatio = this.getTotalActiveCases() / this.population;
+        this.cityInfectionRatio = (double)this.getTotalActiveCases() / (double)this.population;
     }
 }
