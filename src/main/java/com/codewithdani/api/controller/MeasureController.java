@@ -21,4 +21,14 @@ public class MeasureController {
     public void startMedicationDevelopment(){
         simulationService.startMedicationDevelopment();
     }
+
+    @GetMapping("/startvaccination")
+    public void startVaccination(){
+        simulationService.startVaccination();
+    }
+
+    @GetMapping("/startmedication")
+    public void startMedication(){
+        simulationService.startMedication();
+    }
 }

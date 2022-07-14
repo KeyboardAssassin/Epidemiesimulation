@@ -103,4 +103,13 @@ public class SimulationServiceImpl implements SimulationService {
 
     }
 
+    @Override
+    public void startVaccination(){
+        simulation.getSimulatedCountry().getMeasure().getVaccination().setVaccinationStarted(true);
+    }
+
+    @Override
+    public void startMedication(){
+        simulation.getSimulatedCountry().getMeasure().getMedicine().setMedicationStarted(true);
+    }
 }

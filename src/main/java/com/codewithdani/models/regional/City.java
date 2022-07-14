@@ -8,8 +8,8 @@ import java.util.Random;
 
 public class City {
     private final String name;
-    private final int population;
     private final int populationDensity;
+    private int population;
     private int populationLeftFirstInfection;
     private int activeCases;
     private int newCases;
@@ -112,6 +112,7 @@ public class City {
         // update Deaths & Healed Cases
         this.updateDeadCases(deadCasesAfterMedicine);
         this.updateHealedCases((int)(caseHistory[0] * (1 - currentVirus.getMortalityRate())) + healedThroughMedicine);
+        this.removeFromPopulation(deadCasesAfterMedicine);
 
         // todo smartere Lösung finden
         // move the oldest entry in the case history into the healed history
@@ -224,9 +225,6 @@ public class City {
             this.setFirstInfectionNewCases(populationLeftFirstInfection);
         }
 
-        if (this.name == "München"){
-            int b = 5;
-        }
 
         return totalNewInfections + additionalOutBreakTotalInfections;
     }
@@ -361,7 +359,7 @@ public class City {
         return sevenDaysIncidence;
     }
 
-    public double getrValue() {
+    public double getRValue() {
         return rValue;
     }
 
@@ -395,5 +393,9 @@ public class City {
 
     public void calculateAndSetInfectionRatio(){
         this.cityInfectionRatio = (double)this.getTotalActiveCases() / (double)this.population;
+    }
+
+    public void removeFromPopulation(int deadCases){
+        this.population -= deadCases;
     }
 }

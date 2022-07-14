@@ -5,6 +5,7 @@ import com.codewithdani.models.regional.City;
 public class Vaccination {
     private int dayOfDevelopmentStart = -1; // TODO: Decide if countdown is sufficient 90 days left -> 89 days left
     private boolean vaccinationApproved = false;
+    private boolean vaccinationStarted = false;
 
     public void setVaccinationApproved(boolean vaccinationApproved) {
         this.vaccinationApproved = vaccinationApproved;
@@ -42,5 +43,13 @@ public class Vaccination {
         // if (!checkIfVaccinationIsDeveloped(currentDay)) return;
         city.removeVaccinationProportion(amountOfDecrease);
         city.addToVaccinationProportion(ratioOfVaccination);
+    }
+
+    public boolean isVaccinationStarted() {
+        return vaccinationStarted;
+    }
+
+    public void setVaccinationStarted(boolean vaccinationStarted) {
+        this.vaccinationStarted = vaccinationStarted;
     }
 }

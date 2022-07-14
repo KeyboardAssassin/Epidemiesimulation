@@ -1,7 +1,6 @@
 package com.codewithdani.models.summaries;
 
 import com.codewithdani.models.regional.City;
-import com.codewithdani.models.regional.Country;
 
 public class CitySummary {
     private String name;
@@ -16,7 +15,7 @@ public class CitySummary {
         this.population = city.getPopulation();
         this.populationDensity = city.getPopulationDensity();
         this.infectedPeople = city.getTotalNewCases();
-        this.rValue = city.getrValue();
+        this.rValue = city.getRValue();
         this.sevenDaysIncidence = city.getSevenDaysIncidence();
     }
 

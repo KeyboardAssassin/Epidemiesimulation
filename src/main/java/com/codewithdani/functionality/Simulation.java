@@ -63,16 +63,15 @@ public class Simulation {
                         // set the current City
                         currentTestedCity = currentTestedState.getCities()[numberOfCurrentCity];
 
-                        // try to vaccinate people if the vaccination is developed
-                        // TODO Notification to frontend that vaccination is developed
-                        if (simulatedCountry.getMeasure().getVaccination().isVaccinationApproved()){
+                        // try to vaccinate people if the vaccination is developed and the vaccination campaign started
+                        if (simulatedCountry.getMeasure().getVaccination().isVaccinationApproved() && simulatedCountry.getMeasure().getVaccination().isVaccinationStarted()){
                             simulatedCountry.getMeasure().getVaccination().updateVaccination(currentTestedCity);
                         } else {
                             simulatedCountry.getMeasure().getVaccination().checkIfVaccinationIsDeveloped(currentDay);
                         }
 
                         // try to produce medicine for severe cases
-                        if (simulatedCountry.getMeasure().getMedicine().isMedicineApproved()){
+                        if (simulatedCountry.getMeasure().getMedicine().isMedicineApproved() && simulatedCountry.getMeasure().getMedicine().isMedicationStarted()){
                             simulatedCountry.getMeasure().getMedicine().produceMedicine();
                         } else {
                             simulatedCountry.getMeasure().getMedicine().checkIfMedicineIsDeveloped(currentDay);

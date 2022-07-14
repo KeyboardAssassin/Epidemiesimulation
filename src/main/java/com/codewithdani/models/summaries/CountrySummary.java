@@ -9,7 +9,9 @@ public class CountrySummary {
     private int newInfections;
     private int newDeathCases;
     private boolean vaccinationDeveloped;
+    private boolean vaccinationStarted;
     private boolean medicationDeveloped;
+    private boolean medicationStarted;
 
     public CountrySummary(Country country) {
         incidence = country.getIncidenceAsString();
@@ -18,5 +20,7 @@ public class CountrySummary {
         newDeathCases = country.getNewDeathCases();
         vaccinationDeveloped = country.getMeasure().getVaccination().isVaccinationApproved();
         medicationDeveloped = country.getMeasure().getMedicine().isMedicineApproved();
+        vaccinationStarted = country.getMeasure().getVaccination().isVaccinationStarted();
+        medicationStarted = country.getMeasure().getMedicine().isMedicationStarted();
     }
 }

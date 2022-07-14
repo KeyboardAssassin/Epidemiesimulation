@@ -3,6 +3,7 @@ package com.codewithdani.models.actions.goverment;
 public class Medicine {
     private int dayOfDevelopmentStart = -1;
     private boolean medicineApproved = false;
+    private boolean medicationStarted = false;
     private final int daysOfDevelopment = 7; // Source: Code 001 - 730 days
     private int medicineInStock = 0;
 
@@ -44,5 +45,13 @@ public class Medicine {
 
     public void setEffectivityOfMedicine(double effectivityOfMedicine) {
         this.effectivityOfMedicine = effectivityOfMedicine;
+    }
+
+    public boolean isMedicationStarted() {
+        return medicationStarted;
+    }
+
+    public void setMedicationStarted(boolean medicationStarted) {
+        this.medicationStarted = medicationStarted;
     }
 }

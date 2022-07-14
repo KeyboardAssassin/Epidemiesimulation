@@ -18,6 +18,16 @@ public interface SimulationService {
     void startVaccinationDevelopment();
 
     /**
+     * Method to start the vaccination campaign
+     */
+    void startVaccination();
+
+    /**
+     * Method to start the usage of medication in the hospitals
+     */
+    void startMedication();
+
+    /**
      * Method to start the internal medication development
      */
     void startMedicationDevelopment();

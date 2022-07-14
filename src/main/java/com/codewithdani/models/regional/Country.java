@@ -138,8 +138,8 @@ public class Country {
         for (State state: states) {
             for(City city : state.getCities()){
                 sumOfAllSevenDaysIncidences += city.getSevenDaysIncidence();
-                if (city.getrValue() > 0){
-                    sumOfAllRValues += city.getrValue();
+                if (city.getRValue() > 0){
+                    sumOfAllRValues += city.getRValue();
                     amountOfCitiesWithPositiveRValues++;
                 }
                 sumOfAllNewInfections += city.getFristInfectionNewCases(); // TODO richtige membervariable? Oder braucht es noch eine new cases
