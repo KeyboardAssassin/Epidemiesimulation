@@ -11,6 +11,7 @@ public class Simulation {
     static Virus delta = new Virus("delta", 100, 0.003);
     static Virus omicron = new Virus("omicron", 100, 0.0041);
     int sleepTime = 2000;
+    boolean simulationPause = false;
     int day = 0;
 
     Country simulatedCountry;
@@ -46,6 +47,10 @@ public class Simulation {
             for (int currentDay = 0; currentDay < daysOfTestingPerPandemic; currentDay++){
 
                 this.setDay(currentDay);
+
+                while (simulationPause){
+                    // do nothing while pause
+                }
 
                 // run the simulation for every state of germany
                 for (State currentTestedState : simulatedCountry.getStates()) {
@@ -151,5 +156,9 @@ public class Simulation {
 
     public int getDay() {
         return day;
+    }
+
+    public void setSimulationPause(boolean simulationPause) {
+        this.simulationPause = simulationPause;
     }
 }

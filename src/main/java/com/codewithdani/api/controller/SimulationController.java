@@ -28,4 +28,9 @@ public class SimulationController {
     public int getCurrentDay(){
         return simulationService.getDay();
     }
+
+    @GetMapping("/pausesimulation")
+    public void pauseSimulation(@RequestParam(name = "pause") boolean pause){
+        simulationService.pauseSimulation(pause);
+    }
 }

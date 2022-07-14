@@ -112,4 +112,9 @@ public class SimulationServiceImpl implements SimulationService {
     public void startMedication(){
         simulation.getSimulatedCountry().getMeasure().getMedicine().setMedicationStarted(true);
     }
+
+    @Override
+    public void pauseSimulation(boolean pause){
+        simulation.setSimulationPause(pause);
+    }
 }

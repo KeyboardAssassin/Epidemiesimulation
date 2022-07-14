@@ -104,4 +104,11 @@ public interface SimulationService {
      * @return return json object with format {incidence, rValue, newInfections, deathCases}
      */
     String getCountrySummary();
+
+    /**
+     * Method that can be invoked to pause the simulation
+     *
+     * @param pause - true = pause - false = run
+     */
+    void pauseSimulation(boolean pause);
 }
