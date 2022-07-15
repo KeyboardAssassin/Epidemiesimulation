@@ -31,4 +31,9 @@ public class MeasureController {
     public void startMedication(){
         simulationService.startMedication();
     }
+
+    @GetMapping("/activatecontactrestrictions")
+    public void activateContactRestrictions(int amountOfDays){
+        simulationService.activateContactRestrictions(amountOfDays);
+    }
 }

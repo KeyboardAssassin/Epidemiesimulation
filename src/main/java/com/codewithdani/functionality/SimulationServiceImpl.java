@@ -1,6 +1,7 @@
 package com.codewithdani.functionality;
 
 import com.codewithdani.models.regional.City;
+import com.codewithdani.models.regional.State;
 import com.codewithdani.models.summaries.CityListSummary;
 import com.codewithdani.models.summaries.CitySummary;
 import com.codewithdani.models.summaries.CountrySummary;
@@ -95,12 +96,18 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public void activateContactRestrictions(int amountOfDays){
-
+        for (State state : simulation.getSimulatedCountry().getStates()) {
+            state.setContactRestrictions(5);
+            // TODO Method to lower the obedience for every day
+        }
     }
 
     @Override
     public void activateSocialDistancing(int amountOfDays){
-
+        for (State state : simulation.getSimulatedCountry().getStates()) {
+            state.setContactRestrictions(2);
+            // TODO Method to lower the obedience for every day
+        }
     }
 
     @Override

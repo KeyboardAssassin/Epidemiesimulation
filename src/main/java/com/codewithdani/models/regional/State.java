@@ -5,7 +5,8 @@ import java.text.DecimalFormat;
 public class State {
     private final String name;
     private City[] cities;
-    protected double obedience = 1;
+    private double obedience = 1;
+    private double contactRestrictions = 1; // can only go higher e.g. 1 = 100% 2 = 50% 4 = 25%
     private int stateTotalPopulation;
     private int stateInfectedPopulation;
     private double stateInfectionRatio = 0.0;
@@ -89,5 +90,21 @@ public class State {
 
     public int getStateTotalPopulation() {
         return stateTotalPopulation;
+    }
+
+    public void setObedience(double obedience) {
+        this.obedience = obedience;
+    }
+
+    public void looseObedience(double lost){
+        this.obedience += lost;
+    }
+
+    public double getContactRestrictions() {
+        return contactRestrictions;
+    }
+
+    public void setContactRestrictions(double contactRestrictions) {
+        this.contactRestrictions = contactRestrictions;
     }
 }

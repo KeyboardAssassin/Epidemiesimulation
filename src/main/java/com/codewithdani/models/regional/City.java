@@ -24,14 +24,16 @@ public class City {
     private Virus currentVirus;
     private float vaccinationProportion;
     double cityInfectionRatio;
+    double obedienceOfMotherState;
+    double contactRestrictionsOfMotherState;
 
     // min and max amount a persons meets other persons per day (random)
     private static double minAmountOfMeetingsPerDay = 0.1;
     private static double maxAmountOfMeetingsPerDay = 2.4;
 
     // min and max amount of infected people for the first day (random)
-    private static int firstDayInfectedPeopleMin = 3;
-    private static int firstDayInfectedPeopleMax = 8;
+    private static int firstDayInfectedPeopleMin = 4;
+    private static int firstDayInfectedPeopleMax = 7;
 
 
     public City(String name, int population, int populationDensity) {
@@ -46,6 +48,10 @@ public class City {
         this.healedHistory = new HealedHistory();
         this.vaccinationProportion = 0.0f;
         this.cityInfectionRatio = 0.0;
+    }
+
+    public void setObedienceOfMotherState(double obedienceOfMotherState) {
+        this.obedienceOfMotherState = obedienceOfMotherState;
     }
 
     public String getName() {
@@ -171,9 +177,6 @@ public class City {
         double densityOffset = 0; // offset 0 = no offset, 0.1 moves the bounds of the highest and smallest city
         double densityWeight = 1; // increases the importance of this measure
 
-        double contactRestriction = 1; // can only go higher e.g. 1 = 100% 2 = 50% 4 = 25%
-        double obedience = 1;
-
         // first day
         if (day == 0){
             return (random.nextInt(firstDayInfectedPeopleMax - firstDayInfectedPeopleMin) + firstDayInfectedPeopleMin);
@@ -192,7 +195,7 @@ public class City {
 
         // Average amount of People a person meets every day
         double amountOfAveragePeopleMeetings = minAmountOfMeetingsPerDay + (maxAmountOfMeetingsPerDay - minAmountOfMeetingsPerDay) * random.nextDouble();
-        amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, contactRestriction) * obedience)); // TODO this.state.getObedience(); super.super.obedience;
+        amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, this.contactRestrictionsOfMotherState) * this.getObedienceOfMotherState()));
 
         // Probability someone in the 7 days history infects someone
         double infectingCases = calculateActiveCasesInfectingSomeone();
@@ -397,5 +400,13 @@ public class City {
 
     public void removeFromPopulation(int deadCases){
         this.population -= deadCases;
+    }
+
+    public double getObedienceOfMotherState() {
+        return obedienceOfMotherState;
+    }
+
+    public void setContactRestrictionsOfMotherState(double contactRestrictionsOfMotherState) {
+        this.contactRestrictionsOfMotherState = contactRestrictionsOfMotherState;
     }
 }

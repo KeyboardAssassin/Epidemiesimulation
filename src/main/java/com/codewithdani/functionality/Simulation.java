@@ -68,6 +68,10 @@ public class Simulation {
                         // set the current City
                         currentTestedCity = currentTestedState.getCities()[numberOfCurrentCity];
 
+                        // give obedience & restrictions value to every city
+                        currentTestedCity.setObedienceOfMotherState(currentTestedState.getObedience());
+                        currentTestedCity.setContactRestrictionsOfMotherState(currentTestedState.getContactRestrictions());
+
                         // try to vaccinate people if the vaccination is developed and the vaccination campaign started
                         if (simulatedCountry.getMeasure().getVaccination().isVaccinationApproved() && simulatedCountry.getMeasure().getVaccination().isVaccinationStarted()){
                             simulatedCountry.getMeasure().getVaccination().updateVaccination(currentTestedCity);
@@ -110,7 +114,6 @@ public class Simulation {
                     jsonHandler.createPreExistingGermany();
                     germany = jsonHandler.importCountryFromJson(germany);
                     averagePandemicTime += currentDay;
-                    // TODO start a new simulation
                     break;
                 }
             }

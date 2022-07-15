@@ -77,7 +77,7 @@ public class Country {
         return convertValueToStringWithDecimalFormat(rValue);
     }
 
-    // TODO Redundant mit StatetListElement Methode?
+    // TODO Redundant mit StateListElement Methode?
     public String convertValueToStringWithDecimalFormat(double incidence){
         DecimalFormat df = new DecimalFormat("0.00");
         if (incidence % 1 == 0) return  String.valueOf((int)incidence); // TODO Smart?

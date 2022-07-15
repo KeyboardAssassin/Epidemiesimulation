@@ -163,6 +163,12 @@ public class JsonHandler {
         Country germany = new Country("Deutschland");
         germany.setStates(germanStates);
 
+        for (State state: germany.getStates()) {
+            for (City city: state.getCities()) {
+                city.setObedienceOfMotherState(state.getObedience());
+            }
+        }
+
 
         try {
             writer = new FileWriter(filePath);
