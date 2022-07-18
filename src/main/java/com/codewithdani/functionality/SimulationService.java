@@ -36,15 +36,15 @@ public interface SimulationService {
      * Method to activate a contact restriction measure
      *
      * @param amountOfDays - amount of Days the contact restriction should last
+     * @param type - country, state or city
+     * @param amountOfDays - How many days the restriction should last
      */
-    void activateContactRestrictions(int amountOfDays);
+    void activateContactRestrictions(String type, String name, int amountOfDays);
 
     /**
      * Method to activate a social distancing measure
-     *
-     * @param amountOfDays - amount of Days the social distancing restriction should last
      */
-    void activateSocialDistancing(int amountOfDays);
+    void activateSocialDistancing();
 
     /**
      * Method to create a CitySummary of a certain city

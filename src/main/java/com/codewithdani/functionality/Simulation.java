@@ -40,6 +40,9 @@ public class Simulation {
         simulatedCountry = germany;
         City currentTestedCity;
 
+        boolean allStatesSocialDistancingSet = false;
+
+
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
             simulatedCountry = germany;
 
@@ -50,6 +53,69 @@ public class Simulation {
 
                 while (simulationPause){
                     // do nothing while pause
+                }
+
+                // TODO DATENKLASSE
+                int socialDistancingValue = 2;
+
+                // handling for Social Distancing
+                if (simulatedCountry.isSocialDistancingActivated() && !allStatesSocialDistancingSet){
+
+                    for (State state: simulatedCountry.getStates()) {
+                        if (state.getContactRestrictions() < socialDistancingValue){
+                            state.setContactRestrictions(socialDistancingValue);
+                        }
+                        for (City city: state.getCities()) {
+                            if (city.getContactRestrictionsOfMotherState() < socialDistancingValue){
+                                city.setContactRestrictionsOfMotherState(socialDistancingValue);
+                            }
+                        }
+                    }
+
+                    allStatesSocialDistancingSet = true;
+                }
+
+                // count down days left of restrictions
+                // if restrictions ends then reset it to 0
+                for (State state : simulatedCountry.getStates()) {
+                    int daysLeft = state.getContactRestrictionsDaysLeft();
+
+                    if (daysLeft > 0){
+                        state.setContactRestrictionDuration(daysLeft - 1);
+                    }
+                    // if contact restrictions end
+                    if (daysLeft - 1 == 0){
+                        if (simulatedCountry.isSocialDistancingActivated()){
+                            state.setContactRestrictionDuration(0);
+                            state.setContactRestrictions(socialDistancingValue);
+                            state.updateAllCitiesContactRestrictions(socialDistancingValue);
+                        }
+                        else if (!simulatedCountry.isSocialDistancingActivated()){
+                            // TODO Beide Methoden ggf. zusammenlegen
+                            state.setContactRestrictions(0);
+                            state.updateAllCitiesContactRestrictions(0);
+                        }
+                    }
+                    // if no restrictions are active check if the city got restrictions
+                    if(daysLeft == 0){
+                        for (City city: state.getCities()) {
+                            daysLeft = city.getContactRestrictionsDaysLeft();
+                            if (daysLeft > 0){
+                                city.setContactRestrictionDuration(daysLeft - 1);
+                            }
+                            if (daysLeft - 1 == 0){
+                                if (simulatedCountry.isSocialDistancingActivated()){
+                                    city.setContactRestrictionDuration(0);
+                                    city.setContactRestrictionsOfMotherState(socialDistancingValue);
+                                }
+                                else if (!simulatedCountry.isSocialDistancingActivated()){
+                                    city.setContactRestrictionDuration(0);
+                                    city.setContactRestrictionsOfMotherState(0);
+                                }
+                            }
+
+                        }
+                    }
                 }
 
                 // run the simulation for every state of germany
@@ -70,7 +136,7 @@ public class Simulation {
 
                         // give obedience & restrictions value to every city
                         currentTestedCity.setObedienceOfMotherState(currentTestedState.getObedience());
-                        currentTestedCity.setContactRestrictionsOfMotherState(currentTestedState.getContactRestrictions());
+
 
                         // try to vaccinate people if the vaccination is developed and the vaccination campaign started
                         if (simulatedCountry.getMeasure().getVaccination().isVaccinationApproved() && simulatedCountry.getMeasure().getVaccination().isVaccinationStarted()){

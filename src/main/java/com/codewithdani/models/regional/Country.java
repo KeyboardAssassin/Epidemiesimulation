@@ -14,9 +14,8 @@ public class Country {
     private double rValue;
     private int newInfections;
     private int newDeathCases;
-
     private int countryTotalPopulation;
-
+    private boolean socialDistancingActivated;
     public Country(String name) {
         this.name = name;
         this.measure = new Measure();
@@ -52,7 +51,7 @@ public class Country {
     // TODO Ebenfalls
     public State getStateByName(String name){
         for (State state : states){
-            if (state.getName().toLowerCase().equals(name)) return state;
+            if (state.getName().toLowerCase().equals(name.toLowerCase())) return state;
         }
 
         return null;
@@ -177,5 +176,13 @@ public class Country {
 
     public int getCountryTotalPopulation() {
         return countryTotalPopulation;
+    }
+
+    public void setSocialDistancingActivated(boolean socialDistancingActivated) {
+        this.socialDistancingActivated = socialDistancingActivated;
+    }
+
+    public boolean isSocialDistancingActivated() {
+        return socialDistancingActivated;
     }
 }

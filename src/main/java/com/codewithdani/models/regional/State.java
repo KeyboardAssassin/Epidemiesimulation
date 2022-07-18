@@ -7,6 +7,7 @@ public class State {
     private City[] cities;
     private double obedience = 1;
     private double contactRestrictions = 1; // can only go higher e.g. 1 = 100% 2 = 50% 4 = 25%
+    private int contactRestrictionsDaysLeft;
     private int stateTotalPopulation;
     private int stateInfectedPopulation;
     private double stateInfectionRatio = 0.0;
@@ -106,5 +107,20 @@ public class State {
 
     public void setContactRestrictions(double contactRestrictions) {
         this.contactRestrictions = contactRestrictions;
+    }
+
+    public void updateAllCitiesContactRestrictions(double restrictionValue){
+        for (City city: cities) {
+            city.setContactRestrictionsOfMotherState(restrictionValue);
+            city.setContactRestrictionDuration(0);
+        }
+    }
+
+    public void setContactRestrictionDuration(int amountOfDays){
+        this.contactRestrictionsDaysLeft = amountOfDays;
+    }
+
+    public int getContactRestrictionsDaysLeft() {
+        return contactRestrictionsDaysLeft;
     }
 }

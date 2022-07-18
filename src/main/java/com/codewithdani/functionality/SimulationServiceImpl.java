@@ -95,19 +95,38 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public void activateContactRestrictions(int amountOfDays){
-        for (State state : simulation.getSimulatedCountry().getStates()) {
-            state.setContactRestrictions(5);
-            // TODO Method to lower the obedience for every day
+    public void activateContactRestrictions(String type, String name, int amountOfDays){
+        int contactRestrictionValue = 5;
+
+        switch (type) {
+            case "country":
+                for (State state : simulation.getSimulatedCountry().getStates()) {
+                    state.setContactRestrictions(contactRestrictionValue);
+                    state.setContactRestrictionDuration(amountOfDays);
+                    state.updateAllCitiesContactRestrictions(contactRestrictionValue);
+                    break;
+                    // TODO Method to lower the obedience for every day
+                }
+            case "state":
+                State state = simulation.getSimulatedCountry().getStateByName(name);
+
+                state.setContactRestrictions(contactRestrictionValue);
+                state.setContactRestrictionDuration(amountOfDays);
+                state.updateAllCitiesContactRestrictions(contactRestrictionValue);
+                break;
+            case "city":
+                City city = simulation.getSimulatedCountry().getCityByName(name);
+
+                city.setContactRestrictionsOfMotherState(contactRestrictionValue);
+                city.setContactRestrictionDuration(amountOfDays);
+                break;
         }
     }
 
     @Override
-    public void activateSocialDistancing(int amountOfDays){
-        for (State state : simulation.getSimulatedCountry().getStates()) {
-            state.setContactRestrictions(2);
-            // TODO Method to lower the obedience for every day
-        }
+    public void activateSocialDistancing(){
+        simulation.getSimulatedCountry().setSocialDistancingActivated(true);
+        // TODO Method to lower the obedience for every day
     }
 
     @Override

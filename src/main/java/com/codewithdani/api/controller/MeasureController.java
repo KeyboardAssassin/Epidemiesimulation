@@ -2,6 +2,7 @@ package com.codewithdani.api.controller;
 
 import com.codewithdani.functionality.SimulationService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,7 +34,12 @@ public class MeasureController {
     }
 
     @GetMapping("/activatecontactrestrictions")
-    public void activateContactRestrictions(int amountOfDays){
-        simulationService.activateContactRestrictions(amountOfDays);
+    public void activateContactRestrictions(@RequestParam(value = "type") String type, @RequestParam(value = "name") String name, @RequestParam(value = "amountofdays") int amountOfDays){
+        simulationService.activateContactRestrictions(type, name, amountOfDays);
+    }
+
+    @GetMapping("/activatesocialdistancing")
+    public void activateContactRestrictions(){
+        simulationService.activateSocialDistancing();
     }
 }

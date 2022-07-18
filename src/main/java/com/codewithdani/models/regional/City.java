@@ -26,6 +26,7 @@ public class City {
     double cityInfectionRatio;
     double obedienceOfMotherState;
     double contactRestrictionsOfMotherState;
+    int contactRestrictionsDaysLeft;
 
     // min and max amount a persons meets other persons per day (random)
     private static double minAmountOfMeetingsPerDay = 0.1;
@@ -408,5 +409,17 @@ public class City {
 
     public void setContactRestrictionsOfMotherState(double contactRestrictionsOfMotherState) {
         this.contactRestrictionsOfMotherState = contactRestrictionsOfMotherState;
+    }
+
+    public double getContactRestrictionsOfMotherState() {
+        return contactRestrictionsOfMotherState;
+    }
+
+    public void setContactRestrictionDuration(int amountOfDays){
+        this.contactRestrictionsDaysLeft = amountOfDays;
+    }
+
+    public int getContactRestrictionsDaysLeft() {
+        return contactRestrictionsDaysLeft;
     }
 }
