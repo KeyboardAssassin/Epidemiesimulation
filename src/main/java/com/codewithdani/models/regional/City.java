@@ -297,7 +297,6 @@ public class City {
         double seventhDay   = 0.1;
 
 
-
         double[] daysLeft = {firstDay, secondDay, thirdDay, fourthDay, fifthDay, sixthDay, seventhDay};
 
         // if case history is filled with 6 elements
@@ -434,6 +433,5 @@ public class City {
         else{
             this.obedience = 1;
         }
-
     }
 }

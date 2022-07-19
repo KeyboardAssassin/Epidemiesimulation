@@ -31,15 +31,6 @@ public class State {
         return name;
     }
 
-    public String outputSevenDaysIncidenceAsString(){
-        double totalIncidence = this.getSevenDaysIncidence();
-        DecimalFormat df = new DecimalFormat("0.00");
-        if (totalIncidence % 1 == 0) return  String.valueOf((int)totalIncidence); // TODO Smart?
-        String resultIncidenceString = df.format(totalIncidence);
-
-        return resultIncidenceString;
-    }
-
     public double getSevenDaysIncidence(){
         double totalIncidence = 0;
         for (City city : cities){

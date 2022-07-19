@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 public class SimulationServiceImpl implements SimulationService {
 
     public Simulation simulation = new Simulation();
-    public Gson gson = new Gson();
+
+    private Util util = new Util();
+
+    private Gson gson = new Gson();
 
 
     @Override
@@ -38,7 +41,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public String getIncidenceByState(String stateName) {
-        return simulation.getSimulatedCountry().getStateByName(stateName).outputSevenDaysIncidenceAsString();
+        return util.convertIncidenceToStringWith2Digits(simulation.getSimulatedCountry().getStateByName(stateName).getSevenDaysIncidence());
     }
 
     @Override
@@ -105,7 +108,6 @@ public class SimulationServiceImpl implements SimulationService {
                     state.setContactRestrictionDuration(amountOfDays);
                     state.updateAllCitiesContactRestrictions(contactRestrictionValue);
                     break;
-                    // TODO Method to lower the obedience for every day
                 }
             case "state":
                 State state = simulation.getSimulatedCountry().getStateByName(name);
@@ -126,7 +128,6 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public void activateSocialDistancing(){
         simulation.getSimulatedCountry().setSocialDistancingActivated(true);
-        // TODO Method to lower the obedience for every day
     }
 
     @Override

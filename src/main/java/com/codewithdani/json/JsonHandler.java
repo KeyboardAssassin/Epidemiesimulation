@@ -134,7 +134,7 @@ public class JsonHandler {
         City[] citiesOfBerlin                   = {berlinCity};
         City[] citiesOfBrandenburg              = {potsdam, cottbus};
         City[] citiesOfBremen                   = {bremenCity};
-        City[] citiesOfNordrheinwestfalen      = {duesseldorf, koeln};
+        City[] citiesOfNordrheinwestfalen       = {duesseldorf, koeln};
         City[] citiesOfHamburg                  = {hamburgCity};
         City[] citiesOfMecklenburgvorpommern    = {schwerin, rostock};
         City[] citiesOfSachsenanhalt            = {magdeburg, halle};
