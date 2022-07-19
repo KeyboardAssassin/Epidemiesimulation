@@ -24,7 +24,7 @@ public class City {
     private Virus currentVirus;
     private float vaccinationProportion;
     double cityInfectionRatio;
-    double obedienceOfMotherState;
+    double obedience;
     double contactRestrictionsOfMotherState;
     int contactRestrictionsDaysLeft;
 
@@ -51,8 +51,8 @@ public class City {
         this.cityInfectionRatio = 0.0;
     }
 
-    public void setObedienceOfMotherState(double obedienceOfMotherState) {
-        this.obedienceOfMotherState = obedienceOfMotherState;
+    public void setObedience(double obedience) {
+        this.obedience = obedience;
     }
 
     public String getName() {
@@ -196,7 +196,7 @@ public class City {
 
         // Average amount of People a person meets every day
         double amountOfAveragePeopleMeetings = minAmountOfMeetingsPerDay + (maxAmountOfMeetingsPerDay - minAmountOfMeetingsPerDay) * random.nextDouble();
-        amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, this.contactRestrictionsOfMotherState) * this.getObedienceOfMotherState()));
+        amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, this.contactRestrictionsOfMotherState) * this.getObedience()));
 
         // Probability someone in the 7 days history infects someone
         double infectingCases = calculateActiveCasesInfectingSomeone();
@@ -403,8 +403,8 @@ public class City {
         this.population -= deadCases;
     }
 
-    public double getObedienceOfMotherState() {
-        return obedienceOfMotherState;
+    public double getObedience() {
+        return obedience;
     }
 
     public void setContactRestrictionsOfMotherState(double contactRestrictionsOfMotherState) {
@@ -421,5 +421,19 @@ public class City {
 
     public int getContactRestrictionsDaysLeft() {
         return contactRestrictionsDaysLeft;
+    }
+
+    public void looseObedience(double lost){
+        this.obedience += lost;
+    }
+
+    public void gainObedience(double gain){
+        if (this.obedience - gain > 1){
+            this.obedience -= gain;
+        }
+        else{
+            this.obedience = 1;
+        }
+
     }
 }

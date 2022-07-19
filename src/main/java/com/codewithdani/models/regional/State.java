@@ -93,12 +93,14 @@ public class State {
         return stateTotalPopulation;
     }
 
-    public void setObedience(double obedience) {
-        this.obedience = obedience;
-    }
+    public void updateObedience() {
+        double totalObedience = 0;
 
-    public void looseObedience(double lost){
-        this.obedience += lost;
+        for (City city: cities) {
+            totalObedience += city.getObedience();
+        }
+
+        this.obedience = totalObedience / cities.length;
     }
 
     public double getContactRestrictions() {
@@ -122,5 +124,11 @@ public class State {
 
     public int getContactRestrictionsDaysLeft() {
         return contactRestrictionsDaysLeft;
+    }
+
+    public void removeObedienceFromAllCities(double lost){
+        for (City city: cities) {
+            city.looseObedience(lost);
+        }
     }
 }

@@ -165,7 +165,7 @@ public class JsonHandler {
 
         for (State state: germany.getStates()) {
             for (City city: state.getCities()) {
-                city.setObedienceOfMotherState(state.getObedience());
+                city.setObedience(state.getObedience());
             }
         }
 

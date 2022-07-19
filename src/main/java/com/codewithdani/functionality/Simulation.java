@@ -79,9 +79,13 @@ public class Simulation {
                 // if restrictions ends then reset it to 0
                 for (State state : simulatedCountry.getStates()) {
                     int daysLeft = state.getContactRestrictionsDaysLeft();
+                    double obedienceLostPerDay = 0.08;
+                    double obedienceGainPerDay = 0.02;
 
                     if (daysLeft > 0){
                         state.setContactRestrictionDuration(daysLeft - 1);
+
+                        state.removeObedienceFromAllCities(obedienceLostPerDay);
                     }
                     // if contact restrictions end
                     if (daysLeft - 1 == 0){
@@ -95,14 +99,12 @@ public class Simulation {
                             state.setContactRestrictions(0);
                             state.updateAllCitiesContactRestrictions(0);
                         }
+                        state.removeObedienceFromAllCities(obedienceLostPerDay);
                     }
                     // if no restrictions are active check if the city got restrictions
                     if(daysLeft == 0){
                         for (City city: state.getCities()) {
                             daysLeft = city.getContactRestrictionsDaysLeft();
-                            if (daysLeft > 0){
-                                city.setContactRestrictionDuration(daysLeft - 1);
-                            }
                             if (daysLeft - 1 == 0){
                                 if (simulatedCountry.isSocialDistancingActivated()){
                                     city.setContactRestrictionDuration(0);
@@ -112,8 +114,17 @@ public class Simulation {
                                     city.setContactRestrictionDuration(0);
                                     city.setContactRestrictionsOfMotherState(0);
                                 }
-                            }
 
+                                // loose obedience (last day of restrictions)
+                                city.looseObedience(obedienceLostPerDay);
+                            }
+                            else if (daysLeft > 0){
+                                city.setContactRestrictionDuration(daysLeft - 1);
+                                city.looseObedience(obedienceLostPerDay);
+                            }
+                            else if (daysLeft == 0){
+                                city.gainObedience(obedienceGainPerDay);
+                            }
                         }
                     }
                 }
@@ -135,8 +146,7 @@ public class Simulation {
                         currentTestedCity = currentTestedState.getCities()[numberOfCurrentCity];
 
                         // give obedience & restrictions value to every city
-                        currentTestedCity.setObedienceOfMotherState(currentTestedState.getObedience());
-
+                        currentTestedCity.setObedience(currentTestedState.getObedience());
 
                         // try to vaccinate people if the vaccination is developed and the vaccination campaign started
                         if (simulatedCountry.getMeasure().getVaccination().isVaccinationApproved() && simulatedCountry.getMeasure().getVaccination().isVaccinationStarted()){
@@ -162,6 +172,10 @@ public class Simulation {
                         currentTestedCity.addNewEntryToHistory(nextDayInfections, simulatedCountry);
                         currentTestedCity.reloadCity();
                     }
+
+                    // Update median obedience of all cities onto the state
+                    currentTestedState.updateObedience();
+
                     // Logging of every day if wanted
                     System.out.println("Tag: " + currentDay + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
                 }
