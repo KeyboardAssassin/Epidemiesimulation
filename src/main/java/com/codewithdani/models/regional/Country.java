@@ -1,24 +1,25 @@
 package com.codewithdani.models.regional;
 
 import com.codewithdani.models.actions.Measure;
+import com.codewithdani.models.threats.Virus;
 
 import java.text.DecimalFormat;
 
 public class Country {
     private final String name;
     private State[] states;
-
     public Measure measure;
-
     private double incidence;
     private double rValue;
     private int newInfections;
     private int newDeathCases;
     private int countryTotalPopulation;
     private boolean socialDistancingActivated;
-    public Country(String name) {
+    private Virus currentVirus;
+    public Country(String name, Virus startVirus) {
         this.name = name;
         this.measure = new Measure();
+        this.currentVirus = startVirus;
     }
 
     public void setStates(State[] states) {
@@ -184,5 +185,22 @@ public class Country {
 
     public boolean isSocialDistancingActivated() {
         return socialDistancingActivated;
+    }
+
+    public void setCurrentVirus(Virus currentVirus) {
+        this.currentVirus = currentVirus;
+        updateAllCityVirus(currentVirus);
+    }
+
+    public Virus getCurrentVirus() {
+        return currentVirus;
+    }
+
+    public void updateAllCityVirus(Virus virus){
+        for (State state: states) {
+            for (City city: state.getCities()) {
+                city.setCurrentVirus(virus);
+            }
+        }
     }
 }

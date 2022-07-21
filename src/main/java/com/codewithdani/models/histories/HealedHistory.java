@@ -25,7 +25,7 @@ public class HealedHistory {
     }
 
     public int[] shiftElements(){
-        // TODO Smartere Lösung finden
+        // TODO Smarte Lösung finden
         int[] newArray = new int[this.history.length];
 
         for (int i = this.history.length - 1; i > 0; i--){

@@ -34,11 +34,10 @@ public class Vaccination {
         float maxVaccinatedOnOneDay = 0.08f;
         float amountOfDecrease = 0.01f;
 
-        double obedience = 1; // TODO In dem State speichern // wie sehr hören die Leute auf dich generell?
         double vaccinationDisobedienceExponentialMultiplier = 1; // wie schwierig ist es Leute vom Impfen zu überzeugen? e.g. 0 = egal, ob die Leute auf dich hören, lassen sie sich impfen (äußerst Positiv) 1 = neutrale Einstellung - Alles über 1 ist negativ
 
         float ratioOfVaccination = city.getVaccinationProportion();
-        ratioOfVaccination += maxVaccinatedOnOneDay * Math.pow(obedience, vaccinationDisobedienceExponentialMultiplier);
+        ratioOfVaccination += maxVaccinatedOnOneDay * Math.pow(city.getObedience(), vaccinationDisobedienceExponentialMultiplier);
 
         // if (!checkIfVaccinationIsDeveloped(currentDay)) return;
         city.removeVaccinationProportion(amountOfDecrease);

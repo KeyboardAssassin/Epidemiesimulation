@@ -3,6 +3,7 @@ package com.codewithdani.json;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
+import com.codewithdani.models.threats.Virus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -54,7 +55,7 @@ public class JsonHandler {
         }
     }
 
-    public void createPreExistingGermany(){
+    public void createPreExistingGermany(Virus alpha){
         File filePath = new File("/Users/Dani/Desktop/germany.json");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileWriter writer;
@@ -160,7 +161,7 @@ public class JsonHandler {
         State[] germanStates = {thuringen, bayern, hessen, badenWurttemberg, sachsen, niedersachsen, rheinlandpfalz, schleswigholstein,
                 saarland, berlin, brandenburg, bremen, nordrheinwestfahlen, hamburg, mecklenburgvorpommern, sachsenanhalt};
 
-        Country germany = new Country("Deutschland");
+        Country germany = new Country("Deutschland", alpha);
         germany.setStates(germanStates);
 
         for (State state: germany.getStates()) {

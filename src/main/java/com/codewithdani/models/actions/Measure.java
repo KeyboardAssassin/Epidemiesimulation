@@ -3,7 +3,6 @@ package com.codewithdani.models.actions;
 import com.codewithdani.models.actions.goverment.Medicine;
 import com.codewithdani.models.actions.goverment.Vaccination;
 import com.codewithdani.models.actions.self.contact.Distancing;
-import com.codewithdani.models.actions.self.contact.Tracing;
 
 public class Measure {
 
@@ -11,12 +10,12 @@ public class Measure {
 
     Vaccination vaccination;
     Medicine medicine;
-    Tracing tracing;
     Distancing distancing;
 
     public Measure() {
         this.vaccination = new Vaccination();
         this.medicine = new Medicine();
+        this.distancing = new Distancing();
     }
 
     public Vaccination getVaccination() {
@@ -27,4 +26,7 @@ public class Measure {
         return medicine;
     }
 
+    public Distancing getDistancing() {
+        return distancing;
+    }
 }

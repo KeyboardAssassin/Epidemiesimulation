@@ -2,10 +2,9 @@ package com.codewithdani.functionality;
 
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.State;
-import com.codewithdani.models.summaries.CityListSummary;
 import com.codewithdani.models.summaries.CitySummary;
 import com.codewithdani.models.summaries.CountrySummary;
-import com.codewithdani.models.summaries.StateListSummary;
+import com.codewithdani.models.summaries.ListSummary;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +17,10 @@ public class SimulationServiceImpl implements SimulationService {
 
     private Gson gson = new Gson();
 
-
     @Override
     public void startSimulation(int amountOfSimulations) {
         simulation.startSimulation(amountOfSimulations);
     }
-
 
     @Override
     public CitySummary getSummary(String cityName) {
@@ -62,10 +59,10 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public String getIncidenceOfEveryState(){
         try{
-            StateListSummary summary = new StateListSummary();
+            ListSummary summary = new ListSummary();
             summary.fillEveryState(simulation.getSimulatedCountry());
             
-            return gson.toJson(summary.getStateListElements());
+            return gson.toJson(summary.getListElements());
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -74,9 +71,9 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public String getIncidenceOfEveryCity(){
-        CityListSummary summary = new CityListSummary();
+        ListSummary summary = new ListSummary();
         summary.fillEveryCity(simulation.getSimulatedCountry());
-        return gson.toJson((summary.getCitiesListElements()));
+        return gson.toJson((summary.getListElements()));
     }
 
     @Override

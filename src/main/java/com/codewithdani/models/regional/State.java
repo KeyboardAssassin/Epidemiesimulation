@@ -1,5 +1,7 @@
 package com.codewithdani.models.regional;
 
+import com.codewithdani.models.threats.Virus;
+
 import java.text.DecimalFormat;
 
 public class State {
@@ -11,6 +13,7 @@ public class State {
     private int stateTotalPopulation;
     private int stateInfectedPopulation;
     private double stateInfectionRatio = 0.0;
+
 
     public State(String name, City[] citiesOfState) {
         this.name = name;

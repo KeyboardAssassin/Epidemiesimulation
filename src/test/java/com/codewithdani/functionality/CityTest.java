@@ -2,11 +2,13 @@ package com.codewithdani.functionality;
 
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
+import com.codewithdani.models.threats.Virus;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CityTest {
+
 
     @Test
     public void settingAndGettingHistoryDatesTest(){
@@ -34,7 +36,9 @@ public class CityTest {
 
     @Test
     void addingNewDataToHistoryTest() {
-        Country testCountry = new Country("Testcountry");
+        Virus alpha = new Virus("alpha", 100, 0.009, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
+
+        Country testCountry = new Country("Testcountry", alpha);
         City testCity = new City("Testcity", 100000, 100);
 
         testCity.addNewEntryToHistory(10, testCountry);

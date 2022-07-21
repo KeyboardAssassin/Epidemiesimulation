@@ -1,7 +1,6 @@
 package com.codewithdani.functionality;
 
 import com.codewithdani.models.summaries.CitySummary;
-import com.codewithdani.models.summaries.CountrySummary;
 
 public interface SimulationService {
 
@@ -35,8 +34,8 @@ public interface SimulationService {
     /**
      * Method to activate a contact restriction measure
      *
-     * @param amountOfDays - amount of Days the contact restriction should last
-     * @param type - country, state or city
+     * @param type - type on which level the restrictions should be activated "country" - "state" - "city"
+     * @param name - name of the state or city
      * @param amountOfDays - How many days the restriction should last
      */
     void activateContactRestrictions(String type, String name, int amountOfDays);

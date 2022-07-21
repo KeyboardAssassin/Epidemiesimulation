@@ -1,20 +1,24 @@
 package com.codewithdani.functionality;
 
 import com.codewithdani.json.JsonHandler;
+import com.codewithdani.models.data.Data;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
 import com.codewithdani.models.threats.Virus;
 
 public class Simulation {
-    static Virus beta  = new Virus("beta", 100, 0.00216);
-    static Virus delta = new Virus("delta", 100, 0.003);
-    static Virus omicron = new Virus("omicron", 100, 0.0041);
+    static Virus alpha = new Virus("alpha", 100, 0.009, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
+    static Virus beta  = new Virus("beta", 100, 0.00216, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
+    static Virus delta = new Virus("delta", 100, 0.003, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
+    static Virus omicron = new Virus("omicron", 100, 0.0041, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
+
     int sleepTime = 2000;
     boolean simulationPause = false;
     int day = 0;
-
     Country simulatedCountry;
+    // Data class
+    Data data = new Data();
 
 
     public void startSimulation(int amountOfSimulations){
@@ -22,11 +26,11 @@ public class Simulation {
         JsonHandler jsonHandler = new JsonHandler();
 
         // create an empty Country
-        Country germany = new Country("Deutschland");
+        Country germany = new Country("Deutschland", alpha);
 
         // check if a json file of that country already exists
         if (!jsonHandler.checkIfCountryJsonExists("germany")) {
-            jsonHandler.createPreExistingGermany();
+            jsonHandler.createPreExistingGermany(alpha);
         }
         germany = jsonHandler.importCountryFromJson(germany);
         germany.setCountryTotalPopulation();
@@ -41,7 +45,10 @@ public class Simulation {
         City currentTestedCity;
 
         boolean allStatesSocialDistancingSet = false;
+        int socialDistancingValue = simulatedCountry.getMeasure().getDistancing().getSocialDistancingValue();
 
+        // execute all setting methods
+        initialiseDataClass();
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
             simulatedCountry = germany;
@@ -55,12 +62,8 @@ public class Simulation {
                     // do nothing while pause
                 }
 
-                // TODO DATENKLASSE
-                int socialDistancingValue = 2;
-
                 // handling for Social Distancing
                 if (simulatedCountry.isSocialDistancingActivated() && !allStatesSocialDistancingSet){
-
                     for (State state: simulatedCountry.getStates()) {
                         if (state.getContactRestrictions() < socialDistancingValue){
                             state.setContactRestrictions(socialDistancingValue);
@@ -71,7 +74,6 @@ public class Simulation {
                             }
                         }
                     }
-
                     allStatesSocialDistancingSet = true;
                 }
 
@@ -94,7 +96,7 @@ public class Simulation {
                             state.setContactRestrictions(socialDistancingValue);
                             state.updateAllCitiesContactRestrictions(socialDistancingValue);
                         }
-                        else if (!simulatedCountry.isSocialDistancingActivated()){
+                        else {
                             // TODO Beide Methoden ggf. zusammenlegen
                             state.setContactRestrictions(0);
                             state.updateAllCitiesContactRestrictions(0);
@@ -110,7 +112,7 @@ public class Simulation {
                                     city.setContactRestrictionDuration(0);
                                     city.setContactRestrictionsOfMotherState(socialDistancingValue);
                                 }
-                                else if (!simulatedCountry.isSocialDistancingActivated()){
+                                else {
                                     city.setContactRestrictionDuration(0);
                                     city.setContactRestrictionsOfMotherState(0);
                                 }
@@ -131,7 +133,6 @@ public class Simulation {
 
                 // run the simulation for every state of germany
                 for (State currentTestedState : simulatedCountry.getStates()) {
-
                     if (currentDay == 0){
                         currentTestedState.calculateStatePopulation();
                     }
@@ -163,11 +164,11 @@ public class Simulation {
                         }
 
                         // change virus over the days
-                        virusEvolution(currentDay, currentTestedCity);
+                        virusEvolution(currentDay, simulatedCountry);
 
                         currentTestedCity.calculateAndSetInfectionRatio();
 
-                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio());
+                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio(), data);
 
                         currentTestedCity.addNewEntryToHistory(nextDayInfections, simulatedCountry);
                         currentTestedCity.reloadCity();
@@ -191,7 +192,7 @@ public class Simulation {
                     // System.out.println("Pandemie beendet an Tag: " + currentDay);
 
                     // reset all cities to start a new simulation
-                    jsonHandler.createPreExistingGermany();
+                    jsonHandler.createPreExistingGermany(alpha);
                     germany = jsonHandler.importCountryFromJson(germany);
                     averagePandemicTime += currentDay;
                     break;
@@ -202,15 +203,21 @@ public class Simulation {
         System.out.println("Durchschnittliche Dauer einer Pandemie: " + averagePandemicTime / amountOfSimulations + " Tage");
     }
 
-    static void virusEvolution(int day, City currentTestedCity){
+    static void virusEvolution(int day, Country simulatedCountry){
         int amountOfActiveAlphaDays = 108;  // 01.09.2020 (alpha) -> 18.12.2020 (beta) | currently hard cut TODO Soft transition
         int amountOfActiveBetaDays  = 195;  // (beta) -> (delta)
         int amountOfActiveDeltaDays = 148;  // (delta) -> (omicron)
 
         // change virus after the 108th day (3 Months change from alpha -> beta)
-        if (day > amountOfActiveAlphaDays) currentTestedCity.setCurrentVirus(beta);
-        if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays) currentTestedCity.setCurrentVirus(delta);
-        if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays + amountOfActiveDeltaDays) currentTestedCity.setCurrentVirus(omicron);
+        if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays + amountOfActiveDeltaDays){
+            simulatedCountry.setCurrentVirus(omicron);
+        }
+        else if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays){
+            simulatedCountry.setCurrentVirus(delta);
+        }
+        else if (day > amountOfActiveAlphaDays){
+            simulatedCountry.setCurrentVirus(beta);
+        }
     }
 
     static boolean checkIfEveryCityHasNoNewInfections(Country country){
@@ -243,5 +250,10 @@ public class Simulation {
 
     public void setSimulationPause(boolean simulationPause) {
         this.simulationPause = simulationPause;
+    }
+
+    public void initialiseDataClass(){
+        this.data.setHighestCityDensity(simulatedCountry);
+        this.data.setLowestCityDensity(simulatedCountry);
     }
 }

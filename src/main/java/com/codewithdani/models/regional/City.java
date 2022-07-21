@@ -1,5 +1,6 @@
 package com.codewithdani.models.regional;
 
+import com.codewithdani.models.data.Data;
 import com.codewithdani.models.histories.HealedHistory;
 import com.codewithdani.models.threats.Virus;
 
@@ -29,12 +30,14 @@ public class City {
     int contactRestrictionsDaysLeft;
 
     // min and max amount a persons meets other persons per day (random)
-    private static double minAmountOfMeetingsPerDay = 0.1;
-    private static double maxAmountOfMeetingsPerDay = 2.4;
+    private static final double minAmountOfMeetingsPerDay = 0.1;
+    private static final double maxAmountOfMeetingsPerDay = 2.4;
 
     // min and max amount of infected people for the first day (random)
-    private static int firstDayInfectedPeopleMin = 4;
-    private static int firstDayInfectedPeopleMax = 7;
+    private static final int firstDayInfectedPeopleMin = 4;
+    private static final int firstDayInfectedPeopleMax = 7;
+
+    public final static int NOT_INITIALISED = -1;
 
 
     public City(String name, int population, int populationDensity) {
@@ -43,9 +46,9 @@ public class City {
         this.populationDensity = populationDensity;
         this.sevenDaysIncidence = 0.0;
         this.rValue = 0.0;
-        this.caseHistory = new int[]{-1, -1, -1, -1, -1, -1, -1};
+        this.caseHistory = new int[]{NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED};
         this.populationLeftFirstInfection = population;
-        this.currentVirus = new Virus("alpha", 100, 0.009);
+        this.currentVirus = new Virus("alpha", 100, 0.009, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
         this.healedHistory = new HealedHistory();
         this.vaccinationProportion = 0.0f;
         this.cityInfectionRatio = 0.0;
@@ -74,7 +77,7 @@ public class City {
     public void updateNewCases() {
         // go through every element backwards and set the first found at member variable newCase
         for (int elementOfHistory = 6; elementOfHistory > 0; elementOfHistory--) {
-            if (caseHistory[elementOfHistory] != -1) {
+            if (caseHistory[elementOfHistory] != NOT_INITIALISED) {
                 this.setNewCases(caseHistory[elementOfHistory]);
                 return;
             }
@@ -82,18 +85,17 @@ public class City {
     }
 
     public void updateRValue(){
-            if (caseHistory[0] != -1 && caseHistory[1] == -1){
+            if (caseHistory[0] != NOT_INITIALISED && caseHistory[1] == NOT_INITIALISED){
                 setRValue(caseHistory[0]);
             }
             // if at least 2 days are filled
-            else if (caseHistory[0] != -1 && caseHistory[1] != -1 && caseHistory[1] != 0) {
+            else if (caseHistory[0] != NOT_INITIALISED && caseHistory[1] != NOT_INITIALISED && caseHistory[1] != 0) {
                 setRValue(caseHistory[0] / caseHistory[1]);
             }
             // if no day is filled or the second entry is 0 (cannot be devided by 0)
             else {
                 setRValue(0);
             }
-            return;
     }
 
     public void addNewEntryToHistory(int amountOfCases, Country country){
@@ -101,7 +103,7 @@ public class City {
 
         // fill history if one element is not yet filled
         for (int numberOfEntry = 0; numberOfEntry < caseHistory.length; numberOfEntry++){
-            if (caseHistory[numberOfEntry] == -1){
+            if (caseHistory[numberOfEntry] == NOT_INITIALISED){
                 caseHistory[numberOfEntry] = amountOfCases;
 
                 this.setNewCases(amountOfCases);
@@ -139,10 +141,8 @@ public class City {
     }
 
     public int calculateDeaths(){
-        int peopleDying = (int)(caseHistory[0] * currentVirus.getMortalityRate());
-
         // return calculated deaths
-        return peopleDying;
+        return (int)(caseHistory[0] * currentVirus.getMortalityRate());
     }
 
     public int tryToHealWithMedicine(Country country, int peopleDying){
@@ -156,9 +156,8 @@ public class City {
             }
             // just use the available medicine on some patients (not all)
             else {
-                int amountOfPeopleGivingMedicine = amountOfDosesAvailable;
                 country.getMeasure().getMedicine().useMedicine(amountOfDosesAvailable);
-                peopleDying = (int)((peopleDying - amountOfPeopleGivingMedicine) + (amountOfPeopleGivingMedicine * deathProbabilityWithMedicine));
+                peopleDying = (int)((peopleDying - amountOfDosesAvailable) + (amountOfDosesAvailable * deathProbabilityWithMedicine));
             }
         return peopleDying;
     }
@@ -167,11 +166,11 @@ public class City {
         return caseHistory[day - 1];
     }
 
-    public int calculateNextDayInfections(int day, double stateInfectionRatio){
+    public int calculateNextDayInfections(int day, double stateInfectionRatio, Data data){
         Random random = new Random();
 
-        int highestCityDensity = 4790; // TODO Methode, welche diese Daten setzt erstellen? Aber nur einmal ausführen (Membervariable)
-        int lowestCityDensity = 596;
+        int highestCityDensity = data.getHighestCityDensity();
+        int lowestCityDensity = data.getLowestCityDensity();
         double populationDensityModifier = 0.2; // + Boost for the largest city and - brake for the smallest city
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
 
@@ -250,9 +249,7 @@ public class City {
     // TODO Redundancy with State seven Days Incidence Calculation?
     public void updateSevenDaysIncidence(){
         double sevenDaysIncidence =  getTotalActiveCases() / caseHistory.length;
-        double sevenDaysIncidenceOn100k = (sevenDaysIncidence / this.getPopulation()) * 100000;
-
-        this.sevenDaysIncidence = sevenDaysIncidenceOn100k;
+        this.sevenDaysIncidence = (sevenDaysIncidence / this.getPopulation()) * 100000;
     }
 
     public void updateHealedCases(int amountOfCases){
@@ -283,45 +280,30 @@ public class City {
     }
 
     private double calculateActiveCasesInfectingSomeone(){
-
         double infectingRate = 0;
 
         // risks over the days to infect someone
-        // TODO Move Array in Virus class
-        double firstDay     = 0.8;
-        double secondDay    = 0.7;
-        double thirdDay     = 0.6;
-        double fourthDay    = 0.4;
-        double fifthDay     = 0.3;
-        double sixthDay     = 0.2;
-        double seventhDay   = 0.1;
-
-
-        double[] daysLeft = {firstDay, secondDay, thirdDay, fourthDay, fifthDay, sixthDay, seventhDay};
+        double[] infectionProbList = this.getCurrentVirus().getProbabilityListInfection();
 
         // if case history is filled with 6 elements
         // calculate infections for each day
-        // TODO foreach Schleife -> vll Smarter
-        if (this.caseHistory[6] != -1){
-            infectingRate += this.caseHistory[0] * seventhDay;  // 20% probability on day 7
-            infectingRate += this.caseHistory[1] * sixthDay;    // 30% probability on day 6
-            infectingRate += this.caseHistory[2] * fifthDay;
-            infectingRate += this.caseHistory[3] * fourthDay;
-            infectingRate += this.caseHistory[4] * thirdDay;
-            infectingRate += this.caseHistory[5] * secondDay;
-            infectingRate += this.caseHistory[6] * firstDay;
 
-            // TODO Multiplier für Abstandsregeln, Hygieneregeln
+        // 10% probability on day 7 || 20% probability on day 6
+        if (this.caseHistory[6] != NOT_INITIALISED){
+            for (int elementInArray = 0; elementInArray < caseHistory.length; elementInArray++) {
+                infectingRate += this.caseHistory[elementInArray] * infectionProbList[(caseHistory.length - 1) - elementInArray];
+            }
+
             return infectingRate;
         }
 
         // if case history is not fully filled
         for (int numberOfEntry = 6; numberOfEntry > 0; numberOfEntry--)
         {
-            if (this.caseHistory[numberOfEntry] == -1 && this.caseHistory[numberOfEntry - 1] != -1){
+            if (this.caseHistory[numberOfEntry] == NOT_INITIALISED && this.caseHistory[numberOfEntry - 1] != NOT_INITIALISED){
                 int day = 0;
                 for (int amountOfElements = numberOfEntry; amountOfElements > 0; amountOfElements--){
-                    infectingRate += this.caseHistory[amountOfElements - 1] * daysLeft[day];
+                    infectingRate += this.caseHistory[amountOfElements - 1] * infectionProbList[day];
                     day++;
                 }
                 return infectingRate;
@@ -433,5 +415,9 @@ public class City {
         else{
             this.obedience = 1;
         }
+    }
+
+    public Virus getCurrentVirus() {
+        return currentVirus;
     }
 }
