@@ -3,6 +3,7 @@ package com.codewithdani.models.regional;
 import com.codewithdani.models.data.Data;
 import com.codewithdani.models.histories.HealedHistory;
 import com.codewithdani.models.threats.Virus;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -48,7 +49,7 @@ public class City {
         this.rValue = 0.0;
         this.caseHistory = new int[]{NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED};
         this.populationLeftFirstInfection = population;
-        this.currentVirus = new Virus("alpha", 100, 0.009, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
+        this.currentVirus = Virus.ALPHA;
         this.healedHistory = new HealedHistory();
         this.vaccinationProportion = 0.0f;
         this.cityInfectionRatio = 0.0;

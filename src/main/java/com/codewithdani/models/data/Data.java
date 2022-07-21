@@ -1,8 +1,11 @@
 package com.codewithdani.models.data;
 
-import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
+
+import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Data {
     private int highestCityDensity;
@@ -17,28 +20,16 @@ public class Data {
     }
 
     public void setHighestCityDensity(Country country) {
-        int highestDensity = 0;
-
-        for (State state: country.getStates()) {
-            for (City city: state.getCities()) {
-                if (city.getPopulationDensity() > highestDensity){
-                    highestDensity = city.getPopulationDensity();
-                }
-            }
-        }
-        this.highestCityDensity = highestDensity;
+        this.highestCityDensity = getPopulationDensityStream(country).max().getAsInt();
     }
 
     public void setLowestCityDensity(Country country) {
-        int lowestDensity = 10000;
+        this.highestCityDensity = getPopulationDensityStream(country).min().getAsInt();
+    }
 
-        for (State state: country.getStates()) {
-            for (City city: state.getCities()) {
-                if (city.getPopulationDensity() < lowestDensity){
-                    lowestDensity = city.getPopulationDensity();
-                }
-            }
-        }
-        this.lowestCityDensity = lowestDensity;
+    public IntStream getPopulationDensityStream(Country country){
+        return Arrays.stream(country.getStates())
+                .flatMap(x -> Arrays.stream(x.getCities()))
+                .mapToInt(x -> x.getPopulationDensity());
     }
 }

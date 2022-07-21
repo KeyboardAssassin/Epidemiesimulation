@@ -8,11 +8,6 @@ import com.codewithdani.models.regional.State;
 import com.codewithdani.models.threats.Virus;
 
 public class Simulation {
-    static Virus alpha = new Virus("alpha", 100, 0.009, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
-    static Virus beta  = new Virus("beta", 100, 0.00216, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
-    static Virus delta = new Virus("delta", 100, 0.003, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
-    static Virus omicron = new Virus("omicron", 100, 0.0041, new double[] {0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
-
     int sleepTime = 2000;
     boolean simulationPause = false;
     int day = 0;
@@ -26,11 +21,11 @@ public class Simulation {
         JsonHandler jsonHandler = new JsonHandler();
 
         // create an empty Country
-        Country germany = new Country("Deutschland", alpha);
+        Country germany = new Country("Deutschland", Virus.ALPHA);
 
         // check if a json file of that country already exists
         if (!jsonHandler.checkIfCountryJsonExists("germany")) {
-            jsonHandler.createPreExistingGermany(alpha);
+            jsonHandler.createPreExistingGermany(Virus.ALPHA);
         }
         germany = jsonHandler.importCountryFromJson(germany);
         germany.setCountryTotalPopulation();
@@ -192,7 +187,7 @@ public class Simulation {
                     // System.out.println("Pandemie beendet an Tag: " + currentDay);
 
                     // reset all cities to start a new simulation
-                    jsonHandler.createPreExistingGermany(alpha);
+                    jsonHandler.createPreExistingGermany(Virus.ALPHA);
                     germany = jsonHandler.importCountryFromJson(germany);
                     averagePandemicTime += currentDay;
                     break;
@@ -210,13 +205,13 @@ public class Simulation {
 
         // change virus after the 108th day (3 Months change from alpha -> beta)
         if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays + amountOfActiveDeltaDays){
-            simulatedCountry.setCurrentVirus(omicron);
+            simulatedCountry.setCurrentVirus(Virus.OMICRON);
         }
         else if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays){
-            simulatedCountry.setCurrentVirus(delta);
+            simulatedCountry.setCurrentVirus(Virus.DELTA);
         }
         else if (day > amountOfActiveAlphaDays){
-            simulatedCountry.setCurrentVirus(beta);
+            simulatedCountry.setCurrentVirus(Virus.BETA);
         }
     }
 
