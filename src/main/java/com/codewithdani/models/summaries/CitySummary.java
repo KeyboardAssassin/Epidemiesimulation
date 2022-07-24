@@ -4,11 +4,11 @@ import com.codewithdani.models.regional.City;
 
 public class CitySummary {
     private String name;
-    private int population;
-    private int populationDensity;
-    private int infectedPeople;
-    private double rValue;
-    private double sevenDaysIncidence;
+    private final int population;
+    private final int populationDensity;
+    private final int infectedPeople;
+    private final double rValue;
+    private final double sevenDaysIncidence;
 
     public CitySummary(City city) {
         this.name = city.getName();

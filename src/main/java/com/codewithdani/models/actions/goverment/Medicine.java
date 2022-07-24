@@ -4,10 +4,10 @@ public class Medicine {
     private int dayOfDevelopmentStart = -1;
     private boolean medicineApproved = false;
     private boolean medicationStarted = false;
-    private final int daysOfDevelopment = 7; // Source: Code 001 - 730 days
     private int medicineInStock = 0;
+    private static final int DAYS_OF_DEVELOPMENT = 7; // Source: Code 001 - 730 days
+    private static final double EFFECTIVITY_OF_MEDICINE = 0.2;
 
-    private double effectivityOfMedicine = 0.2;
 
     public void setMedicineApproved(boolean medicineApproved) {
         this.medicineApproved = medicineApproved;
@@ -17,9 +17,8 @@ public class Medicine {
         this.dayOfDevelopmentStart = day;
     }
 
-    public boolean checkIfMedicineIsDeveloped(int currentDay){
-        if (currentDay > (dayOfDevelopmentStart + daysOfDevelopment) && dayOfDevelopmentStart != -1) setMedicineApproved(true);
-        return medicineApproved;
+    public void checkIfMedicineIsDeveloped(int currentDay){
+        if (currentDay > (dayOfDevelopmentStart + DAYS_OF_DEVELOPMENT) && dayOfDevelopmentStart != -1) setMedicineApproved(true);
     }
 
     public void produceMedicine(){
@@ -40,11 +39,7 @@ public class Medicine {
     }
 
     public double getEffectivityOfMedicine() {
-        return effectivityOfMedicine;
-    }
-
-    public void setEffectivityOfMedicine(double effectivityOfMedicine) {
-        this.effectivityOfMedicine = effectivityOfMedicine;
+        return EFFECTIVITY_OF_MEDICINE;
     }
 
     public boolean isMedicationStarted() {

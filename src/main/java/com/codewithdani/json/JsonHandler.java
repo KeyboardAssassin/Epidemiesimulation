@@ -11,10 +11,12 @@ import java.io.*;
 
 public class JsonHandler {
 
+    private static final String PATH = "/Users/Dani/Desktop/germany.json";
+
 
     public Country importCountryFromJson(Country country){
         Gson gson = new Gson();
-        File filePath = new File("/Users/Dani/Desktop/germany.json");
+        File filePath = new File(PATH);
         FileReader reader;
 
         try {
@@ -37,7 +39,7 @@ public class JsonHandler {
     public void exportCountryToJson(Country country){
         System.out.println("Überprüfe ob eine json Datei existiert..");
 
-        File filePath = new File("/Users/Dani/Desktop/germany.json");
+        File filePath = new File(PATH);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileWriter writer;
         try {
@@ -56,7 +58,7 @@ public class JsonHandler {
     }
 
     public void createPreExistingGermany(Virus alpha){
-        File filePath = new File("/Users/Dani/Desktop/germany.json");
+        File filePath = new File(PATH);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileWriter writer;
 
@@ -190,5 +192,4 @@ public class JsonHandler {
         File filePath = new File("/Users/Dani/Desktop/".concat(countryName).concat(".json"));
         return filePath.exists();
     }
-
 }

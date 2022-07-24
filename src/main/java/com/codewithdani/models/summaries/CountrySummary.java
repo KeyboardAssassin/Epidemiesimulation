@@ -1,21 +1,22 @@
 package com.codewithdani.models.summaries;
 
+import com.codewithdani.functionality.Util;
 import com.codewithdani.models.regional.Country;
 
 public class CountrySummary {
 
-    private String incidence;
-    private String rValue;
-    private int newInfections;
-    private int newDeathCases;
-    private boolean vaccinationDeveloped;
-    private boolean vaccinationStarted;
-    private boolean medicationDeveloped;
-    private boolean medicationStarted;
+    private final String incidence;
+    private final String rValue;
+    private final int newInfections;
+    private final int newDeathCases;
+    private final boolean vaccinationDeveloped;
+    private final boolean vaccinationStarted;
+    private final boolean medicationDeveloped;
+    private final boolean medicationStarted;
 
-    public CountrySummary(Country country) {
-        incidence = country.getIncidenceAsString();
-        rValue = country.getRValueAsString();
+    public CountrySummary(Country country, Util util) {
+        incidence = country.getIncidenceAsString(util);
+        rValue = country.getRValueAsString(util);
         newInfections = country.getNewInfections();
         newDeathCases = country.getNewDeathCases();
         vaccinationDeveloped = country.getMeasure().getVaccination().isVaccinationApproved();

@@ -6,6 +6,7 @@ public class Vaccination {
     private int dayOfDevelopmentStart = -1; // TODO: Decide if countdown is sufficient 90 days left -> 89 days left
     private boolean vaccinationApproved = false;
     private boolean vaccinationStarted = false;
+    private static final int DAYS_OF_VACCINATION_DEVELOPMENT = 4;
 
     public void setVaccinationApproved(boolean vaccinationApproved) {
         this.vaccinationApproved = vaccinationApproved;
@@ -15,14 +16,8 @@ public class Vaccination {
         this.dayOfDevelopmentStart = day;
     }
 
-    public boolean checkIfVaccinationIsDeveloped(int currentDay){
-        // Source: Code 002 & Code 003
-        int daysOfDevelopment = 330;
-
-        // temporary value because of short simulations
-        daysOfDevelopment = 7;
-        if (currentDay > (dayOfDevelopmentStart + daysOfDevelopment) && dayOfDevelopmentStart != -1) setVaccinationApproved(true);
-        return vaccinationApproved;
+    public void checkIfVaccinationIsDeveloped(int currentDay){
+        if (currentDay > (dayOfDevelopmentStart + DAYS_OF_VACCINATION_DEVELOPMENT) && dayOfDevelopmentStart != -1) setVaccinationApproved(true);
     }
 
     public boolean isVaccinationApproved() {
@@ -39,7 +34,6 @@ public class Vaccination {
         float ratioOfVaccination = city.getVaccinationProportion();
         ratioOfVaccination += maxVaccinatedOnOneDay * Math.pow(city.getObedience(), vaccinationDisobedienceExponentialMultiplier);
 
-        // if (!checkIfVaccinationIsDeveloped(currentDay)) return;
         city.removeVaccinationProportion(amountOfDecrease);
         city.addToVaccinationProportion(ratioOfVaccination);
     }

@@ -5,8 +5,8 @@ import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.State;
 
 public class ListElement {
-    private String name;
-    private String incidence;
+    private final String name;
+    private final String incidence;
 
     public ListElement(City city, Util util) {
         this.name = city.getName();

@@ -3,7 +3,6 @@ package com.codewithdani.models.regional;
 import com.codewithdani.models.data.Data;
 import com.codewithdani.models.histories.HealedHistory;
 import com.codewithdani.models.threats.Virus;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -31,15 +30,16 @@ public class City {
     int contactRestrictionsDaysLeft;
 
     // min and max amount a persons meets other persons per day (random)
-    private static final double minAmountOfMeetingsPerDay = 0.1;
-    private static final double maxAmountOfMeetingsPerDay = 2.4;
+    private static final double MIN_AMOUNT_OF_MEETINGS_PER_DAY = 0.1;
+    private static final double MAX_AMOUNT_OF_MEETINGS_PER_DAY = 2.4;
 
     // min and max amount of infected people for the first day (random)
-    private static final int firstDayInfectedPeopleMin = 4;
-    private static final int firstDayInfectedPeopleMax = 7;
+    private static final int FIRST_DAY_INFECTED_PEOPLE_MIN = 4;
+    private static final int FIRST_DAY_INFECTED_PEOPLE_MAX = 7;
 
     public final static int NOT_INITIALISED = -1;
 
+    Random random = new Random();
 
     public City(String name, int population, int populationDensity) {
         this.name = name;
@@ -168,8 +168,6 @@ public class City {
     }
 
     public int calculateNextDayInfections(int day, double stateInfectionRatio, Data data){
-        Random random = new Random();
-
         int highestCityDensity = data.getHighestCityDensity();
         int lowestCityDensity = data.getLowestCityDensity();
         double populationDensityModifier = 0.2; // + Boost for the largest city and - brake for the smallest city
@@ -180,7 +178,7 @@ public class City {
 
         // first day
         if (day == 0){
-            return (random.nextInt(firstDayInfectedPeopleMax - firstDayInfectedPeopleMin) + firstDayInfectedPeopleMin);
+            return (random.nextInt(FIRST_DAY_INFECTED_PEOPLE_MAX - FIRST_DAY_INFECTED_PEOPLE_MIN) + FIRST_DAY_INFECTED_PEOPLE_MIN);
         }
 
         // TODO In Setup Methode auslagern - immer gleiches Ergebnis -> Membervariable
@@ -195,7 +193,7 @@ public class City {
         double decreasingProbabilityGrowingRateOfCuredCases = (((this.populationLeftFirstInfection / (double)population) * protectionAfterFirstInfection) + (1 - protectionAfterFirstInfection));
 
         // Average amount of People a person meets every day
-        double amountOfAveragePeopleMeetings = minAmountOfMeetingsPerDay + (maxAmountOfMeetingsPerDay - minAmountOfMeetingsPerDay) * random.nextDouble();
+        double amountOfAveragePeopleMeetings = MIN_AMOUNT_OF_MEETINGS_PER_DAY + (MAX_AMOUNT_OF_MEETINGS_PER_DAY - MIN_AMOUNT_OF_MEETINGS_PER_DAY) * random.nextDouble();
         amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, this.contactRestrictionsOfMotherState) * this.getObedience()));
 
         // Probability someone in the 7 days history infects someone
@@ -209,9 +207,7 @@ public class City {
         // Protection zwischen 0.9 - 1
         double vaccinationProtectionRatio = 1 - (this.getVaccinationProportion() * vaccinationProtection);
 
-        // TODO Maßnahmen wie Isolation und Kontaktbeschränkungen auf aktive Fälle multiplizieren (einbeziehen)
         // TODO newFirstInfections sind mehr als totalNewInfections
-
         // calculation of the infections for the current day of the infection
         int totalMeetingsWithInfectedPeople = (int)(infectingCases * amountOfAveragePeopleMeetings);
 
@@ -247,7 +243,6 @@ public class City {
         return Math.pow(ratio, 2) / Math.pow(RATIO_MAX, 2);
     }
 
-    // TODO Redundancy with State seven Days Incidence Calculation?
     public void updateSevenDaysIncidence(){
         double sevenDaysIncidence =  getTotalActiveCases() / caseHistory.length;
         this.sevenDaysIncidence = (sevenDaysIncidence / this.getPopulation()) * 100000;

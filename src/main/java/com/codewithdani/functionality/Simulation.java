@@ -184,7 +184,7 @@ public class Simulation {
 
                 // end the pandemic + logging
                 if (checkIfEveryCityHasNoNewInfections(simulatedCountry) && this.day > 10) {
-                    // System.out.println("Pandemie beendet an Tag: " + currentDay);
+                    System.out.println("Pandemie beendet an Tag: " + currentDay);
 
                     // reset all cities to start a new simulation
                     jsonHandler.createPreExistingGermany(Virus.ALPHA);

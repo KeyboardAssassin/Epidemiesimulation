@@ -5,9 +5,6 @@ import com.codewithdani.models.actions.goverment.Vaccination;
 import com.codewithdani.models.actions.self.contact.Distancing;
 
 public class Measure {
-
-    // TODO nur Datenklasse (Distancing, Restrictions und co löschen, weil nur ein Faktor als Membervariable)
-
     Vaccination vaccination;
     Medicine medicine;
     Distancing distancing;

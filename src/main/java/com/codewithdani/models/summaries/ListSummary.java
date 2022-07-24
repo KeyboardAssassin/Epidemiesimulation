@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class ListSummary {
     private ArrayList<ListElement> ListElements;
-    private Util util = new Util();
+    private final Util util = new Util();
 
     public ListSummary() {
         this.ListElements = new ArrayList<>();

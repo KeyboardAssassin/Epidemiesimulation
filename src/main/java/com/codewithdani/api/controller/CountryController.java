@@ -1,7 +1,6 @@
 package com.codewithdani.api.controller;
 
 import com.codewithdani.functionality.SimulationService;
-import com.codewithdani.models.summaries.CountrySummary;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

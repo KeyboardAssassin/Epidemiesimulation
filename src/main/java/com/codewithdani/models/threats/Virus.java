@@ -6,10 +6,10 @@ public enum Virus {
     DELTA("delta", 100, 0.003, new double[]{0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1}),
     OMICRON("omicron", 100, 0.0041, new double[]{0.8, 0.7, 0.6, 0.4, 0.3, 0.2, 0.1});
 
-    private String name;
-    private int infectionSpeed;
-    private double mortalityRate;
-    private double[] probabilityListInfection;
+    private final String name;
+    private final int infectionSpeed;
+    private final double mortalityRate;
+    private final double[] probabilityListInfection;
 
     Virus(String name, int infectionSpeed, double mortalityRate, double[] probabilityListInfection) {
         this.name = name;

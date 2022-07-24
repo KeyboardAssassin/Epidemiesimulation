@@ -10,11 +10,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SimulationServiceImpl implements SimulationService {
-
     public Simulation simulation = new Simulation();
-
     private Util util = new Util();
-
     private Gson gson = new Gson();
 
     @Override
@@ -79,7 +76,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public String getCountrySummary(){
         simulation.getSimulatedCountry().updateData();
-        return gson.toJson(new CountrySummary(simulation.getSimulatedCountry()));
+        return gson.toJson(new CountrySummary(simulation.getSimulatedCountry(), util));
     }
 
     @Override

@@ -1,14 +1,13 @@
 package com.codewithdani.models.regional;
 
+import com.codewithdani.functionality.Util;
 import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.threats.Virus;
-
-import java.text.DecimalFormat;
 
 public class Country {
     private final String name;
     private State[] states;
-    public Measure measure;
+    private Measure measure;
     private double incidence;
     private double rValue;
     private int newInfections;
@@ -52,7 +51,7 @@ public class Country {
     // TODO Ebenfalls
     public State getStateByName(String name){
         for (State state : states){
-            if (state.getName().toLowerCase().equals(name.toLowerCase())) return state;
+            if (state.getName().equalsIgnoreCase(name)) return state;
         }
 
         return null;
@@ -66,26 +65,16 @@ public class Country {
         return incidence;
     }
 
-    public String getIncidenceAsString(){
+    public String getIncidenceAsString(Util util){
         double totalIncidence = this.getIncidence();
-        return convertValueToStringWithDecimalFormat(totalIncidence);
+        return util.convertIncidenceToStringWith2Digits(totalIncidence);
     }
 
     // TODO Redundant otra vez?
-    public String getRValueAsString(){
+    public String getRValueAsString(Util util){
         double rValue = this.getRValue();
-        return convertValueToStringWithDecimalFormat(rValue);
+        return util.convertIncidenceToStringWith2Digits(rValue);
     }
-
-    // TODO Redundant mit StateListElement Methode?
-    public String convertValueToStringWithDecimalFormat(double incidence){
-        DecimalFormat df = new DecimalFormat("0.00");
-        if (incidence % 1 == 0) return  String.valueOf((int)incidence); // TODO Smart?
-        String resultIncidenceString = df.format(incidence);
-
-        return resultIncidenceString;
-    }
-
     public double getRValue() {
         return rValue;
     }
@@ -149,18 +138,13 @@ public class Country {
         }
 
         // outputs the median value of a requested value
-        switch (type){
-            case "incidence":
-                return ((sumOfAllSevenDaysIncidences / amountOfCities) / this.getCountryTotalPopulation()) * 100000;
-            case "rvalue":
-                return sumOfAllRValues / amountOfCitiesWithPositiveRValues;
-            case "newcases":
-                return sumOfAllNewInfections;
-            case "deadcases":
-                return sumOfAllNewDeathCases;
-            default:
-                return -1.0;
-        }
+        return switch (type) {
+            case "incidence" -> ((sumOfAllSevenDaysIncidences / amountOfCities) / this.getCountryTotalPopulation()) * 100000;
+            case "rvalue"    -> sumOfAllRValues / amountOfCitiesWithPositiveRValues;
+            case "newcases"  -> sumOfAllNewInfections;
+            case "deadcases" -> sumOfAllNewDeathCases;
+            default -> -1.0;
+        };
     }
 
     public void setCountryTotalPopulation() {
@@ -190,10 +174,6 @@ public class Country {
     public void setCurrentVirus(Virus currentVirus) {
         this.currentVirus = currentVirus;
         updateAllCityVirus(currentVirus);
-    }
-
-    public Virus getCurrentVirus() {
-        return currentVirus;
     }
 
     public void updateAllCityVirus(Virus virus){

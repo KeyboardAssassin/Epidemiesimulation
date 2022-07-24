@@ -1,29 +1,20 @@
 package com.codewithdani.models.regional;
 
-import com.codewithdani.models.threats.Virus;
-
-import java.text.DecimalFormat;
-
 public class State {
     private final String name;
-    private City[] cities;
+    private final City[] cities;
     private double obedience = 1;
     private double contactRestrictions = 1; // can only go higher e.g. 1 = 100% 2 = 50% 4 = 25%
     private int contactRestrictionsDaysLeft;
-    private int stateTotalPopulation;
+    private final int stateTotalPopulation;
     private int stateInfectedPopulation;
     private double stateInfectionRatio = 0.0;
-
 
     public State(String name, City[] citiesOfState) {
         this.name = name;
         this.cities = citiesOfState;
         this.stateTotalPopulation = this.calculateStatePopulation();
         this.stateInfectedPopulation = 0;
-    }
-
-    public void setCities(City[] cities) {
-        this.cities = cities;
     }
 
     public City[] getCities() {
@@ -39,11 +30,9 @@ public class State {
         for (City city : cities){
             totalIncidence += city.getSevenDaysIncidence();
         }
-
         double sevenDaysIncidence =  totalIncidence / cities.length;
-        double sevenDaysIncidenceOn100k = (sevenDaysIncidence / this.getStateTotalPopulation()) * 100000;
 
-        return sevenDaysIncidenceOn100k;
+        return (sevenDaysIncidence / this.getStateTotalPopulation()) * 100000;
     }
 
     public double getObedience() {
