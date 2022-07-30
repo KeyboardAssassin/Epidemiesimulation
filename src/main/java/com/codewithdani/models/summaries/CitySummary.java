@@ -26,4 +26,24 @@ public class CitySummary {
     public String getName() {
         return name;
     }
+
+    public int getPopulation() {
+        return population;
+    }
+
+    public int getPopulationDensity() {
+        return populationDensity;
+    }
+
+    public int getInfectedPeople() {
+        return infectedPeople;
+    }
+
+    public double getRValue() {
+        return rValue;
+    }
+
+    public double getSevenDaysIncidence() {
+        return sevenDaysIncidence;
+    }
 }

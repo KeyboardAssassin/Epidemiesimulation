@@ -15,7 +15,7 @@ public class StateController {
     }
 
     @GetMapping("/getincidencebystate")
-    public String getIncidenceByState(@RequestParam(name="statename") String name){
-        return simulationService.getIncidenceByState(name);
+    public String getIncidenceByState(@RequestParam(name="statename") String name, @RequestParam(name="uuid") String uuid){
+        return simulationService.getIncidenceByState(name, uuid);
     }
 }

@@ -1,5 +1,5 @@
 ### Startsimulation
-GET localhost:3000/startsimulation?amountofsimulations=1
+GET localhost:3000/startsimulation?amountOfSimulations=1
 
 ### Change Speed
 GET localhost:3000/changespeed

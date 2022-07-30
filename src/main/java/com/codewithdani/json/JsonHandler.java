@@ -31,6 +31,7 @@ public class JsonHandler {
         }
         catch (Exception e){
             System.out.println("Fehler beim importieren aus einer json Datei!");
+            // TODO DELETE AND CREATE NEW JSON?
         }
 
         return country;

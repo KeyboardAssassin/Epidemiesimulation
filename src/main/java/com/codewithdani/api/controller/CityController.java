@@ -15,13 +15,13 @@ public class CityController {
     }
 
     @GetMapping("/getincidence")
-    public double getIncidence(@RequestParam(name = "cityname") String name){
-        return simulationService.getIncidence(name);
+    public double getIncidence(@RequestParam(name = "cityname") String name, @RequestParam(name = "uuid") String uuid){
+        return simulationService.getIncidence(name, uuid);
     }
 
     @GetMapping("/getdetailed")
-    public CitySummary getCitySummary(@RequestParam(name = "cityname") String name){
-        return simulationService.getSummary(name);
+    public CitySummary getCitySummary(@RequestParam(name = "cityname")  String name, @RequestParam(name = "uuid") String uuid){
+        return simulationService.getSummary(name, uuid);
     }
 
 }

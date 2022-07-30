@@ -7,13 +7,22 @@ import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
 import com.codewithdani.models.threats.Virus;
 
+import java.util.Random;
+import java.util.UUID;
+
 public class Simulation {
+    private String id = UUID.randomUUID().toString();
+
     int sleepTime = 2000;
     boolean simulationPause = false;
     int day = 0;
     Country simulatedCountry;
     // Data class
     Data data = new Data();
+
+    Random random = new Random();
+
+    boolean stopSimulation = false;
 
 
     public void startSimulation(int amountOfSimulations){
@@ -46,6 +55,10 @@ public class Simulation {
         initialiseDataClass();
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
+            if (stopSimulation) {
+                break;
+            }
+
             simulatedCountry = germany;
 
             // growth algorithm for 1 year
@@ -163,7 +176,7 @@ public class Simulation {
 
                         currentTestedCity.calculateAndSetInfectionRatio();
 
-                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio(), data);
+                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio(), data, random);
 
                         currentTestedCity.addNewEntryToHistory(nextDayInfections, simulatedCountry);
                         currentTestedCity.reloadCity();
@@ -173,7 +186,7 @@ public class Simulation {
                     currentTestedState.updateObedience();
 
                     // Logging of every day if wanted
-                    System.out.println("Tag: " + currentDay + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
+                    System.out.println(getId() + " Tag: " + currentDay + " von Bundesland " + currentTestedState.getName() + " abgeschlossen!");
                 }
 
                 try {
@@ -239,7 +252,7 @@ public class Simulation {
         this.day = day;
     }
 
-    public int getDay() {
+    public int getCurrentDay() {
         return day;
     }
 
@@ -250,5 +263,10 @@ public class Simulation {
     public void initialiseDataClass(){
         this.data.setHighestCityDensity(simulatedCountry);
         this.data.setLowestCityDensity(simulatedCountry);
+        this.data.setDifference();
+    }
+
+    public String getId() {
+        return id;
     }
 }

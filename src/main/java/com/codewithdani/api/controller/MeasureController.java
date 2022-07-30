@@ -14,32 +14,32 @@ public class MeasureController {
     }
 
     @GetMapping("/startvaccinationdevelopment")
-    public void startVaccinationDevelopment(){
-        simulationService.startVaccinationDevelopment();
+    public void startVaccinationDevelopment(@RequestParam(value = "uuid") String uuid){
+        simulationService.startVaccinationDevelopment(uuid);
     }
 
     @GetMapping("/startmedicationdevelopment")
-    public void startMedicationDevelopment(){
-        simulationService.startMedicationDevelopment();
+    public void startMedicationDevelopment(@RequestParam(value = "uuid") String uuid){
+        simulationService.startMedicationDevelopment(uuid);
     }
 
     @GetMapping("/startvaccination")
-    public void startVaccination(){
-        simulationService.startVaccination();
+    public void startVaccination(@RequestParam(value = "uuid") String uuid){
+        simulationService.startVaccination(uuid);
     }
 
     @GetMapping("/startmedication")
-    public void startMedication(){
-        simulationService.startMedication();
+    public void startMedication(@RequestParam(value = "uuid") String uuid){
+        simulationService.startMedication(uuid);
     }
 
     @GetMapping("/activatecontactrestrictions")
-    public void activateContactRestrictions(@RequestParam(value = "type") String type, @RequestParam(value = "name") String name, @RequestParam(value = "amountofdays") int amountOfDays){
-        simulationService.activateContactRestrictions(type, name, amountOfDays);
+    public void activateContactRestrictions(@RequestParam(value = "type") String type, @RequestParam(value = "name") String name, @RequestParam(value = "amountofdays") int amountOfDays, @RequestParam(value = "uuid") String uuid){
+        simulationService.activateContactRestrictions(type, name, amountOfDays, uuid);
     }
 
     @GetMapping("/activatesocialdistancing")
-    public void activateContactRestrictions(){
-        simulationService.activateSocialDistancing();
+    public void activateContactRestrictions(@RequestParam(value = "uuid") String uuid){
+        simulationService.activateSocialDistancing(uuid);
     }
 }

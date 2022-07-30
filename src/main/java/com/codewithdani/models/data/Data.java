@@ -8,6 +8,8 @@ public class Data {
     private int highestCityDensity;
     private int lowestCityDensity;
 
+    private int differenceBetweenHighestAndLowestDensity;
+
     public int getHighestCityDensity() {
         return highestCityDensity;
     }
@@ -28,5 +30,12 @@ public class Data {
         return Arrays.stream(country.getStates())
                 .flatMap(x -> Arrays.stream(x.getCities()))
                 .mapToInt(x -> x.getPopulationDensity());
+    }
+    public void setDifference(){
+        this.differenceBetweenHighestAndLowestDensity = highestCityDensity - lowestCityDensity;
+    }
+
+    public int getDifferenceBetweenHighestAndLowestDensity() {
+        return differenceBetweenHighestAndLowestDensity;
     }
 }

@@ -39,8 +39,6 @@ public class City {
 
     public final static int NOT_INITIALISED = -1;
 
-    Random random = new Random();
-
     public City(String name, int population, int populationDensity) {
         this.name = name;
         this.population = population;
@@ -167,8 +165,7 @@ public class City {
         return caseHistory[day - 1];
     }
 
-    public int calculateNextDayInfections(int day, double stateInfectionRatio, Data data){
-        int highestCityDensity = data.getHighestCityDensity();
+    public int calculateNextDayInfections(int day, double stateInfectionRatio, Data data, Random random){
         int lowestCityDensity = data.getLowestCityDensity();
         double populationDensityModifier = 0.2; // + Boost for the largest city and - brake for the smallest city
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
@@ -183,7 +180,7 @@ public class City {
 
         // TODO In Setup Methode auslagern - immer gleiches Ergebnis -> Membervariable
         // Probability between 0% and 20% depending on the density of the city (min/max: city with lowest/highest density)
-        int differenceHighestAndLowestDensity = highestCityDensity - lowestCityDensity; // Densities Cottbus and München (min/max)
+        int differenceHighestAndLowestDensity = data.getDifferenceBetweenHighestAndLowestDensity(); // Densities Cottbus and München (min/max)
         double normalizedDensity = (this.populationDensity - lowestCityDensity) / differenceHighestAndLowestDensity;
         double populationDensityProbability =  (((normalizedDensity * 2) - 1) * populationDensityModifier * densityWeight) + (1 + densityOffset); // 4790 Density (München) equals factor of 20% = 0.2
 
@@ -281,33 +278,13 @@ public class City {
         // risks over the days to infect someone
         double[] infectionProbList = this.getCurrentVirus().getProbabilityListInfection();
 
-        // if case history is filled with 6 elements
-        // calculate infections for each day
-
         // 10% probability on day 7 || 20% probability on day 6
-        if (this.caseHistory[6] != NOT_INITIALISED){
-            for (int elementInArray = 0; elementInArray < caseHistory.length; elementInArray++) {
-                infectingRate += this.caseHistory[elementInArray] * infectionProbList[(caseHistory.length - 1) - elementInArray];
-            }
-
-            return infectingRate;
-        }
-
-        // if case history is not fully filled
-        for (int numberOfEntry = 6; numberOfEntry > 0; numberOfEntry--)
-        {
-            if (this.caseHistory[numberOfEntry] == NOT_INITIALISED && this.caseHistory[numberOfEntry - 1] != NOT_INITIALISED){
-                int day = 0;
-                for (int amountOfElements = numberOfEntry; amountOfElements > 0; amountOfElements--){
-                    infectingRate += this.caseHistory[amountOfElements - 1] * infectionProbList[day];
-                    day++;
-                }
-                return infectingRate;
+        for(int elementInArray = 0; elementInArray <= this.caseHistory.length - 1; elementInArray++) {
+            if (this.caseHistory[elementInArray] != NOT_INITIALISED) {
+                infectingRate += this.caseHistory[elementInArray] * infectionProbList[elementInArray];
             }
         }
-
-        // if something went wrong
-        return 111.111;
+        return infectingRate;
     }
 
     public void addToVaccinationProportion(float vaccinationGrowth) {

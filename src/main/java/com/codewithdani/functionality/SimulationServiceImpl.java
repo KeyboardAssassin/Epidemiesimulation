@@ -6,22 +6,59 @@ import com.codewithdani.models.summaries.CitySummary;
 import com.codewithdani.models.summaries.CountrySummary;
 import com.codewithdani.models.summaries.ListSummary;
 import com.google.gson.Gson;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class SimulationServiceImpl implements SimulationService {
-    public Simulation simulation = new Simulation();
-    private Util util = new Util();
-    private Gson gson = new Gson();
+    private final SimulationRunner simulationRunner;
+    // Stores a map of uuid and the simulation
+    public Map<String, Simulation> simulationList = new HashMap<>();
 
-    @Override
-    public void startSimulation(int amountOfSimulations) {
-        simulation.startSimulation(amountOfSimulations);
+    private Util util = new Util();
+    private final Gson gson = new Gson();
+
+    public SimulationServiceImpl(SimulationRunner simulationRunner) {
+        this.simulationRunner = simulationRunner;
     }
 
     @Override
-    public CitySummary getSummary(String cityName) {
-        City requestedCity = simulation.getSimulatedCountry().getCityByName(cityName);
+    public String startSimulation(int amountOfSimulations) {
+        Simulation simulation = new Simulation();
+        simulationList.put(simulation.getId(), simulation);
+        simulationRunner.runSimulation(simulation, amountOfSimulations);
+        return simulation.getId();
+    }
+
+    @Override
+    public List<String> getAllSimulations(){
+        List<String> list = new ArrayList<>();
+        // list.add(simulationList);
+        // TODO RESORT
+        return (List<String>) simulationList;
+    }
+
+
+    private Simulation getSimulationByUuidOrError(String uuid) {
+        if (StringUtils.hasText(uuid)) {
+            Simulation simulation = simulationList.get(uuid);
+            if (simulation != null) {
+                return simulation;
+            }
+        }
+    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "uuid with id " + uuid + " does not exist!");
+    }
+
+    @Override
+    public CitySummary getSummary(String cityName, String uuid) {
+        City requestedCity = getSimulationByUuidOrError(uuid).getSimulatedCountry().getCityByName(cityName);
         CitySummary summary = new CitySummary(requestedCity);
 
         try{
@@ -34,30 +71,29 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public String getIncidenceByState(String stateName) {
-        return util.convertIncidenceToStringWith2Digits(simulation.getSimulatedCountry().getStateByName(stateName).getSevenDaysIncidence());
+    public String getIncidenceByState(String stateName, String uuid) {
+        return util.convertIncidenceToStringWith2Digits(getSimulationByUuidOrError(uuid).getSimulatedCountry().getStateByName(stateName).getSevenDaysIncidence());
     }
 
     @Override
-    public double getIncidence(String cityName) {
-        return simulation.getSimulatedCountry().getCityByName(cityName).getSevenDaysIncidence();
+    public double getIncidence(String cityName, String uuid) {
+        return getSimulationByUuidOrError(uuid).getSimulatedCountry().getCityByName(cityName).getSevenDaysIncidence();
     }
 
     @Override
-    public void changeSpeed(int speed) {
-        simulation.setSleepTime(speed);
+    public void changeSpeed(int speed, String uuid) {
+        getSimulationByUuidOrError(uuid).setSleepTime(speed);
+    }
+
+    public int getCurrentDay(String uuid){
+        return getSimulationByUuidOrError(uuid).getCurrentDay();
     }
 
     @Override
-    public int getDay(){
-        return simulation.getDay();
-    }
-
-    @Override
-    public String getIncidenceOfEveryState(){
+    public String getIncidenceOfEveryState(String uuid){
         try{
             ListSummary summary = new ListSummary();
-            summary.fillEveryState(simulation.getSimulatedCountry());
+            summary.fillEveryState(getSimulationByUuidOrError(uuid).getSimulatedCountry());
             
             return gson.toJson(summary.getListElements());
         }catch (Exception e){
@@ -67,32 +103,36 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public String getIncidenceOfEveryCity(){
+    public String getIncidenceOfEveryCity(String uuid){
         ListSummary summary = new ListSummary();
-        summary.fillEveryCity(simulation.getSimulatedCountry());
+        summary.fillEveryCity(getSimulationByUuidOrError(uuid).getSimulatedCountry());
         return gson.toJson((summary.getListElements()));
     }
 
     @Override
-    public String getCountrySummary(){
+    public String getCountrySummary(String uuid){
+        Simulation simulation = getSimulationByUuidOrError(uuid);
         simulation.getSimulatedCountry().updateData();
         return gson.toJson(new CountrySummary(simulation.getSimulatedCountry(), util));
     }
 
     @Override
-    public void startVaccinationDevelopment(){
-        int dayOfDevelopmentStart = simulation.getDay();
+    public void startVaccinationDevelopment(String uuid){
+        Simulation simulation = getSimulationByUuidOrError(uuid);
+        int dayOfDevelopmentStart = simulation.getCurrentDay();
         simulation.getSimulatedCountry().getMeasure().getVaccination().startDevelopingVaccination(dayOfDevelopmentStart);
     }
 
     @Override
-    public void startMedicationDevelopment(){
-        int dayOfDevelopmentStart = simulation.getDay();
+    public void startMedicationDevelopment(String uuid){
+        Simulation simulation = getSimulationByUuidOrError(uuid);
+        int dayOfDevelopmentStart = simulation.getCurrentDay();
         simulation.getSimulatedCountry().getMeasure().getMedicine().startDevelopingMedicine(dayOfDevelopmentStart);
     }
 
     @Override
-    public void activateContactRestrictions(String type, String name, int amountOfDays){
+    public void activateContactRestrictions(String type, String name, int amountOfDays, String uuid){
+        Simulation simulation = getSimulationByUuidOrError(uuid);
         int contactRestrictionValue = 5;
 
         switch (type) {
@@ -120,22 +160,22 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public void activateSocialDistancing(){
-        simulation.getSimulatedCountry().setSocialDistancingActivated(true);
+    public void activateSocialDistancing(String uuid){
+        getSimulationByUuidOrError(uuid).getSimulatedCountry().setSocialDistancingActivated(true);
     }
 
     @Override
-    public void startVaccination(){
-        simulation.getSimulatedCountry().getMeasure().getVaccination().setVaccinationStarted(true);
+    public void startVaccination(String uuid){
+        getSimulationByUuidOrError(uuid).getSimulatedCountry().getMeasure().getVaccination().setVaccinationStarted(true);
     }
 
     @Override
-    public void startMedication(){
-        simulation.getSimulatedCountry().getMeasure().getMedicine().setMedicationStarted(true);
+    public void startMedication(String uuid){
+        getSimulationByUuidOrError(uuid).getSimulatedCountry().getMeasure().getMedicine().setMedicationStarted(true);
     }
 
     @Override
-    public void pauseSimulation(boolean pause){
-        simulation.setSimulationPause(pause);
+    public void pauseSimulation(boolean pause, String uuid){
+        getSimulationByUuidOrError(uuid).setSimulationPause(pause);
     }
 }
