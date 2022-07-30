@@ -3,6 +3,7 @@ package com.codewithdani.functionality;
 import com.codewithdani.models.summaries.CitySummary;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SimulationService {
 
@@ -20,7 +21,7 @@ public interface SimulationService {
      *
      * @return list with uuid + timestamp
      */
-    List<String> getAllSimulations();
+    Map<String, String> getAllSimulations();
 
 
     /**
@@ -125,7 +126,14 @@ public interface SimulationService {
      * Method that can be invoked to pause the simulation
      *
      * @param pause - true = pause - false = run
-     * @param uuid
+     * @param uuid-  the ID of the simulation to pause
      */
     void pauseSimulation(boolean pause, String uuid);
+
+    /**
+     * Method that can be invoked to terminate the simulation
+     *
+     * @param uuid - the ID of the simulation to end
+     */
+    void stopSimulation(String uuid);
 }

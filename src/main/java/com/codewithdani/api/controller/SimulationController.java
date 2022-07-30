@@ -3,7 +3,7 @@ package com.codewithdani.api.controller;
 import com.codewithdani.functionality.SimulationService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 public class SimulationController {
@@ -19,8 +19,8 @@ public class SimulationController {
         return simulationService.startSimulation(amountOfSimulations);
     }
 
-    @GetMapping("/simulations")
-    public List<String> getAllSimulations() {
+    @GetMapping("/getallsimulations")
+    public Map<String, String> getAllSimulations() {
         return simulationService.getAllSimulations();
     }
 
@@ -37,5 +37,10 @@ public class SimulationController {
     @GetMapping("/pausesimulation")
     public void pauseSimulation(@RequestParam(name = "pause") boolean pause, @RequestParam(value = "uuid") String uuid){
         simulationService.pauseSimulation(pause, uuid);
+    }
+
+    @GetMapping("/endsimulation")
+    public void stopSimulation(@RequestParam(value = "uuid") String uuid){
+        simulationService.stopSimulation(uuid);
     }
 }

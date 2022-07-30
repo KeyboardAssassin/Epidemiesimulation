@@ -11,16 +11,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class SimulationServiceImpl implements SimulationService {
     private final SimulationRunner simulationRunner;
     // Stores a map of uuid and the simulation
     public Map<String, Simulation> simulationList = new HashMap<>();
+    public Map<String, String> simulationDates = new HashMap<>();
 
     private Util util = new Util();
     private final Gson gson = new Gson();
@@ -32,19 +31,21 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public String startSimulation(int amountOfSimulations) {
         Simulation simulation = new Simulation();
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
         simulationList.put(simulation.getId(), simulation);
+        simulationDates.put(simulation.getId(), formatter.format(calendar.getTime()));
+
         simulationRunner.runSimulation(simulation, amountOfSimulations);
         return simulation.getId();
     }
 
     @Override
-    public List<String> getAllSimulations(){
-        List<String> list = new ArrayList<>();
-        // list.add(simulationList);
-        // TODO RESORT
-        return (List<String>) simulationList;
+    public Map<String, String> getAllSimulations() {
+        return simulationDates;
     }
-
 
     private Simulation getSimulationByUuidOrError(String uuid) {
         if (StringUtils.hasText(uuid)) {
@@ -177,5 +178,11 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public void pauseSimulation(boolean pause, String uuid){
         getSimulationByUuidOrError(uuid).setSimulationPause(pause);
+    }
+
+    @Override
+    public void stopSimulation(String uuid){
+        getSimulationByUuidOrError(uuid).setStopSimulation(true);
+        simulationList.remove(uuid);
     }
 }

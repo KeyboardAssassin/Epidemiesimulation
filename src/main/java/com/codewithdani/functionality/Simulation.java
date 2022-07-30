@@ -49,20 +49,20 @@ public class Simulation {
         City currentTestedCity;
 
         boolean allStatesSocialDistancingSet = false;
+        // TODO ???
         int socialDistancingValue = simulatedCountry.getMeasure().getDistancing().getSocialDistancingValue();
 
         // execute all setting methods
         initialiseDataClass();
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
-            if (stopSimulation) {
-                break;
-            }
-
             simulatedCountry = germany;
 
             // growth algorithm for 1 year
             for (int currentDay = 0; currentDay < daysOfTestingPerPandemic; currentDay++){
+                if (stopSimulation) {
+                    break;
+                }
 
                 this.setDay(currentDay);
 
@@ -158,6 +158,7 @@ public class Simulation {
                         currentTestedCity.setObedience(currentTestedState.getObedience());
 
                         // try to vaccinate people if the vaccination is developed and the vaccination campaign started
+                        // TODO Langes Statement?
                         if (simulatedCountry.getMeasure().getVaccination().isVaccinationApproved() && simulatedCountry.getMeasure().getVaccination().isVaccinationStarted()){
                             simulatedCountry.getMeasure().getVaccination().updateVaccination(currentTestedCity);
                         } else {
@@ -268,5 +269,9 @@ public class Simulation {
 
     public String getId() {
         return id;
+    }
+
+    public void setStopSimulation(boolean stopSimulation) {
+        this.stopSimulation = stopSimulation;
     }
 }
