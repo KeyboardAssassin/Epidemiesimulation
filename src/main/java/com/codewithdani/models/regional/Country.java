@@ -106,9 +106,9 @@ public class Country {
     public void updateData(){
         try{
             setIncidence(this.calculateSummaryInfo("incidence"));
-            setRValue(this.calculateSummaryInfo("rvalue"));
             setNewInfections((int)this.calculateSummaryInfo("newcases"));
             setNewDeathCases((int)this.calculateSummaryInfo("deadcases"));
+            this.updateRValue();
         }
         catch (Exception e){
             System.out.println("Request from frontend to update country but country is not yet set!");
@@ -117,35 +117,37 @@ public class Country {
 
     public double calculateSummaryInfo(String type){
         double sumOfAllSevenDaysIncidences = 0.0;
-        double sumOfAllRValues = 0.0;
         int sumOfAllNewInfections = 0;
         int sumOfAllNewDeathCases = 0;
         int amountOfCities = 0;
-        int amountOfCitiesWithPositiveRValues = 0;
 
         // loops through every state and every city
         for (State state: states) {
             for(City city : state.getCities()){
                 sumOfAllSevenDaysIncidences += city.getSevenDaysIncidence();
-                if (city.getRValue() > 0){
-                    sumOfAllRValues += city.getRValue();
-                    amountOfCitiesWithPositiveRValues++;
-                }
                 sumOfAllNewInfections += city.getFristInfectionNewCases(); // TODO richtige membervariable? Oder braucht es noch eine new cases
                 sumOfAllNewDeathCases += city.getDeadCases();
             }
-            amountOfCities += state.getCities().length;
+            amountOfCities += state.getCities().size();
         }
 
         // outputs the median value of a requested value
         return switch (type) {
             case "incidence" -> ((sumOfAllSevenDaysIncidences / amountOfCities) / this.getCountryTotalPopulation()) * 100000;
-            case "rvalue"    -> sumOfAllRValues / amountOfCitiesWithPositiveRValues;
             case "newcases"  -> sumOfAllNewInfections;
             case "deadcases" -> sumOfAllNewDeathCases;
             default -> -1.0;
         };
     }
+
+    private void updateRValue(){
+        double rValue = 0;
+            for (State state: this.getStates()) {
+                rValue += state.getrValue() * state.getTotalPopulation() / this.getCountryTotalPopulation();
+            }
+        this.rValue = rValue;
+    }
+
 
     public void setCountryTotalPopulation() {
         int totalPopulation = 0;

@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.*;
+import java.util.List;
 
 public class JsonHandler {
 
@@ -126,22 +127,22 @@ public class JsonHandler {
         City halle     = new City("Halle", 237865, 1762);
         City magdeburg = new City("Magdeburg", 238697, 1173);
 
-        City[] citiesOfBayern                   = {ingolstadt, munchen, nurnberg};
-        City[] citiesOfThuringen                = {erfurt, jena};
-        City[] citiesOfHessen                   = {frankfurt, wiesbaden};
-        City[] citiesOfBadenwurttemberg         = {stuttgart, mannheim};
-        City[] citiesOfSachsen                  = {dresden, leipzig};
-        City[] citiesOfNiedersachsen            = {hannover, braunschweig};
-        City[] citiesOfRheinlandpfalz           = {mainz, ludwigshafen};
-        City[] citiesOfSchleswigholstein        = {kiel, luebeck};
-        City[] citiesOfSaarland                 = {saarbruecken, neunkirchen};
-        City[] citiesOfBerlin                   = {berlinCity};
-        City[] citiesOfBrandenburg              = {potsdam, cottbus};
-        City[] citiesOfBremen                   = {bremenCity};
-        City[] citiesOfNordrheinwestfalen       = {duesseldorf, koeln};
-        City[] citiesOfHamburg                  = {hamburgCity};
-        City[] citiesOfMecklenburgvorpommern    = {schwerin, rostock};
-        City[] citiesOfSachsenanhalt            = {magdeburg, halle};
+        List<City> citiesOfBayern                   = List.of(ingolstadt, munchen, nurnberg);
+        List<City> citiesOfThuringen                = List.of(erfurt, jena);
+        List<City> citiesOfHessen                   = List.of(frankfurt, wiesbaden);
+        List<City> citiesOfBadenwurttemberg         = List.of(stuttgart, mannheim);
+        List<City> citiesOfSachsen                  = List.of(dresden, leipzig);
+        List<City> citiesOfNiedersachsen            = List.of(hannover, braunschweig);
+        List<City> citiesOfRheinlandpfalz           = List.of(mainz, ludwigshafen);
+        List<City> citiesOfSchleswigholstein        = List.of(kiel, luebeck);
+        List<City> citiesOfSaarland                 = List.of(saarbruecken, neunkirchen);
+        List<City> citiesOfBerlin                   = List.of(berlinCity);
+        List<City> citiesOfBrandenburg              = List.of(potsdam, cottbus);
+        List<City> citiesOfBremen                   = List.of(bremenCity);
+        List<City> citiesOfNordrheinwestfalen       = List.of(duesseldorf, koeln);
+        List<City> citiesOfHamburg                  = List.of(hamburgCity);
+        List<City> citiesOfMecklenburgvorpommern    = List.of(schwerin, rostock);
+        List<City> citiesOfSachsenanhalt            = List.of(magdeburg, halle);
 
         State thuringen             = new State("Thüringen", citiesOfThuringen);
         State bayern                = new State("Bayern", citiesOfBayern);

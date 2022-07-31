@@ -1,5 +1,6 @@
 package com.codewithdani.functionality;
 
+import com.codewithdani.api.models.SimulationListResponseTO;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.State;
 import com.codewithdani.models.summaries.CitySummary;
@@ -13,13 +14,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SimulationServiceImpl implements SimulationService {
     private final SimulationRunner simulationRunner;
     // Stores a map of uuid and the simulation
     public Map<String, Simulation> simulationList = new HashMap<>();
-    public Map<String, String> simulationDates = new HashMap<>();
 
     private Util util = new Util();
     private final Gson gson = new Gson();
@@ -31,20 +32,19 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public String startSimulation(int amountOfSimulations) {
         Simulation simulation = new Simulation();
-
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-
         simulationList.put(simulation.getId(), simulation);
-        simulationDates.put(simulation.getId(), formatter.format(calendar.getTime()));
-
         simulationRunner.runSimulation(simulation, amountOfSimulations);
         return simulation.getId();
     }
 
     @Override
-    public Map<String, String> getAllSimulations() {
-        return simulationDates;
+    public List<SimulationListResponseTO> getAllSimulations() {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+        return simulationList.values().stream()
+                .map(simulation -> new SimulationListResponseTO(simulation.getId(),formatter.format(simulation.getCreationDate())))
+                .sorted(Comparator.comparing(SimulationListResponseTO::getDate))
+                .collect(Collectors.toList());
     }
 
     private Simulation getSimulationByUuidOrError(String uuid) {

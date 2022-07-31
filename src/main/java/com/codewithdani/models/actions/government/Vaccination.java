@@ -1,4 +1,4 @@
-package com.codewithdani.models.actions.goverment;
+package com.codewithdani.models.actions.government;
 
 import com.codewithdani.models.regional.City;
 
@@ -7,6 +7,7 @@ public class Vaccination {
     private boolean vaccinationApproved = false;
     private boolean vaccinationStarted = false;
     private static final int DAYS_OF_VACCINATION_DEVELOPMENT = 4;
+    private double vaccinationProtection = 0.9;
 
     public void setVaccinationApproved(boolean vaccinationApproved) {
         this.vaccinationApproved = vaccinationApproved;
@@ -44,5 +45,9 @@ public class Vaccination {
 
     public void setVaccinationStarted(boolean vaccinationStarted) {
         this.vaccinationStarted = vaccinationStarted;
+    }
+
+    public double getVaccinationProtection() {
+        return vaccinationProtection;
     }
 }

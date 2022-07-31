@@ -1,5 +1,6 @@
 package com.codewithdani.models.data;
 
+import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -28,8 +29,8 @@ public class Data {
 
     public IntStream getPopulationDensityStream(Country country){
         return Arrays.stream(country.getStates())
-                .flatMap(x -> Arrays.stream(x.getCities()))
-                .mapToInt(x -> x.getPopulationDensity());
+                .flatMap(x -> x.getCities().stream())
+                .mapToInt(City::getPopulationDensity);
     }
     public void setDifference(){
         this.differenceBetweenHighestAndLowestDensity = highestCityDensity - lowestCityDensity;

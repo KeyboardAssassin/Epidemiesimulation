@@ -1,5 +1,6 @@
 package com.codewithdani.functionality;
 
+import com.codewithdani.api.models.SimulationListResponseTO;
 import com.codewithdani.models.summaries.CitySummary;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface SimulationService {
      *
      * @return list with uuid + timestamp
      */
-    Map<String, String> getAllSimulations();
+    List<SimulationListResponseTO> getAllSimulations();
 
 
     /**

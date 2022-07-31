@@ -1,4 +1,4 @@
-package com.codewithdani.models.actions.goverment;
+package com.codewithdani.models.actions.government;
 
 public class Medicine {
     private int dayOfDevelopmentStart = -1;

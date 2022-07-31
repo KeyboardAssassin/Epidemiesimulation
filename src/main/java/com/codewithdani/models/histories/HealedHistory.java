@@ -4,11 +4,13 @@ import java.util.Arrays;
 
 public class HealedHistory {
     private int[] history;
-
     public final static int NOT_INITIALISED = -1;
 
+    public final static double LESS_PROTECTION_PER_DAY = 0.001666;
+
     public HealedHistory() {
-        this.history = new int[200]; // TODO auf 30 Tage -> danach populationLeftToInfekt
+        this.history = new int[30]; // TODO auf 30 Tage -> danach populationLeftToInfekt
+        // TODO Macht man sowas?
         initializeHistory();
     }
 
@@ -20,29 +22,28 @@ public class HealedHistory {
         if (this.history[this.history.length - 1] != NOT_INITIALISED){
             this.history = this.shiftElements();
         }
-
-        this.history[this.history.length - 1] = cases;
+        this.history[0] = cases;
     }
 
     public int[] shiftElements(){
         // TODO Smarte Lösung finden
         int[] newArray = new int[this.history.length];
 
-        for (int i = this.history.length - 1; i > 0; i--){
-            int newPosition = (i + (this.history.length - 1)) % this.history.length;
-            newArray[newPosition] = this.history[i];
+        // shift all elements downwards
+        for (int element = 0; element < history.length - 1; element++){
+            newArray[element + 1] = history[element];
         }
         return newArray;
     }
 
     public int calculateProbabilityOfAnotherInfection(){
         double amountOfPeopleCouldBeInfectedAgain = 0;
-        double lessProtectionPerDay = 0.001666;
 
-        for (int indexOfHistory = history.length - 1; indexOfHistory > 0; indexOfHistory--)
+        for (int indexOfHistory = 0; indexOfHistory < history.length; indexOfHistory++)
         {
             if (history[indexOfHistory] != -1){
-                amountOfPeopleCouldBeInfectedAgain += history[indexOfHistory] * (history.length - indexOfHistory) * lessProtectionPerDay;
+                // TODO Sinnvolle Anzahl an Leuten, die sich noch infizieren können sollte rauskommen
+                amountOfPeopleCouldBeInfectedAgain += history[indexOfHistory] * indexOfHistory * LESS_PROTECTION_PER_DAY;
             }
         }
         return (int)amountOfPeopleCouldBeInfectedAgain;

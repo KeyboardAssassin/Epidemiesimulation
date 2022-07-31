@@ -1,5 +1,6 @@
 package com.codewithdani.models.regional;
 
+import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.data.Data;
 import com.codewithdani.models.histories.HealedHistory;
 import com.codewithdani.models.threats.Virus;
@@ -84,14 +85,18 @@ public class City {
     }
 
     public void updateRValue(){
-            if (caseHistory[0] != NOT_INITIALISED && caseHistory[1] == NOT_INITIALISED){
-                setRValue(caseHistory[0]);
+            // calculates rValue if 7 days history is filled
+            // comparison between smoothened 4 days mean
+            // (old) elements 4, 5, 6 vs
+            // (new) elements 0, 1, 2
+            if (caseHistory[6] != NOT_INITIALISED) {
+                double newValue = (caseHistory[0] + caseHistory[1] + caseHistory[2]) / 3;
+                double oldValue = (caseHistory[4] + caseHistory[5] + caseHistory[6]) / 3;
+
+                // TODO R-Wert unter 1
+                setRValue(newValue / oldValue);
             }
-            // if at least 2 days are filled
-            else if (caseHistory[0] != NOT_INITIALISED && caseHistory[1] != NOT_INITIALISED && caseHistory[1] != 0) {
-                setRValue(caseHistory[0] / caseHistory[1]);
-            }
-            // if no day is filled or the second entry is 0 (cannot be devided by 0)
+            // if no day is filled or the second entry is 0 (cannot be divided by 0)
             else {
                 setRValue(0);
             }
@@ -99,18 +104,6 @@ public class City {
 
     public void addNewEntryToHistory(int amountOfCases, Country country){
         int amountOfFirstCases = this.getFristInfectionNewCases();
-
-        // fill history if one element is not yet filled
-        for (int numberOfEntry = 0; numberOfEntry < caseHistory.length; numberOfEntry++){
-            if (caseHistory[numberOfEntry] == NOT_INITIALISED){
-                caseHistory[numberOfEntry] = amountOfCases;
-
-                this.setNewCases(amountOfCases);
-                this.updatePopulationLeftToInfect(amountOfFirstCases);
-
-                return;
-            }
-        }
 
         // calculate Deaths
         int deadCasesWithOutMedicine = this.calculateDeaths();
@@ -124,24 +117,34 @@ public class City {
 
         // todo smartere Lösung finden
         // move the oldest entry in the case history into the healed history
-        healedHistory.addEntry(caseHistory[0]);
+        if (caseHistory[6] != NOT_INITIALISED){
+            healedHistory.addEntry(caseHistory[6]);
+        }
 
-        // left shift every element and add new cases at the last element
-        caseHistory[0] = caseHistory[1];
-        caseHistory[1] = caseHistory[2];
-        caseHistory[2] = caseHistory[3];
-        caseHistory[3] = caseHistory[4];
-        caseHistory[4] = caseHistory[5];
-        caseHistory[5] = caseHistory[6];
-        caseHistory[6] = amountOfCases;
+        //  shift every element and add new cases at the first
+        caseHistory[1] = caseHistory[0];
+        caseHistory[2] = caseHistory[1];
+        caseHistory[3] = caseHistory[2];
+        caseHistory[4] = caseHistory[3];
+        caseHistory[5] = caseHistory[4];
+        caseHistory[6] = caseHistory[5];
+
+        // set the newest record
+        caseHistory[0] = amountOfCases;
+
 
         this.setNewCases(amountOfCases);
         this.updatePopulationLeftToInfect(amountOfFirstCases);
     }
 
     public int calculateDeaths(){
-        // return calculated deaths
-        return (int)(caseHistory[0] * currentVirus.getMortalityRate());
+        if (caseHistory[6] != NOT_INITIALISED){
+            // return calculated deaths
+            return (int)(caseHistory[6] * currentVirus.getMortalityRate());
+        }
+        else{
+            return 0;
+        }
     }
 
     public int tryToHealWithMedicine(Country country, int peopleDying){
@@ -165,7 +168,7 @@ public class City {
         return caseHistory[day - 1];
     }
 
-    public int calculateNextDayInfections(int day, double stateInfectionRatio, Data data, Random random){
+    public int calculateNextDayInfections(int day, double stateInfectionRatio, Data data, Random random, Measure measure){
         int lowestCityDensity = data.getLowestCityDensity();
         double populationDensityModifier = 0.2; // + Boost for the largest city and - brake for the smallest city
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
@@ -178,7 +181,6 @@ public class City {
             return (random.nextInt(FIRST_DAY_INFECTED_PEOPLE_MAX - FIRST_DAY_INFECTED_PEOPLE_MIN) + FIRST_DAY_INFECTED_PEOPLE_MIN);
         }
 
-        // TODO In Setup Methode auslagern - immer gleiches Ergebnis -> Membervariable
         // Probability between 0% and 20% depending on the density of the city (min/max: city with lowest/highest density)
         int differenceHighestAndLowestDensity = data.getDifferenceBetweenHighestAndLowestDensity(); // Densities Cottbus and München (min/max)
         double normalizedDensity = (this.populationDensity - lowestCityDensity) / differenceHighestAndLowestDensity;
@@ -198,7 +200,7 @@ public class City {
 
         int amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain = this.healedHistory.calculateProbabilityOfAnotherInfection();
 
-        double vaccinationProtection = 0.9;
+        double vaccinationProtection = measure.getVaccination().getVaccinationProtection();
 
         // TODO Proportion zwischen 0 (0) und 1 (100%)
         // Protection zwischen 0.9 - 1
@@ -241,6 +243,7 @@ public class City {
     }
 
     public void updateSevenDaysIncidence(){
+        // TODO Nur durch die Anzahl der caseHistoryElemente teilen die nicht -1 sind statt caseHistory.length!
         double sevenDaysIncidence =  getTotalActiveCases() / caseHistory.length;
         this.sevenDaysIncidence = (sevenDaysIncidence / this.getPopulation()) * 100000;
     }
@@ -288,11 +291,11 @@ public class City {
     }
 
     public void addToVaccinationProportion(float vaccinationGrowth) {
-        if (this.vaccinationProportion + vaccinationGrowth < 100){
+        if (this.vaccinationProportion + vaccinationGrowth < 1){
             this.vaccinationProportion += vaccinationGrowth;
         }
         else {
-            this.vaccinationProportion = 100f;
+            this.vaccinationProportion = 1f;
         }
     }
 

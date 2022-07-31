@@ -1,8 +1,13 @@
 package com.codewithdani.models.regional;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class State {
     private final String name;
-    private final City[] cities;
+    private final List<City> cities;
+    private int totalPopulation;
+    private double rValue;
     private double obedience = 1;
     private double contactRestrictions = 1; // can only go higher e.g. 1 = 100% 2 = 50% 4 = 25%
     private int contactRestrictionsDaysLeft;
@@ -10,14 +15,14 @@ public class State {
     private int stateInfectedPopulation;
     private double stateInfectionRatio = 0.0;
 
-    public State(String name, City[] citiesOfState) {
+    public State(String name, List<City> citiesOfState) {
         this.name = name;
         this.cities = citiesOfState;
         this.stateTotalPopulation = this.calculateStatePopulation();
         this.stateInfectedPopulation = 0;
     }
 
-    public City[] getCities() {
+    public List<City> getCities() {
         return cities;
     }
 
@@ -30,7 +35,7 @@ public class State {
         for (City city : cities){
             totalIncidence += city.getSevenDaysIncidence();
         }
-        double sevenDaysIncidence =  totalIncidence / cities.length;
+        double sevenDaysIncidence =  totalIncidence / cities.size();
 
         return (sevenDaysIncidence / this.getStateTotalPopulation()) * 100000;
     }
@@ -53,6 +58,27 @@ public class State {
 
     public void calculateAndSetInfectionRatio(){
         this.stateInfectionRatio = this.stateInfectedPopulation / (double)this.stateTotalPopulation ;
+    }
+
+    private void updateTotalPopulation() {
+        this.totalPopulation =  this.getCities().stream().map(City::getPopulation).reduce(0, (Integer::sum));
+    }
+
+    public int getTotalPopulation() {
+        return totalPopulation;
+    }
+
+    private void updateRValue(){
+        double rValue = 0;
+        for (City city: this.getCities()) {
+            rValue += city.getRValue() *  city.getPopulation() / getTotalPopulation();
+        }
+        this.rValue = rValue;
+    }
+
+    public void updateState(){
+        this.updateTotalPopulation();
+        this.updateRValue();
     }
 
     /**
@@ -83,7 +109,7 @@ public class State {
             totalObedience += city.getObedience();
         }
 
-        this.obedience = totalObedience / cities.length;
+        this.obedience = totalObedience / cities.size();
     }
 
     public double getContactRestrictions() {
@@ -113,5 +139,9 @@ public class State {
         for (City city: cities) {
             city.looseObedience(lost);
         }
+    }
+
+    public double getrValue() {
+        return rValue;
     }
 }

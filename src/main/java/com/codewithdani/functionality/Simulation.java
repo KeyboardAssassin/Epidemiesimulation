@@ -7,6 +7,9 @@ import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
 import com.codewithdani.models.threats.Virus;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 
@@ -24,6 +27,7 @@ public class Simulation {
 
     boolean stopSimulation = false;
 
+    Date creationDate = Calendar.getInstance().getTime();
 
     public void startSimulation(int amountOfSimulations){
         // create the json Reader/Writer Object
@@ -141,6 +145,9 @@ public class Simulation {
 
                 // run the simulation for every state of germany
                 for (State currentTestedState : simulatedCountry.getStates()) {
+                    // Update the state information
+                    currentTestedState.updateState();
+
                     if (currentDay == 0){
                         currentTestedState.calculateStatePopulation();
                     }
@@ -150,9 +157,9 @@ public class Simulation {
                     currentTestedState.calculateAndSetInfectionRatio();
 
                     // run the simulation for every city of the current state
-                    for (int numberOfCurrentCity = 0; numberOfCurrentCity < currentTestedState.getCities().length; numberOfCurrentCity++) {
+                    for (int numberOfCurrentCity = 0; numberOfCurrentCity < currentTestedState.getCities().size(); numberOfCurrentCity++) {
                         // set the current City
-                        currentTestedCity = currentTestedState.getCities()[numberOfCurrentCity];
+                        currentTestedCity = currentTestedState.getCities().get(numberOfCurrentCity);
 
                         // give obedience & restrictions value to every city
                         currentTestedCity.setObedience(currentTestedState.getObedience());
@@ -177,7 +184,7 @@ public class Simulation {
 
                         currentTestedCity.calculateAndSetInfectionRatio();
 
-                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio(), data, random);
+                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio(), data, random, this.getSimulatedCountry().getMeasure());
 
                         currentTestedCity.addNewEntryToHistory(nextDayInfections, simulatedCountry);
                         currentTestedCity.reloadCity();
@@ -273,5 +280,9 @@ public class Simulation {
 
     public void setStopSimulation(boolean stopSimulation) {
         this.stopSimulation = stopSimulation;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
     }
 }

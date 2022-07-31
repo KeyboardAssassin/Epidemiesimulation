@@ -1,7 +1,7 @@
 package com.codewithdani.models.actions;
 
-import com.codewithdani.models.actions.goverment.Medicine;
-import com.codewithdani.models.actions.goverment.Vaccination;
+import com.codewithdani.models.actions.government.Medicine;
+import com.codewithdani.models.actions.government.Vaccination;
 import com.codewithdani.models.actions.self.contact.Distancing;
 
 public class Measure {
