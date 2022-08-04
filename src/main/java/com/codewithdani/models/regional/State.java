@@ -1,7 +1,8 @@
 package com.codewithdani.models.regional;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static com.codewithdani.models.actions.government.Restriction.CONTACT_RESTRICTIONS_VALUE;
 
 public class State {
     private final String name;
@@ -33,7 +34,7 @@ public class State {
     public double getSevenDaysIncidence(){
         double totalIncidence = 0;
         for (City city : cities){
-            totalIncidence += city.getSevenDaysIncidence();
+            totalIncidence += city.getInfectionData().getSevenDaysIncidence();
         }
         double sevenDaysIncidence =  totalIncidence / cities.size();
 
@@ -47,7 +48,7 @@ public class State {
     public void calculateAndSetInfectedPopulation(){
         int totalPeopleInfected = 0;
         for (City city: this.getCities()) {
-            totalPeopleInfected += city.getTotalActiveCases();
+            totalPeopleInfected += city.getInfectionData().getTotalActiveCases();
         }
         this.setStateInfectedPopulation(totalPeopleInfected);
     }
@@ -71,7 +72,7 @@ public class State {
     private void updateRValue(){
         double rValue = 0;
         for (City city: this.getCities()) {
-            rValue += city.getRValue() *  city.getPopulation() / getTotalPopulation();
+            rValue += city.getInfectionData().getRValue() *  city.getPopulation() / getTotalPopulation();
         }
         this.rValue = rValue;
     }
@@ -122,7 +123,7 @@ public class State {
 
     public void updateAllCitiesContactRestrictions(double restrictionValue){
         for (City city: cities) {
-            city.setContactRestrictionsOfMotherState(restrictionValue);
+            city.setContactRestrictions(restrictionValue);
             city.setContactRestrictionDuration(0);
         }
     }
@@ -137,11 +138,17 @@ public class State {
 
     public void removeObedienceFromAllCities(double lost){
         for (City city: cities) {
-            city.looseObedience(lost);
+            city.loseObedience(lost);
         }
     }
 
-    public double getrValue() {
+    public double getRValue() {
         return rValue;
+    }
+
+    public void activateContactRestrictions(int amountOfDays){
+        this.setContactRestrictions(CONTACT_RESTRICTIONS_VALUE);
+        this.setContactRestrictionDuration(amountOfDays);
+        this.updateAllCitiesContactRestrictions(CONTACT_RESTRICTIONS_VALUE);
     }
 }

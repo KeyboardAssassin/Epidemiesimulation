@@ -1,9 +1,8 @@
-package com.codewithdani.models.summaries;
+package com.codewithdani.api.models;
 
-import com.codewithdani.functionality.Util;
 import com.codewithdani.models.regional.Country;
 
-public class CountrySummary {
+public class CountrySummaryTO {
 
     private final String incidence;
     private final String rValue;
@@ -14,14 +13,46 @@ public class CountrySummary {
     private final boolean medicationDeveloped;
     private final boolean medicationStarted;
 
-    public CountrySummary(Country country, Util util) {
-        incidence = country.getIncidenceAsString(util);
-        rValue = country.getRValueAsString(util);
+    public CountrySummaryTO(Country country) {
+        incidence = country.getIncidenceAsString();
+        rValue = country.getRValueAsString();
         newInfections = country.getNewInfections();
         newDeathCases = country.getNewDeathCases();
         vaccinationDeveloped = country.getMeasure().getVaccination().isVaccinationApproved();
         medicationDeveloped = country.getMeasure().getMedicine().isMedicineApproved();
         vaccinationStarted = country.getMeasure().getVaccination().isVaccinationStarted();
         medicationStarted = country.getMeasure().getMedicine().isMedicationStarted();
+    }
+
+    public String getIncidence() {
+        return incidence;
+    }
+
+    public String getrValue() {
+        return rValue;
+    }
+
+    public int getNewInfections() {
+        return newInfections;
+    }
+
+    public int getNewDeathCases() {
+        return newDeathCases;
+    }
+
+    public boolean isVaccinationDeveloped() {
+        return vaccinationDeveloped;
+    }
+
+    public boolean isVaccinationStarted() {
+        return vaccinationStarted;
+    }
+
+    public boolean isMedicationDeveloped() {
+        return medicationDeveloped;
+    }
+
+    public boolean isMedicationStarted() {
+        return medicationStarted;
     }
 }

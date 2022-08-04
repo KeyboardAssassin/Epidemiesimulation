@@ -3,10 +3,10 @@ package com.codewithdani.functionality;
 import com.codewithdani.api.models.SimulationListResponseTO;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.State;
-import com.codewithdani.models.summaries.CitySummary;
-import com.codewithdani.models.summaries.CountrySummary;
-import com.codewithdani.models.summaries.ListSummary;
-import com.google.gson.Gson;
+import com.codewithdani.api.models.CitySummaryTO;
+import com.codewithdani.api.models.CountrySummaryTO;
+import com.codewithdani.api.models.RegionIncidenceReportTO;
+import com.codewithdani.util.SimulationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,9 +21,6 @@ public class SimulationServiceImpl implements SimulationService {
     private final SimulationRunner simulationRunner;
     // Stores a map of uuid and the simulation
     public Map<String, Simulation> simulationList = new HashMap<>();
-
-    private Util util = new Util();
-    private final Gson gson = new Gson();
 
     public SimulationServiceImpl(SimulationRunner simulationRunner) {
         this.simulationRunner = simulationRunner;
@@ -58,9 +55,9 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public CitySummary getSummary(String cityName, String uuid) {
+    public CitySummaryTO getSummary(String cityName, String uuid) {
         City requestedCity = getSimulationByUuidOrError(uuid).getSimulatedCountry().getCityByName(cityName);
-        CitySummary summary = new CitySummary(requestedCity);
+        CitySummaryTO summary = new CitySummaryTO(requestedCity);
 
         try{
             return summary;
@@ -73,12 +70,12 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public String getIncidenceByState(String stateName, String uuid) {
-        return util.convertIncidenceToStringWith2Digits(getSimulationByUuidOrError(uuid).getSimulatedCountry().getStateByName(stateName).getSevenDaysIncidence());
+        return SimulationUtils.convertIncidenceToStringWith2Digits(getSimulationByUuidOrError(uuid).getSimulatedCountry().getStateByName(stateName).getSevenDaysIncidence());
     }
 
     @Override
     public double getIncidence(String cityName, String uuid) {
-        return getSimulationByUuidOrError(uuid).getSimulatedCountry().getCityByName(cityName).getSevenDaysIncidence();
+        return getSimulationByUuidOrError(uuid).getSimulatedCountry().getCityByName(cityName).getInfectionData().getSevenDaysIncidence();
     }
 
     @Override
@@ -86,17 +83,17 @@ public class SimulationServiceImpl implements SimulationService {
         getSimulationByUuidOrError(uuid).setSleepTime(speed);
     }
 
+    @Override
     public int getCurrentDay(String uuid){
         return getSimulationByUuidOrError(uuid).getCurrentDay();
     }
 
     @Override
-    public String getIncidenceOfEveryState(String uuid){
+    public List<RegionIncidenceReportTO> getIncidenceOfEveryState(String uuid){
         try{
-            ListSummary summary = new ListSummary();
-            summary.fillEveryState(getSimulationByUuidOrError(uuid).getSimulatedCountry());
-            
-            return gson.toJson(summary.getListElements());
+            return Arrays.stream(getSimulationByUuidOrError(uuid).getSimulatedCountry().getStates())
+                    .map(RegionIncidenceReportTO::new)
+                    .collect(Collectors.toList());
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -104,17 +101,17 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public String getIncidenceOfEveryCity(String uuid){
-        ListSummary summary = new ListSummary();
-        summary.fillEveryCity(getSimulationByUuidOrError(uuid).getSimulatedCountry());
-        return gson.toJson((summary.getListElements()));
+    public List<RegionIncidenceReportTO> getIncidenceOfEveryCity(String uuid){
+       return  Arrays.stream(getSimulationByUuidOrError(uuid).getSimulatedCountry().getStates())
+                .flatMap(state -> state.getCities().stream())
+                .map(RegionIncidenceReportTO::new)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public String getCountrySummary(String uuid){
+    public CountrySummaryTO getCountrySummary(String uuid){
         Simulation simulation = getSimulationByUuidOrError(uuid);
-        simulation.getSimulatedCountry().updateData();
-        return gson.toJson(new CountrySummary(simulation.getSimulatedCountry(), util));
+        return new CountrySummaryTO(simulation.getSimulatedCountry());
     }
 
     @Override
@@ -134,28 +131,18 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public void activateContactRestrictions(String type, String name, int amountOfDays, String uuid){
         Simulation simulation = getSimulationByUuidOrError(uuid);
-        int contactRestrictionValue = 5;
 
         switch (type) {
             case "country":
                 for (State state : simulation.getSimulatedCountry().getStates()) {
-                    state.setContactRestrictions(contactRestrictionValue);
-                    state.setContactRestrictionDuration(amountOfDays);
-                    state.updateAllCitiesContactRestrictions(contactRestrictionValue);
-                    break;
+                    state.activateContactRestrictions(amountOfDays);
                 }
+                break;
             case "state":
-                State state = simulation.getSimulatedCountry().getStateByName(name);
-
-                state.setContactRestrictions(contactRestrictionValue);
-                state.setContactRestrictionDuration(amountOfDays);
-                state.updateAllCitiesContactRestrictions(contactRestrictionValue);
+                simulation.getSimulatedCountry().getStateByName(name).activateContactRestrictions(amountOfDays);
                 break;
             case "city":
-                City city = simulation.getSimulatedCountry().getCityByName(name);
-
-                city.setContactRestrictionsOfMotherState(contactRestrictionValue);
-                city.setContactRestrictionDuration(amountOfDays);
+                simulation.getSimulatedCountry().getCityByName(name).activateContactRestrictions(amountOfDays);
                 break;
         }
     }
@@ -184,5 +171,10 @@ public class SimulationServiceImpl implements SimulationService {
     public void stopSimulation(String uuid){
         getSimulationByUuidOrError(uuid).setStopSimulation(true);
         simulationList.remove(uuid);
+    }
+
+    @Override
+    public double getObedience(String uuid){
+        return getSimulationByUuidOrError(uuid).getSimulatedCountry().getObedience();
     }
 }

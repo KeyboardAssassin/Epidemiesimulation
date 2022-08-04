@@ -1,7 +1,7 @@
 package com.codewithdani.api.controller;
 
 import com.codewithdani.functionality.SimulationService;
-import com.codewithdani.models.summaries.CitySummary;
+import com.codewithdani.api.models.CitySummaryTO;
 import org.springframework.web.bind.annotation.*;
 
 @RestController()
@@ -19,7 +19,7 @@ public class SimulationCityController {
     }
 
     @GetMapping("/{uuid}/city/detailed")
-    public CitySummary getCitySummary(@RequestParam(name = "cityname")  String name, @PathVariable(name = "uuid") String uuid){
+    public CitySummaryTO getCitySummary(@RequestParam(name = "cityname")  String name, @PathVariable(name = "uuid") String uuid){
         return simulationService.getSummary(name, uuid);
     }
 

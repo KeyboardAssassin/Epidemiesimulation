@@ -1,10 +1,11 @@
 package com.codewithdani.functionality;
 
+import com.codewithdani.api.models.CountrySummaryTO;
 import com.codewithdani.api.models.SimulationListResponseTO;
-import com.codewithdani.models.summaries.CitySummary;
+import com.codewithdani.api.models.CitySummaryTO;
+import com.codewithdani.api.models.RegionIncidenceReportTO;
 
 import java.util.List;
-import java.util.Map;
 
 public interface SimulationService {
 
@@ -67,7 +68,7 @@ public interface SimulationService {
      * @param simulationUuid - uuid of the simulation
      * @return summary of the requested City
      */
-    CitySummary getSummary(String cityName, String simulationUuid);
+    CitySummaryTO getSummary(String cityName, String simulationUuid);
 
     /**
      * Method to get the incidence of a state
@@ -107,21 +108,21 @@ public interface SimulationService {
      *
      * @return returns json object with format ({state, incidence}) of every state
      */
-    String getIncidenceOfEveryState(String uuid);
+    List<RegionIncidenceReportTO> getIncidenceOfEveryState(String uuid);
 
     /**
      * Method to return all incidences of every city of every state
      *
      * @return returns json object with format ({city, incidence}) of every state and every city
      */
-    String getIncidenceOfEveryCity(String uuid);
+    List<RegionIncidenceReportTO> getIncidenceOfEveryCity(String uuid);
 
     /**
      * Method to return a country summary including incidence, rValue, newInfections and deathCases
      *
      * @return return json object with format {incidence, rValue, newInfections, deathCases}
      */
-    String getCountrySummary(String uuid);
+    CountrySummaryTO getCountrySummary(String uuid);
 
     /**
      * Method that can be invoked to pause the simulation
@@ -137,4 +138,11 @@ public interface SimulationService {
      * @param uuid - the ID of the simulation to end
      */
     void stopSimulation(String uuid);
+
+    /**
+     * Method to get the current obedience of a nation
+     *
+     * @return obedience between 0 (no obedience) and 1 (obedience)
+     */
+    double getObedience(String uuid);
 }

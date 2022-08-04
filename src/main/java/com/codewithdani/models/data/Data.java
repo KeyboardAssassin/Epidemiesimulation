@@ -8,7 +8,6 @@ import java.util.stream.IntStream;
 public class Data {
     private int highestCityDensity;
     private int lowestCityDensity;
-
     private int differenceBetweenHighestAndLowestDensity;
 
     public int getHighestCityDensity() {

@@ -1,13 +1,13 @@
-package com.codewithdani.functionality;
+package com.codewithdani.util;
 
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.State;
 
 import java.text.DecimalFormat;
 
-public class Util {
+public class SimulationUtils {
 
-    public String convertIncidenceToStringWith2Digits(double totalIncidence){
+    public static String convertIncidenceToStringWith2Digits(double totalIncidence){
         DecimalFormat df = new DecimalFormat("0.00");
         if (totalIncidence % 1 == 0) return  String.valueOf((int)totalIncidence);
 

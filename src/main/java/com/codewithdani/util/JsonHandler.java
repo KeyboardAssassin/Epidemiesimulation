@@ -1,4 +1,4 @@
-package com.codewithdani.json;
+package com.codewithdani.util;
 
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;

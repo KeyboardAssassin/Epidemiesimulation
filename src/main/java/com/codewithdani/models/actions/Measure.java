@@ -2,17 +2,15 @@ package com.codewithdani.models.actions;
 
 import com.codewithdani.models.actions.government.Medicine;
 import com.codewithdani.models.actions.government.Vaccination;
-import com.codewithdani.models.actions.self.contact.Distancing;
+import com.codewithdani.models.actions.self.Distancing;
 
 public class Measure {
     Vaccination vaccination;
     Medicine medicine;
-    Distancing distancing;
 
     public Measure() {
         this.vaccination = new Vaccination();
         this.medicine = new Medicine();
-        this.distancing = new Distancing();
     }
 
     public Vaccination getVaccination() {
@@ -23,7 +21,4 @@ public class Measure {
         return medicine;
     }
 
-    public Distancing getDistancing() {
-        return distancing;
-    }
 }

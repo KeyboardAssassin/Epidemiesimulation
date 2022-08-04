@@ -1,8 +1,8 @@
-package com.codewithdani.models.summaries;
+package com.codewithdani.api.models;
 
 import com.codewithdani.models.regional.City;
 
-public class CitySummary {
+public class CitySummaryTO {
     private String name;
     private final int population;
     private final int populationDensity;
@@ -10,13 +10,13 @@ public class CitySummary {
     private final double rValue;
     private final double sevenDaysIncidence;
 
-    public CitySummary(City city) {
+    public CitySummaryTO(City city) {
         this.name = city.getName();
         this.population = city.getPopulation();
         this.populationDensity = city.getPopulationDensity();
-        this.infectedPeople = city.getTotalNewCases();
-        this.rValue = city.getRValue();
-        this.sevenDaysIncidence = city.getSevenDaysIncidence();
+        this.infectedPeople = city.getInfectionData().getTotalNewCases();
+        this.rValue = city.getInfectionData().getRValue();
+        this.sevenDaysIncidence = city.getInfectionData().getSevenDaysIncidence();
     }
 
     public void setName(String name) {

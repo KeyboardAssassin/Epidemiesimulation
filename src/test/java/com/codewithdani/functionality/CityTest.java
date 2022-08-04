@@ -15,23 +15,23 @@ public class CityTest {
         City testCity = new City("Testcity", 100000, 100);
 
         // set days precisely
-        testCity.setHistoryDay(1, 100);
-        testCity.setHistoryDay(2, 200);
-        testCity.setHistoryDay(3, 300);
-        testCity.setHistoryDay(4, 400);
-        testCity.setHistoryDay(5, 500);
-        testCity.setHistoryDay(6, 600);
-        testCity.setHistoryDay(7, 700);
+        testCity.getInfectionData().setHistoryDay(1, 100);
+        testCity.getInfectionData().setHistoryDay(2, 200);
+        testCity.getInfectionData().setHistoryDay(3, 300);
+        testCity.getInfectionData().setHistoryDay(4, 400);
+        testCity.getInfectionData().setHistoryDay(5, 500);
+        testCity.getInfectionData().setHistoryDay(6, 600);
+        testCity.getInfectionData().setHistoryDay(7, 700);
 
-        testCity.reloadCity();
+        testCity.getInfectionData().updateInfectionData();
 
-        assertEquals(100, testCity.getEntryFromHistory(1));
-        assertEquals(200, testCity.getEntryFromHistory(2));
-        assertEquals(300, testCity.getEntryFromHistory(3));
-        assertEquals(400, testCity.getEntryFromHistory(4));
-        assertEquals(500, testCity.getEntryFromHistory(5));
-        assertEquals(600, testCity.getEntryFromHistory(6));
-        assertEquals(700, testCity.getEntryFromHistory(7));
+        assertEquals(100, testCity.getInfectionData().getEntryFromHistory(1));
+        assertEquals(200, testCity.getInfectionData().getEntryFromHistory(2));
+        assertEquals(300, testCity.getInfectionData().getEntryFromHistory(3));
+        assertEquals(400, testCity.getInfectionData().getEntryFromHistory(4));
+        assertEquals(500, testCity.getInfectionData().getEntryFromHistory(5));
+        assertEquals(600, testCity.getInfectionData().getEntryFromHistory(6));
+        assertEquals(700, testCity.getInfectionData().getEntryFromHistory(7));
     }
 
     @Test
@@ -39,14 +39,14 @@ public class CityTest {
         Country testCountry = new Country("Testcountry",  Virus.ALPHA);
         City testCity = new City("Testcity", 100000, 100);
 
-        testCity.addNewEntryToHistory(10, testCountry);
-        testCity.addNewEntryToHistory(100, testCountry);
-        testCity.addNewEntryToHistory(500, testCountry);
+        testCity.getInfectionData().addNewEntryToHistory(10, testCountry);
+        testCity.getInfectionData().addNewEntryToHistory(100, testCountry);
+        testCity.getInfectionData().addNewEntryToHistory(500, testCountry);
 
-        testCity.reloadCity();
+        testCity.getInfectionData().updateInfectionData();
 
-        assertEquals(10, testCity.getEntryFromHistory(1));
-        assertEquals(100, testCity.getEntryFromHistory(2));
-        assertEquals(500, testCity.getEntryFromHistory(3));
+        assertEquals(10,  testCity.getInfectionData().getEntryFromHistory(1));
+        assertEquals(100, testCity.getInfectionData().getEntryFromHistory(2));
+        assertEquals(500, testCity.getInfectionData().getEntryFromHistory(3));
     }
 }

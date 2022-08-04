@@ -32,7 +32,7 @@ public class SimulationMeasureController {
         simulationService.startMedication(uuid);
     }
 
-    @PutMapping("/{uuid}/measure/contactrestrictions")
+    @GetMapping("/{uuid}/measure/contactrestrictions")
     public void activateContactRestrictions(@RequestParam(value = "type") String type, @RequestParam(value = "name") String name, @RequestParam(value = "amountofdays") int amountOfDays, @PathVariable(value = "uuid") String uuid){
         simulationService.activateContactRestrictions(type, name, amountOfDays, uuid);
     }

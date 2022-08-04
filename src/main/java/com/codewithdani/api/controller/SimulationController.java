@@ -27,7 +27,7 @@ public class SimulationController {
         return simulationService.getAllSimulations();
     }
 
-    @PutMapping("/{uuid}/changespeed")
+    @GetMapping("/{uuid}/speed")
     public void changeSpeed(@RequestParam(value = "speed", defaultValue = "1000") int speed, @PathVariable(value = "uuid") String uuid){
         simulationService.changeSpeed(speed, uuid);
     }
@@ -37,7 +37,7 @@ public class SimulationController {
         return simulationService.getCurrentDay(uuid);
     }
 
-    @PutMapping("/{uuid}/pause")
+    @GetMapping("/{uuid}/pause")
     public void pauseSimulation(@RequestParam(name = "pause") boolean pause, @PathVariable(value = "uuid") String uuid){
         simulationService.pauseSimulation(pause, uuid);
     }

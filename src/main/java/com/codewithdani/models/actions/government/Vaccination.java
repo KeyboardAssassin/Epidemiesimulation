@@ -32,11 +32,11 @@ public class Vaccination {
 
         double vaccinationDisobedienceExponentialMultiplier = 1; // wie schwierig ist es Leute vom Impfen zu überzeugen? e.g. 0 = egal, ob die Leute auf dich hören, lassen sie sich impfen (äußerst Positiv) 1 = neutrale Einstellung - Alles über 1 ist negativ
 
-        float ratioOfVaccination = city.getVaccinationProportion();
+        float ratioOfVaccination = city.getInfectionData().getVaccinationProportion();
         ratioOfVaccination += maxVaccinatedOnOneDay * Math.pow(city.getObedience(), vaccinationDisobedienceExponentialMultiplier);
 
-        city.removeVaccinationProportion(amountOfDecrease);
-        city.addToVaccinationProportion(ratioOfVaccination);
+        city.getInfectionData().removeVaccinationProportion(amountOfDecrease);
+        city.getInfectionData().addToVaccinationProportion(ratioOfVaccination);
     }
 
     public boolean isVaccinationStarted() {

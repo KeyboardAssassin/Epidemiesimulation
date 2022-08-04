@@ -13,7 +13,7 @@ public class SimulationStateController {
         this.simulationService = simulationService;
     }
 
-    @GetMapping("/{uuid}/state/incidencebystate")
+    @GetMapping("/{uuid}/state/incidence")
     public String getIncidenceByState(@RequestParam(name="statename") String name, @PathVariable(name="uuid") String uuid){
         return simulationService.getIncidenceByState(name, uuid);
     }

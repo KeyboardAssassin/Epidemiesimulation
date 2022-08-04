@@ -1,6 +1,6 @@
 package com.codewithdani.models.regional;
 
-import com.codewithdani.functionality.Util;
+import com.codewithdani.util.SimulationUtils;
 import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.threats.Virus;
 
@@ -8,6 +8,8 @@ public class Country {
     private final String name;
     private State[] states;
     private Measure measure;
+
+    private double obedience;
     private double incidence;
     private double rValue;
     private int newInfections;
@@ -65,15 +67,15 @@ public class Country {
         return incidence;
     }
 
-    public String getIncidenceAsString(Util util){
+    public String getIncidenceAsString(){
         double totalIncidence = this.getIncidence();
-        return util.convertIncidenceToStringWith2Digits(totalIncidence);
+        return SimulationUtils.convertIncidenceToStringWith2Digits(totalIncidence);
     }
 
     // TODO Redundant otra vez?
-    public String getRValueAsString(Util util){
+    public String getRValueAsString(){
         double rValue = this.getRValue();
-        return util.convertIncidenceToStringWith2Digits(rValue);
+        return SimulationUtils.convertIncidenceToStringWith2Digits(rValue);
     }
     public double getRValue() {
         return rValue;
@@ -91,10 +93,6 @@ public class Country {
         this.incidence = incidence;
     }
 
-    public void setRValue(double rValue) {
-        this.rValue = rValue;
-    }
-
     public void setNewInfections(int newInfections) {
         this.newInfections = newInfections;
     }
@@ -108,6 +106,7 @@ public class Country {
             setIncidence(this.calculateSummaryInfo("incidence"));
             setNewInfections((int)this.calculateSummaryInfo("newcases"));
             setNewDeathCases((int)this.calculateSummaryInfo("deadcases"));
+            setObedience();
             this.updateRValue();
         }
         catch (Exception e){
@@ -124,9 +123,10 @@ public class Country {
         // loops through every state and every city
         for (State state: states) {
             for(City city : state.getCities()){
-                sumOfAllSevenDaysIncidences += city.getSevenDaysIncidence();
-                sumOfAllNewInfections += city.getFristInfectionNewCases(); // TODO richtige membervariable? Oder braucht es noch eine new cases
-                sumOfAllNewDeathCases += city.getDeadCases();
+                sumOfAllSevenDaysIncidences += city.getInfectionData().getSevenDaysIncidence();
+                // TODO richtige membervariable? Oder braucht es noch eine new cases
+                sumOfAllNewInfections += city.getInfectionData().getFristInfectionNewCases();
+                sumOfAllNewDeathCases += city.getInfectionData().getDeadCases();
             }
             amountOfCities += state.getCities().size();
         }
@@ -143,7 +143,7 @@ public class Country {
     private void updateRValue(){
         double rValue = 0;
             for (State state: this.getStates()) {
-                rValue += state.getrValue() * state.getTotalPopulation() / this.getCountryTotalPopulation();
+                rValue += state.getRValue() * state.getTotalPopulation() / this.getCountryTotalPopulation();
             }
         this.rValue = rValue;
     }
@@ -181,8 +181,22 @@ public class Country {
     public void updateAllCityVirus(Virus virus){
         for (State state: states) {
             for (City city: state.getCities()) {
-                city.setCurrentVirus(virus);
+                city.getInfectionData().setCurrentVirus(virus);
             }
         }
     }
+
+    public double getObedience() {
+        return obedience;
+    }
+
+    public void setObedience() {
+        double totalObedience = 0;
+
+        for (State state: this.getStates()) {
+            totalObedience += state.getObedience();
+        }
+        this.obedience = totalObedience / states.length;
+    }
+
 }
