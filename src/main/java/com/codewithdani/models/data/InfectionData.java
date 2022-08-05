@@ -19,7 +19,6 @@ public class InfectionData {
     private double sevenDaysIncidence;
     private double rValue;
     private int[] caseHistory;
-    // TODO MUss noch privat
     private HealedHistory healedHistory;
     private Virus currentVirus;
     private float vaccinationProportion;
@@ -27,7 +26,7 @@ public class InfectionData {
 
     public final static int NOT_INITIALISED = -1;
 
-    private City thisCity;
+    private transient City thisCity;
 
     public InfectionData(City city, int population) {
         // TODO Reihenfolge überprüfen

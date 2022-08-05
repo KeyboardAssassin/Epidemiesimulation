@@ -9,18 +9,17 @@ public class State {
     private final List<City> cities;
     private int totalPopulation;
     private double rValue;
-    private double obedience = 1;
+    private double obedience;
     private double contactRestrictions = 1; // can only go higher e.g. 1 = 100% 2 = 50% 4 = 25%
     private int contactRestrictionsDaysLeft;
-    private final int stateTotalPopulation;
     private int stateInfectedPopulation;
     private double stateInfectionRatio = 0.0;
 
     public State(String name, List<City> citiesOfState) {
         this.name = name;
         this.cities = citiesOfState;
-        this.stateTotalPopulation = this.calculateStatePopulation();
         this.stateInfectedPopulation = 0;
+        this.obedience = 1;
     }
 
     public List<City> getCities() {
@@ -38,7 +37,7 @@ public class State {
         }
         double sevenDaysIncidence =  totalIncidence / cities.size();
 
-        return (sevenDaysIncidence / this.getStateTotalPopulation()) * 100000;
+        return (sevenDaysIncidence / this.getTotalPopulation()) * 100000;
     }
 
     public double getObedience() {
@@ -58,10 +57,10 @@ public class State {
     }
 
     public void calculateAndSetInfectionRatio(){
-        this.stateInfectionRatio = this.stateInfectedPopulation / (double)this.stateTotalPopulation ;
+        this.stateInfectionRatio = this.stateInfectedPopulation / (double)this.totalPopulation ;
     }
 
-    private void updateTotalPopulation() {
+    public void updateTotalPopulation() {
         this.totalPopulation =  this.getCities().stream().map(City::getPopulation).reduce(0, (Integer::sum));
     }
 
@@ -70,11 +69,11 @@ public class State {
     }
 
     private void updateRValue(){
-        double rValue = 0;
+        double newRValue = 0;
         for (City city: this.getCities()) {
-            rValue += city.getInfectionData().getRValue() *  city.getPopulation() / getTotalPopulation();
+            newRValue += city.getInfectionData().getRValue() *  city.getPopulation() / getTotalPopulation();
         }
-        this.rValue = rValue;
+        this.rValue = newRValue;
     }
 
     public void updateState(){
@@ -82,25 +81,8 @@ public class State {
         this.updateRValue();
     }
 
-    /**
-     * Calculates and sets the total population of a state
-     *
-     * @return total population of all states - e.g. 500000
-     */
-    public int calculateStatePopulation(){
-        int totalPopulation = 0;
-        for (City city: this.getCities()) {
-            totalPopulation += city.getPopulation();
-        }
-        return totalPopulation;
-    }
-
     public double getStateInfectionRatio() {
         return stateInfectionRatio;
-    }
-
-    public int getStateTotalPopulation() {
-        return stateTotalPopulation;
     }
 
     public void updateObedience() {

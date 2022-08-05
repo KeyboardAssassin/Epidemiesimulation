@@ -12,7 +12,7 @@ public class City {
     private final String name;
     private final int populationDensity;
     private int population;
-    private double obedience;
+    private double obedience = 1;
     private double contactRestrictions;
     private int contactRestrictionsDaysLeft;
     private InfectionData infectionData;
@@ -34,11 +34,7 @@ public class City {
         this.name = name;
         this.population = population;
         this.populationDensity = populationDensity;
-        this.infectionData = new InfectionData(this, population);
-    }
 
-    public void setObedience(double obedience) {
-        this.obedience = obedience;
     }
 
     public String getName() {
@@ -175,5 +171,9 @@ public class City {
 
     public InfectionData getInfectionData() {
         return infectionData;
+    }
+
+    public void createInfectionData(){
+        this.infectionData = new InfectionData(this, population);
     }
 }

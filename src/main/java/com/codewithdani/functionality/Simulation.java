@@ -148,7 +148,7 @@ public class Simulation {
                     currentTestedState.updateState();
 
                     if (currentDay == 0){
-                        currentTestedState.calculateStatePopulation();
+                        currentTestedState.updateTotalPopulation();
                     }
 
                     // calculate infection ratio for current state

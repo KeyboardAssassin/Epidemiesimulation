@@ -35,6 +35,12 @@ public class JsonHandler {
             // TODO DELETE AND CREATE NEW JSON?
         }
 
+        for (State state : country.getStates()) {
+            for (City city : state.getCities()) {
+                city.createInfectionData();
+            }
+        }
+
         return country;
     }
 
@@ -167,13 +173,6 @@ public class JsonHandler {
 
         Country germany = new Country("Deutschland", alpha);
         germany.setStates(germanStates);
-
-        for (State state: germany.getStates()) {
-            for (City city: state.getCities()) {
-                city.setObedience(state.getObedience());
-            }
-        }
-
 
         try {
             writer = new FileWriter(filePath);
