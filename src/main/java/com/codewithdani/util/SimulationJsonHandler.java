@@ -8,40 +8,37 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.List;
 
-public class JsonHandler {
+public class SimulationJsonHandler {
 
     private static final String PATH = "/Users/Dani/Desktop/germany.json";
 
 
-    public Country importCountryFromJson(Country country){
+    public static Country importCountryFromJson(String countryName) throws IOException {
         Gson gson = new Gson();
-        File filePath = new File(PATH);
-        FileReader reader;
+        File filePath = new File(Paths.get(countryName + ".json").toString());
+        Country country;
 
         try {
-            reader = new FileReader(filePath);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
+            FileReader reader = new FileReader(filePath);
             country = gson.fromJson(reader, Country.class);
+            for (State state : country.getStates()) {
+                for (City city : state.getCities()) {
+                    city.createInfectionData();
+                }
+            }
             reader.close();
+
+            return country;
         }
         catch (Exception e){
             System.out.println("Fehler beim importieren aus einer json Datei!");
             // TODO DELETE AND CREATE NEW JSON?
         }
 
-        for (State state : country.getStates()) {
-            for (City city : state.getCities()) {
-                city.createInfectionData();
-            }
-        }
-
-        return country;
+        return createPreExistingGermany();
     }
 
     public void exportCountryToJson(Country country){
@@ -65,8 +62,8 @@ public class JsonHandler {
         }
     }
 
-    public void createPreExistingGermany(Virus alpha){
-        File filePath = new File(PATH);
+    public static Country createPreExistingGermany() throws IOException {
+        File filePath = new File(Paths.get("germany.json").toString());
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileWriter writer;
 
@@ -171,26 +168,23 @@ public class JsonHandler {
         State[] germanStates = {thuringen, bayern, hessen, badenWurttemberg, sachsen, niedersachsen, rheinlandpfalz, schleswigholstein,
                 saarland, berlin, brandenburg, bremen, nordrheinwestfahlen, hamburg, mecklenburgvorpommern, sachsenanhalt};
 
-        Country germany = new Country("Deutschland", alpha);
+        Country germany = new Country("Deutschland", Virus.ALPHA);
         germany.setStates(germanStates);
 
-        try {
-            writer = new FileWriter(filePath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         try{
+            writer = new FileWriter(filePath);
             gson.toJson(germany, writer);
             writer.flush();
             writer.close();
         }catch (Exception e){
             System.out.println("Fehler beim exportieren des Landes " + germany.getName() + " in eine json Datei!");
         }
+
+        return germany;
     }
 
-    public Boolean checkIfCountryJsonExists(String countryName){
-        File filePath = new File("/Users/Dani/Desktop/".concat(countryName).concat(".json"));
-        return filePath.exists();
+    public static boolean checkIfCountryJsonExists(String countryName){
+        File file = new File(Paths.get(countryName + ".json").toString());
+        return file.exists();
     }
 }

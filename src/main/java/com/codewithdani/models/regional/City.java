@@ -3,6 +3,7 @@ package com.codewithdani.models.regional;
 import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.data.Data;
 import com.codewithdani.models.data.InfectionData;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Random;
 
@@ -15,7 +16,7 @@ public class City {
     private double obedience = 1;
     private double contactRestrictions;
     private int contactRestrictionsDaysLeft;
-    private InfectionData infectionData;
+    private transient InfectionData infectionData;
 
     // min and max amount a persons meets other persons per day (random)
     private static final double MIN_AMOUNT_OF_MEETINGS_PER_DAY = 2.3;
@@ -34,7 +35,7 @@ public class City {
         this.name = name;
         this.population = population;
         this.populationDensity = populationDensity;
-
+        this.infectionData = new InfectionData(this, population);
     }
 
     public String getName() {

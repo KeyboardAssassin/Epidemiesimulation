@@ -5,6 +5,7 @@ import com.codewithdani.api.models.SimulationListResponseTO;
 import com.codewithdani.api.models.CitySummaryTO;
 import com.codewithdani.api.models.RegionIncidenceReportTO;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface SimulationService {
@@ -15,7 +16,7 @@ public interface SimulationService {
      * @param amountOfSimulations - how many simulations should run behind each other
      * @return uuid of the newly created simulation
      */
-    String startSimulation(int amountOfSimulations);
+    String startSimulation(int amountOfSimulations) throws IOException;
 
 
     /**

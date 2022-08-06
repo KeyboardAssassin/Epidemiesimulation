@@ -1,16 +1,15 @@
 package com.codewithdani.functionality;
 
-import com.codewithdani.util.JsonHandler;
+import com.codewithdani.models.actions.government.Vaccination;
+import com.codewithdani.util.SimulationJsonHandler;
 import com.codewithdani.models.data.Data;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
 import com.codewithdani.models.threats.Virus;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Random;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 import static com.codewithdani.models.actions.self.Distancing.SOCIAL_DISTANCING_VALUE;
 
@@ -30,19 +29,18 @@ public class Simulation {
 
     Date creationDate = Calendar.getInstance().getTime();
 
-    public void startSimulation(int amountOfSimulations){
-        // create the json Reader/Writer Object
-        JsonHandler jsonHandler = new JsonHandler();
+    public void startSimulation(int amountOfSimulations) throws IOException {
 
         // create an empty Country
-        Country germany = new Country("Deutschland", Virus.ALPHA);
+        Country germany;
 
         // check if a json file of that country already exists
-        if (!jsonHandler.checkIfCountryJsonExists("germany")) {
-            jsonHandler.createPreExistingGermany(Virus.ALPHA);
+        if (SimulationJsonHandler.checkIfCountryJsonExists("germany")) {
+            germany = SimulationJsonHandler.importCountryFromJson("germany");
+        } else {
+           germany = SimulationJsonHandler.createPreExistingGermany();
         }
-        germany = jsonHandler.importCountryFromJson(germany);
-        germany.setCountryTotalPopulation();
+
 
         System.out.println("Erfolgreich gestartet");
         System.out.println("Geladenes Land: " + germany.getName());
@@ -51,7 +49,6 @@ public class Simulation {
         int averagePandemicTime = 0;
         int daysOfTestingPerPandemic = 365;
         simulatedCountry = germany;
-        City currentTestedCity;
 
         boolean allStatesSocialDistancingSet = false;
 
@@ -59,7 +56,6 @@ public class Simulation {
         initialiseDataClass();
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
-            simulatedCountry = germany;
 
             // growth algorithm for 1 year
             for (int currentDay = 0; currentDay < daysOfTestingPerPandemic; currentDay++){
@@ -90,57 +86,7 @@ public class Simulation {
 
                 // count down days left of restrictions
                 // if restrictions ends then reset it to 0
-                for (State state : simulatedCountry.getStates()) {
-                    int daysLeft = state.getContactRestrictionsDaysLeft();
-                    double obedienceLostPerDay = 0.08;
-                    double obedienceGainPerDay = 0.02;
-
-                    if (daysLeft > 0){
-                        state.setContactRestrictionDuration(daysLeft - 1);
-
-                        state.removeObedienceFromAllCities(obedienceLostPerDay);
-                    }
-                    // if contact restrictions end
-                    if (daysLeft - 1 == 0){
-                        if (simulatedCountry.isSocialDistancingActivated()){
-                            state.setContactRestrictionDuration(0);
-                            state.setContactRestrictions(SOCIAL_DISTANCING_VALUE);
-                            state.updateAllCitiesContactRestrictions(SOCIAL_DISTANCING_VALUE);
-                        }
-                        else {
-                            // TODO Beide Methoden ggf. zusammenlegen
-                            state.setContactRestrictions(0);
-                            state.updateAllCitiesContactRestrictions(0);
-                        }
-                        state.removeObedienceFromAllCities(obedienceLostPerDay);
-                    }
-                    // if no restrictions are active check if the city got restrictions
-                    if(daysLeft == 0){
-                        for (City city: state.getCities()) {
-                            daysLeft = city.getContactRestrictionsDaysLeft();
-                            if (daysLeft - 1 == 0){
-                                if (simulatedCountry.isSocialDistancingActivated()){
-                                    city.setContactRestrictionDuration(0);
-                                    city.setContactRestrictions(SOCIAL_DISTANCING_VALUE);
-                                }
-                                else {
-                                    city.setContactRestrictionDuration(0);
-                                    city.setContactRestrictions(0);
-                                }
-
-                                // loose obedience (last day of restrictions)
-                                city.loseObedience(obedienceLostPerDay);
-                            }
-                            else if (daysLeft > 0){
-                                city.setContactRestrictionDuration(daysLeft - 1);
-                                city.loseObedience(obedienceLostPerDay);
-                            }
-                            else if (daysLeft == 0){
-                                city.gainObedience(obedienceGainPerDay);
-                            }
-                        }
-                    }
-                }
+                restrictionCalculations(Arrays.asList(simulatedCountry.getStates()));
 
                 // run the simulation for every state of germany
                 for (State currentTestedState : simulatedCountry.getStates()) {
@@ -155,35 +101,20 @@ public class Simulation {
                     currentTestedState.calculateAndSetInfectedPopulation();
                     currentTestedState.calculateAndSetInfectionRatio();
 
-                    // run the simulation for every city of the current state
-                    for (int numberOfCurrentCity = 0; numberOfCurrentCity < currentTestedState.getCities().size(); numberOfCurrentCity++) {
-                        // set the current City
-                        currentTestedCity = currentTestedState.getCities().get(numberOfCurrentCity);
 
-                        // try to vaccinate people if the vaccination is developed and the vaccination campaign started
-                        // TODO Langes Statement?
-                        if (simulatedCountry.getMeasure().getVaccination().isVaccinationApproved() && simulatedCountry.getMeasure().getVaccination().isVaccinationStarted()){
-                            simulatedCountry.getMeasure().getVaccination().updateVaccination(currentTestedCity);
-                        } else {
-                            simulatedCountry.getMeasure().getVaccination().checkIfVaccinationIsDeveloped(currentDay);
-                        }
-
-                        // try to produce medicine for severe cases
-                        if (simulatedCountry.getMeasure().getMedicine().isMedicineApproved() && simulatedCountry.getMeasure().getMedicine().isMedicationStarted()){
-                            simulatedCountry.getMeasure().getMedicine().produceMedicine();
-                        } else {
-                            simulatedCountry.getMeasure().getMedicine().checkIfMedicineIsDeveloped(currentDay);
-                        }
+                    for (City city : currentTestedState.getCities()) {// try to vaccinate people if the vaccination is developed and the vaccination campaign started
+                        // Usage of Vaccination & Medicine
+                        vaccinationHandling(currentDay, city);
+                        medicineHandling(currentDay);
 
                         // change virus over the days
                         virusEvolution(currentDay, simulatedCountry);
 
-                        currentTestedCity.getInfectionData().calculateAndSetInfectionRatio();
+                        city.getInfectionData().calculateAndSetInfectionRatio();
 
-                        int nextDayInfections = currentTestedCity.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio(), data, random, this.getSimulatedCountry().getMeasure());
+                        int nextDayInfections = city.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio(), data, random, this.getSimulatedCountry().getMeasure());
 
-                        currentTestedCity.getInfectionData().addNewEntryToHistory(nextDayInfections, simulatedCountry);
-
+                        city.getInfectionData().addNewEntryToHistory(nextDayInfections, simulatedCountry);
                     }
 
                     // Update median obedience of all cities onto the state
@@ -207,8 +138,7 @@ public class Simulation {
                     System.out.println("Pandemie beendet an Tag: " + currentDay);
 
                     // reset all cities to start a new simulation
-                    jsonHandler.createPreExistingGermany(Virus.ALPHA);
-                    germany = jsonHandler.importCountryFromJson(germany);
+                    germany = SimulationJsonHandler.createPreExistingGermany();
                     averagePandemicTime += currentDay;
                     break;
                 }
@@ -216,6 +146,74 @@ public class Simulation {
         }
         System.out.println();
         System.out.println("Durchschnittliche Dauer einer Pandemie: " + averagePandemicTime / amountOfSimulations + " Tage");
+    }
+
+    private void vaccinationHandling(int currentDay, City city) {
+        Vaccination vaccination = simulatedCountry.getMeasure().getVaccination();
+        if (vaccination.isVaccinationApproved() && vaccination.isVaccinationStarted()) {
+            vaccination.updateVaccination(city);
+        } else {
+            vaccination.checkIfVaccinationIsDeveloped(currentDay);
+        }
+    }
+
+    private void medicineHandling(int currentDay) {
+        // try to produce medicine for severe cases
+        if (simulatedCountry.getMeasure().getMedicine().isMedicineApproved() && simulatedCountry.getMeasure().getMedicine().isMedicationStarted()) {
+            simulatedCountry.getMeasure().getMedicine().produceMedicine();
+        } else {
+            simulatedCountry.getMeasure().getMedicine().checkIfMedicineIsDeveloped(currentDay);
+        }
+    }
+
+    private void restrictionCalculations(List<State> states) {
+        for (State state : states) {
+            int daysLeft = state.getContactRestrictionsDaysLeft();
+            double obedienceLostPerDay = 0.08;
+            double obedienceGainPerDay = 0.02;
+
+            if (daysLeft > 0) {
+                state.setContactRestrictionDuration(daysLeft - 1);
+
+                state.removeObedienceFromAllCities(obedienceLostPerDay);
+            }
+            // if contact restrictions end
+            if (daysLeft - 1 == 0) {
+                if (simulatedCountry.isSocialDistancingActivated()) {
+                    state.setContactRestrictionDuration(0);
+                    state.setContactRestrictions(SOCIAL_DISTANCING_VALUE);
+                    state.updateAllCitiesContactRestrictions(SOCIAL_DISTANCING_VALUE);
+                } else {
+                    // TODO Beide Methoden ggf. zusammenlegen
+                    state.setContactRestrictions(0);
+                    state.updateAllCitiesContactRestrictions(0);
+                }
+                state.removeObedienceFromAllCities(obedienceLostPerDay);
+            }
+            // if no restrictions are active check if the city got restrictions
+            if (daysLeft == 0) {
+                for (City city : state.getCities()) {
+                    daysLeft = city.getContactRestrictionsDaysLeft();
+                    if (daysLeft - 1 == 0) {
+                        if (simulatedCountry.isSocialDistancingActivated()) {
+                            city.setContactRestrictionDuration(0);
+                            city.setContactRestrictions(SOCIAL_DISTANCING_VALUE);
+                        } else {
+                            city.setContactRestrictionDuration(0);
+                            city.setContactRestrictions(0);
+                        }
+
+                        // loose obedience (last day of restrictions)
+                        city.loseObedience(obedienceLostPerDay);
+                    } else if (daysLeft > 0) {
+                        city.setContactRestrictionDuration(daysLeft - 1);
+                        city.loseObedience(obedienceLostPerDay);
+                    } else if (daysLeft == 0) {
+                        city.gainObedience(obedienceGainPerDay);
+                    }
+                }
+            }
+        }
     }
 
     static void virusEvolution(int day, Country simulatedCountry){

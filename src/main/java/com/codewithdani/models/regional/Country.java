@@ -25,6 +25,7 @@ public class Country {
 
     public void setStates(State[] states) {
         this.states = states;
+        this.setCountryTotalPopulation();
     }
 
     public String getName() {
@@ -149,7 +150,7 @@ public class Country {
     }
 
 
-    public void setCountryTotalPopulation() {
+    private void setCountryTotalPopulation() {
         int totalPopulation = 0;
 
         for (State state: this.getStates()) {

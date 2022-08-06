@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public String startSimulation(int amountOfSimulations) {
+    public String startSimulation(int amountOfSimulations) throws IOException {
         Simulation simulation = new Simulation();
         simulationList.put(simulation.getId(), simulation);
         simulationRunner.runSimulation(simulation, amountOfSimulations);

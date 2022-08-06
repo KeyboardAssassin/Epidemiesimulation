@@ -4,6 +4,7 @@ import com.codewithdani.api.models.SimulationListResponseTO;
 import com.codewithdani.functionality.SimulationService;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class SimulationController {
     }
 
     @PostMapping()
-    public String startSimulation(@RequestParam(value= "amountofsimulations", defaultValue = "1") int amountOfSimulations){
+    public String startSimulation(@RequestParam(value= "amountofsimulations", defaultValue = "1") int amountOfSimulations) throws IOException {
         return simulationService.startSimulation(amountOfSimulations);
     }
 
