@@ -15,7 +15,8 @@ public class InfectionData {
     private int fristInfectionNewCases;
     private int totalNewCases;
     private int healedCases;
-    private int deadCases;
+    private int totalDeadCases;
+    private int currentDayDeadCases;
     private double sevenDaysIncidence;
     private double rValue;
     private int[] caseHistory;
@@ -29,22 +30,19 @@ public class InfectionData {
     private transient City thisCity;
 
     public InfectionData(City city, int population) {
-        // TODO Reihenfolge überprüfen
-        this.vaccinationProportion = 0.0f;
-        this.currentVirus = Virus.ALPHA;
-        this.caseHistory = new int[]{NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED};
-        this.rValue = 0.0;
-        this.healedHistory = new HealedHistory();
         this.populationLeftFirstInfection = population;
         this.sevenDaysIncidence = 0.0;
+        this.rValue = 0.0;
+        this.caseHistory = new int[]{NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED};
+        this.healedHistory = new HealedHistory();
+        this.currentVirus = Virus.ALPHA;
+        this.vaccinationProportion = 0.0f;
         this.cityInfectionRatio = 0.0;
         thisCity = city;
     }
 
     public void updateSevenDaysIncidence(){
-        // TODO Nur durch die Anzahl der caseHistoryElemente teilen die nicht -1 sind statt caseHistory.length!
-        double sevenDaysIncidence =  getTotalActiveCases() / caseHistory.length;
-        this.sevenDaysIncidence = (sevenDaysIncidence / thisCity.getPopulation()) * 100000;
+        this.sevenDaysIncidence = (getTotalActiveCases() / thisCity.getPopulation()) * 100000;
     }
 
     public double getSevenDaysIncidence() {
@@ -100,6 +98,8 @@ public class InfectionData {
             healedHistory.addEntry(caseHistory[6]);
         }
 
+        this.updateRValue(amountOfCases);
+
         //  shift every element and add new cases at the first
         caseHistory[1] = caseHistory[0];
         caseHistory[2] = caseHistory[1];
@@ -153,7 +153,20 @@ public class InfectionData {
     }
 
     public void updateDeadCases(int amountOfCases){
-        this.deadCases += amountOfCases;
+        updateDayDeadCases(amountOfCases);
+        updateTotalDeadCases(amountOfCases);
+    }
+
+    public void updateTotalDeadCases(int amountOfCases){
+        this.totalDeadCases += amountOfCases;
+    }
+
+    public void updateDayDeadCases(int amountOfCases){
+        this.currentDayDeadCases = amountOfCases;
+    }
+
+    public int getCurrentDayDeadCases() {
+        return currentDayDeadCases;
     }
 
     public void updatePopulationLeftToInfect(int amountOfFirstCases){
@@ -184,8 +197,8 @@ public class InfectionData {
         return totalNewCases;
     }
 
-    public int getDeadCases() {
-        return deadCases;
+    public int getTotalDeadCases() {
+        return totalDeadCases;
     }
 
     public double getRValue() {
@@ -196,16 +209,15 @@ public class InfectionData {
         this.rValue = rValue;
     }
 
-    public void updateRValue(){
+    public void updateRValue(int amountOfCases){
         // calculates rValue if 7 days history is filled
         // comparison between smoothened 4 days mean
-        // (old) elements 4, 5, 6 vs
-        // (new) elements 0, 1, 2
+        // (new) elements this day new cases, 0, 1, 2
+        // (old) elements 3, 4, 5, 6 vs
         if (caseHistory[6] != NOT_INITIALISED) {
-            double newValue = (caseHistory[0] + caseHistory[1] + caseHistory[2]) / 3;
-            double oldValue = (caseHistory[4] + caseHistory[5] + caseHistory[6]) / 3;
+            double newValue = (amountOfCases + caseHistory[0] + caseHistory[1] + caseHistory[2]) / 4;
+            double oldValue = (caseHistory[3] + caseHistory[4] + caseHistory[5] + caseHistory[6]) / 4;
 
-            // TODO R-Wert unter 1
             setRValue(newValue / oldValue);
         }
         // if no day is filled or the second entry is 0 (cannot be divided by 0)
@@ -274,7 +286,6 @@ public class InfectionData {
     public void updateInfectionData(){
         this.updateActiveCases();
         this.updateNewCases();
-        this.updateRValue();
         this.updateSevenDaysIncidence();
     }
 }

@@ -6,6 +6,7 @@ import com.codewithdani.api.models.CitySummaryTO;
 import com.codewithdani.api.models.RegionIncidenceReportTO;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface SimulationService {
@@ -58,9 +59,9 @@ public interface SimulationService {
     void activateContactRestrictions(String type, String name, int amountOfDays, String uuid);
 
     /**
-     * Method to activate a social distancing measure
+     * Method to activate/deactivate the social distancing measure
      */
-    void activateSocialDistancing(String uuid);
+    void toggleSocialDistancing(String uuid, boolean status);
 
     /**
      * Method to create a CitySummary of a certain city
@@ -143,7 +144,26 @@ public interface SimulationService {
     /**
      * Method to get the current obedience of a nation
      *
+     * @param uuid - the ID of the simulation to end
      * @return obedience between 0 (no obedience) and 1 (obedience)
      */
     double getObedience(String uuid);
+
+    /**
+     * Method to remove all contact restrictions of the country
+     * @param uuid - the ID of the simulation to end
+     */
+    void removeCountryRestrictions(String uuid);
+    /**
+     * Method to remove all contact restrictions of a certain state
+     * @param uuid - the ID of the simulation to end
+     */
+    void removeStateRestrictions(String uuid, String stateName);
+
+    /**
+     * Method to remove all contact restrictions of a certain city
+     * @param uuid - the ID of the simulation to end
+     */
+    void removeCityRestrictions(String uuid, String cityName);
+
 }

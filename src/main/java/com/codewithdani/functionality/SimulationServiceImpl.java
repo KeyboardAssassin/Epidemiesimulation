@@ -149,8 +149,23 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public void activateSocialDistancing(String uuid){
-        getSimulationByUuidOrError(uuid).getSimulatedCountry().setSocialDistancingActivated(true);
+    public void toggleSocialDistancing(String uuid, boolean status){
+        getSimulationByUuidOrError(uuid).getSimulatedCountry().setSocialDistancing(status);
+    }
+
+    @Override
+    public void removeCountryRestrictions(String uuid){
+        getSimulationByUuidOrError(uuid).getSimulatedCountry().resetAllRestrictions();
+    }
+
+    @Override
+    public void removeStateRestrictions(String uuid, String stateName){
+        getSimulationByUuidOrError(uuid).getSimulatedCountry().resetOneStateRestrictions(stateName);
+    }
+
+    @Override
+    public void removeCityRestrictions(String uuid, String cityName){
+        getSimulationByUuidOrError(uuid).getSimulatedCountry().resetOneCityRestrictions(cityName);
     }
 
     @Override

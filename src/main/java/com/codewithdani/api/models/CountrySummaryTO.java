@@ -12,6 +12,7 @@ public class CountrySummaryTO {
     private final boolean vaccinationStarted;
     private final boolean medicationDeveloped;
     private final boolean medicationStarted;
+    private final boolean simulationEnded;
 
     public CountrySummaryTO(Country country) {
         incidence = country.getIncidenceAsString();
@@ -22,13 +23,14 @@ public class CountrySummaryTO {
         medicationDeveloped = country.getMeasure().getMedicine().isMedicineApproved();
         vaccinationStarted = country.getMeasure().getVaccination().isVaccinationStarted();
         medicationStarted = country.getMeasure().getMedicine().isMedicationStarted();
+        simulationEnded = country.isEpidemicEnded();
     }
 
     public String getIncidence() {
         return incidence;
     }
 
-    public String getrValue() {
+    public String getRValue() {
         return rValue;
     }
 
@@ -54,5 +56,9 @@ public class CountrySummaryTO {
 
     public boolean isMedicationStarted() {
         return medicationStarted;
+    }
+
+    public boolean isSimulationEnded() {
+        return simulationEnded;
     }
 }

@@ -3,7 +3,6 @@ package com.codewithdani.models.regional;
 import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.data.Data;
 import com.codewithdani.models.data.InfectionData;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Random;
 

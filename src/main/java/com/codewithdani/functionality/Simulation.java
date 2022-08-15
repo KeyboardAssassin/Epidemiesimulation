@@ -30,32 +30,25 @@ public class Simulation {
     Date creationDate = Calendar.getInstance().getTime();
 
     public void startSimulation(int amountOfSimulations) throws IOException {
-
-        // create an empty Country
-        Country germany;
-
-        // check if a json file of that country already exists
-        if (SimulationJsonHandler.checkIfCountryJsonExists("germany")) {
-            germany = SimulationJsonHandler.importCountryFromJson("germany");
-        } else {
-           germany = SimulationJsonHandler.createPreExistingGermany();
-        }
-
+        // load custom country or create country from template
+        loadCountryOrCreateGermanyFromTemplate();
 
         System.out.println("Erfolgreich gestartet");
-        System.out.println("Geladenes Land: " + germany.getName());
-        System.out.println(germany.getAmountOfStates() + " Bundesländer");
+        System.out.println("Geladenes Land: " + simulatedCountry.getName());
+        System.out.println(simulatedCountry.getAmountOfStates() + " Bundesländer");
 
         int averagePandemicTime = 0;
         int daysOfTestingPerPandemic = 365;
-        simulatedCountry = germany;
-
-        boolean allStatesSocialDistancingSet = false;
 
         // execute all setting methods
         initialiseDataClass();
 
         for (int amountOfSimulation = 0; amountOfSimulation < amountOfSimulations; amountOfSimulation++){
+
+            if (amountOfSimulation >= 1){
+                // reset all cities to start a new simulation
+                loadCountryOrCreateGermanyFromTemplate();
+            }
 
             // growth algorithm for 1 year
             for (int currentDay = 0; currentDay < daysOfTestingPerPandemic; currentDay++){
@@ -68,24 +61,6 @@ public class Simulation {
                 while (simulationPause){
                     // do nothing while pause
                 }
-
-                // handling for Social Distancing
-                if (simulatedCountry.isSocialDistancingActivated() && !allStatesSocialDistancingSet){
-                    for (State state: simulatedCountry.getStates()) {
-                        if (state.getContactRestrictions() < SOCIAL_DISTANCING_VALUE){
-                            state.setContactRestrictions(SOCIAL_DISTANCING_VALUE);
-                        }
-                        for (City city: state.getCities()) {
-                            if (city.getContactRestrictions() < SOCIAL_DISTANCING_VALUE){
-                                city.setContactRestrictions(SOCIAL_DISTANCING_VALUE);
-                            }
-                        }
-                    }
-                    allStatesSocialDistancingSet = true;
-                }
-
-                // count down days left of restrictions
-                // if restrictions ends then reset it to 0
                 restrictionCalculations(Arrays.asList(simulatedCountry.getStates()));
 
                 // run the simulation for every state of germany
@@ -135,10 +110,9 @@ public class Simulation {
 
                 // end the pandemic + logging
                 if (checkIfEveryCityHasNoNewInfections(simulatedCountry) && this.day > 10) {
+                    simulatedCountry.setEpidemicEnded(true);
                     System.out.println("Pandemie beendet an Tag: " + currentDay);
 
-                    // reset all cities to start a new simulation
-                    germany = SimulationJsonHandler.createPreExistingGermany();
                     averagePandemicTime += currentDay;
                     break;
                 }
@@ -146,6 +120,15 @@ public class Simulation {
         }
         System.out.println();
         System.out.println("Durchschnittliche Dauer einer Pandemie: " + averagePandemicTime / amountOfSimulations + " Tage");
+    }
+
+    private void loadCountryOrCreateGermanyFromTemplate() throws IOException {
+        // check if a json file of a custom country already exists or create new from template (germany)
+        if (SimulationJsonHandler.checkIfCountryJsonExists("germany")) {
+            simulatedCountry = SimulationJsonHandler.importCountryFromJson("germany");
+        } else {
+            simulatedCountry = SimulationJsonHandler.createPreExistingGermany();
+        }
     }
 
     private void vaccinationHandling(int currentDay, City city) {
@@ -167,6 +150,8 @@ public class Simulation {
     }
 
     private void restrictionCalculations(List<State> states) {
+        // count down days left of restrictions
+        // if restrictions ends then reset it to 0
         for (State state : states) {
             int daysLeft = state.getContactRestrictionsDaysLeft();
             double obedienceLostPerDay = 0.08;

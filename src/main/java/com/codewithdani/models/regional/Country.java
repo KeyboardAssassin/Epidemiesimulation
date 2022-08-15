@@ -4,6 +4,8 @@ import com.codewithdani.util.SimulationUtils;
 import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.threats.Virus;
 
+import static com.codewithdani.models.actions.self.Distancing.SOCIAL_DISTANCING_VALUE;
+
 public class Country {
     private final String name;
     private State[] states;
@@ -16,6 +18,7 @@ public class Country {
     private int newDeathCases;
     private int countryTotalPopulation;
     private boolean socialDistancingActivated;
+    private boolean epidemicEnded = false;
     private Virus currentVirus;
     public Country(String name, Virus startVirus) {
         this.name = name;
@@ -43,7 +46,7 @@ public class Country {
     public City getCityByName(String name){
         for (State state : states){
             for (City city : state.getCities()){
-             if (city.getName().toLowerCase().equals(name)) return city;
+             if (city.getName().equalsIgnoreCase(name)) return city;
             }
         }
         // TODO GEFAHR
@@ -51,12 +54,12 @@ public class Country {
     }
 
 
-    // TODO Ebenfalls
+
     public State getStateByName(String name){
         for (State state : states){
             if (state.getName().equalsIgnoreCase(name)) return state;
         }
-
+        // TODO Ebenfalls
         return null;
     }
 
@@ -116,25 +119,23 @@ public class Country {
     }
 
     public double calculateSummaryInfo(String type){
-        double sumOfAllSevenDaysIncidences = 0.0;
+        double sumOfAllCitiesNewInfections7Days = 0.0;
         int sumOfAllNewInfections = 0;
         int sumOfAllNewDeathCases = 0;
-        int amountOfCities = 0;
 
         // loops through every state and every city
         for (State state: states) {
             for(City city : state.getCities()){
-                sumOfAllSevenDaysIncidences += city.getInfectionData().getSevenDaysIncidence();
+                sumOfAllCitiesNewInfections7Days += city.getInfectionData().getTotalActiveCases();
                 // TODO richtige membervariable? Oder braucht es noch eine new cases
                 sumOfAllNewInfections += city.getInfectionData().getFristInfectionNewCases();
-                sumOfAllNewDeathCases += city.getInfectionData().getDeadCases();
+                sumOfAllNewDeathCases += city.getInfectionData().getCurrentDayDeadCases();
             }
-            amountOfCities += state.getCities().size();
         }
 
         // outputs the median value of a requested value
         return switch (type) {
-            case "incidence" -> ((sumOfAllSevenDaysIncidences / amountOfCities) / this.getCountryTotalPopulation()) * 100000;
+            case "incidence" -> (sumOfAllCitiesNewInfections7Days / this.getCountryTotalPopulation()) * 100000;
             case "newcases"  -> sumOfAllNewInfections;
             case "deadcases" -> sumOfAllNewDeathCases;
             default -> -1.0;
@@ -166,8 +167,11 @@ public class Country {
         return countryTotalPopulation;
     }
 
-    public void setSocialDistancingActivated(boolean socialDistancingActivated) {
-        this.socialDistancingActivated = socialDistancingActivated;
+    public void setSocialDistancing(boolean socialDistancingStatus) {
+        this.socialDistancingActivated = socialDistancingStatus;
+        if (socialDistancingStatus){
+            activateSocialDistancingForEveryStateAndCity();
+        }
     }
 
     public boolean isSocialDistancingActivated() {
@@ -200,4 +204,57 @@ public class Country {
         this.obedience = totalObedience / states.length;
     }
 
+    public void activateSocialDistancingForEveryStateAndCity(){
+        // handling for Social Distancing
+        for (State state: states) {
+            if (state.getContactRestrictions() < SOCIAL_DISTANCING_VALUE){
+                state.setContactRestrictions(SOCIAL_DISTANCING_VALUE);
+            }
+            for (City city: state.getCities()) {
+                if (city.getContactRestrictions() < SOCIAL_DISTANCING_VALUE){
+                    city.setContactRestrictions(SOCIAL_DISTANCING_VALUE);
+                }
+            }
+        }
+    }
+
+    private void deactivateRestrictions(City city) {
+        if (socialDistancingActivated){
+            city.setContactRestrictions(SOCIAL_DISTANCING_VALUE);
+        } else{
+            city.setContactRestrictions(0);
+        }
+        city.setContactRestrictionDuration(0);
+    }
+
+    public void resetAllRestrictions(){
+        for (State state: states) {
+            state.deactivateRestrictions();
+            for (City city: state.getCities()) {
+                deactivateRestrictions(city);
+            }
+        }
+    }
+
+    public void resetOneStateRestrictions(String stateName){
+        // deactivate state restrictions
+        getStateByName(stateName).deactivateRestrictions();
+
+        // deactivate restrictions of every city in that state
+        for (City city: this.getStateByName(stateName).getCities()) {
+            deactivateRestrictions(city);
+        }
+    }
+
+    public void resetOneCityRestrictions(String cityName){
+        deactivateRestrictions(this.getCityByName(cityName));
+    }
+
+    public boolean isEpidemicEnded() {
+        return epidemicEnded;
+    }
+
+    public void setEpidemicEnded(boolean epidemicEnded) {
+        this.epidemicEnded = epidemicEnded;
+    }
 }

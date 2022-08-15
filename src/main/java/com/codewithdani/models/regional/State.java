@@ -31,13 +31,11 @@ public class State {
     }
 
     public double getSevenDaysIncidence(){
-        double totalIncidence = 0;
+        double sumOfAllCityInfectionsPast7Days = 0;
         for (City city : cities){
-            totalIncidence += city.getInfectionData().getSevenDaysIncidence();
+            sumOfAllCityInfectionsPast7Days += city.getInfectionData().getTotalActiveCases();
         }
-        double sevenDaysIncidence =  totalIncidence / cities.size();
-
-        return (sevenDaysIncidence / this.getTotalPopulation()) * 100000;
+        return (sumOfAllCityInfectionsPast7Days / this.getTotalPopulation()) * 100000;
     }
 
     public double getObedience() {
@@ -132,5 +130,10 @@ public class State {
         this.setContactRestrictions(CONTACT_RESTRICTIONS_VALUE);
         this.setContactRestrictionDuration(amountOfDays);
         this.updateAllCitiesContactRestrictions(CONTACT_RESTRICTIONS_VALUE);
+    }
+
+    public void deactivateRestrictions(){
+        setContactRestrictions(0);
+        setContactRestrictionDuration(0);
     }
 }

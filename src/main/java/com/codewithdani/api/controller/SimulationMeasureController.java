@@ -39,6 +39,26 @@ public class SimulationMeasureController {
 
     @PutMapping("/{uuid}/measure/socialdistancing")
     public void activateContactRestrictions(@PathVariable(value = "uuid") String uuid){
-        simulationService.activateSocialDistancing(uuid);
+        simulationService.toggleSocialDistancing(uuid, true);
+    }
+
+    @DeleteMapping("/{uuid}/measure/socialdistancing")
+    public void deactivateContactRestrictions(@PathVariable(value = "uuid") String uuid){
+        simulationService.toggleSocialDistancing(uuid, false);
+    }
+
+    @DeleteMapping("/{uuid}/measure/countryrestrictions")
+    public void deactivateCountryRestrictions(@PathVariable(value = "uuid") String uuid){
+        simulationService.removeCountryRestrictions(uuid);
+    }
+
+    @DeleteMapping("/{uuid}/measure/staterestrictions")
+    public void deactivateStateRestrictions(@PathVariable(value = "uuid") String uuid, @RequestParam(value = "name") String stateName){
+        simulationService.removeStateRestrictions(uuid, stateName);
+    }
+
+    @DeleteMapping("/{uuid}/measure/cityrestrictions")
+    public void deactivateCityRestrictions(@PathVariable(value = "uuid") String uuid, @RequestParam(value = "name") String cityName){
+        simulationService.removeCityRestrictions(uuid, cityName);
     }
 }
