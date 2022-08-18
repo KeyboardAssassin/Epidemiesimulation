@@ -13,7 +13,7 @@ public class City {
     private final int populationDensity;
     private int population;
     private double obedience = 1;
-    private double contactRestrictions;
+    private double contactRestrictions = 1;
     private int contactRestrictionsDaysLeft;
     private transient InfectionData infectionData;
 
@@ -41,22 +41,22 @@ public class City {
         return name;
     }
 
-    public int calculateNextDayInfections(int day, double stateInfectionRatio, Data data, Random random, Measure measure){
+    public int calculateNextDayInfections(double stateInfectionRatio, Data data, Random random, Measure measure){
         int lowestCityDensity = data.getLowestCityDensity();
         double populationDensityModifier = 0.2; // + Boost for the largest city and - brake for the smallest city
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
 
         double densityOffset = 0; // offset 0 = no offset, 0.1 moves the bounds of the highest and smallest city
-        double densityWeight = 1; // increases the importance of this measure
+        double densityWeight = 1; // increases the importance of this factor
 
         // first day
-        if (day == 0){
+        if (infectionData.isNewVirus() && infectionData.getSevenDaysIncidence() == 0){
+            infectionData.setNewVirus(false);
             return (random.nextInt(MAX_FIRST_DAY_INFECTED_PEOPLE - MIN_FIRST_DAY_INFECTED_PEOPLE) + MIN_FIRST_DAY_INFECTED_PEOPLE);
         }
 
         // Probability between 0% and 20% depending on the density of the city (min/max: city with lowest/highest density)
-        int differenceHighestAndLowestDensity = data.getDifferenceBetweenHighestAndLowestDensity(); // Densities Cottbus and München (min/max)
-        double normalizedDensity = (this.populationDensity - lowestCityDensity) / differenceHighestAndLowestDensity;
+        double normalizedDensity = (this.populationDensity - lowestCityDensity) / data.getDifferenceBetweenHighestAndLowestDensity();// Densities Cottbus and München (min/max)
         double populationDensityProbability =  (((normalizedDensity * 2) - 1) * populationDensityModifier * densityWeight) + (1 + densityOffset); // 4790 Density (München) equals factor of 20% = 0.2
 
         // Probability depending on the proportion of healed or vaccinated cases to the total population

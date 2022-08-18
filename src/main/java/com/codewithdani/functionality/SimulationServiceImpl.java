@@ -57,16 +57,15 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public CitySummaryTO getSummary(String cityName, String uuid) {
-        City requestedCity = getSimulationByUuidOrError(uuid).getSimulatedCountry().getCityByName(cityName);
-        CitySummaryTO summary = new CitySummaryTO(requestedCity);
+        if (StringUtils.hasText(cityName) && StringUtils.hasText(uuid)) {
+            City requestedCity = getSimulationByUuidOrError(uuid).getSimulatedCountry().getCityByName(cityName);
+            CitySummaryTO summary = new CitySummaryTO(requestedCity);
 
-        try{
-            return summary;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+            if (summary != null){
+                return summary;
+            }
         }
-        // TODO Handling falls null benötigt
-        return null;
+    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "uuid with id " + uuid + " or city with name " + cityName + " does not exist!");
     }
 
     @Override

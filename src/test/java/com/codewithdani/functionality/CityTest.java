@@ -36,7 +36,7 @@ public class CityTest {
 
     @Test
     void addingNewDataToHistoryTest() {
-        Country testCountry = new Country("Testcountry",  Virus.ALPHA);
+        Country testCountry = new Country("Testcountry");
         City testCity = new City("Testcity", 100000, 100);
 
         testCity.getInfectionData().addNewEntryToHistory(10, testCountry);

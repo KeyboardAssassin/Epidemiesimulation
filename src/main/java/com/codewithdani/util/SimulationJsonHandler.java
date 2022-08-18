@@ -168,7 +168,7 @@ public class SimulationJsonHandler {
         State[] germanStates = {thuringen, bayern, hessen, badenWurttemberg, sachsen, niedersachsen, rheinlandpfalz, schleswigholstein,
                 saarland, berlin, brandenburg, bremen, nordrheinwestfahlen, hamburg, mecklenburgvorpommern, sachsenanhalt};
 
-        Country germany = new Country("Deutschland", Virus.ALPHA);
+        Country germany = new Country("Deutschland");
         germany.setStates(germanStates);
 
         try{

@@ -19,11 +19,9 @@ public class Country {
     private int countryTotalPopulation;
     private boolean socialDistancingActivated;
     private boolean epidemicEnded = false;
-    private Virus currentVirus;
-    public Country(String name, Virus startVirus) {
+    public Country(String name) {
         this.name = name;
         this.measure = new Measure();
-        this.currentVirus = startVirus;
     }
 
     public void setStates(State[] states) {
@@ -178,15 +176,11 @@ public class Country {
         return socialDistancingActivated;
     }
 
-    public void setCurrentVirus(Virus currentVirus) {
-        this.currentVirus = currentVirus;
-        updateAllCityVirus(currentVirus);
-    }
-
     public void updateAllCityVirus(Virus virus){
         for (State state: states) {
             for (City city: state.getCities()) {
                 city.getInfectionData().setCurrentVirus(virus);
+                city.getInfectionData().setNewVirus(true);
             }
         }
     }
@@ -256,5 +250,14 @@ public class Country {
 
     public void setEpidemicEnded(boolean epidemicEnded) {
         this.epidemicEnded = epidemicEnded;
+    }
+
+    public void resetAlreadyOneInfectionData(){
+        for (State state: this.getStates()) {
+            for (City city: state.getCities()) {
+                city.getInfectionData().setPopulationAlreadyHadFirstInfection(0);
+                city.getInfectionData().setPopulationLeftFirstInfection(city.getPopulation());
+            }
+        }
     }
 }

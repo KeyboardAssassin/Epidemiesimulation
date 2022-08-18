@@ -17,11 +17,12 @@ public class InfectionData {
     private int healedCases;
     private int totalDeadCases;
     private int currentDayDeadCases;
-    private double sevenDaysIncidence;
+    private double sevenDaysIncidence = 0;
     private double rValue;
     private int[] caseHistory;
     private HealedHistory healedHistory;
     private Virus currentVirus;
+    private boolean newVirus = true;
     private float vaccinationProportion;
     private double cityInfectionRatio;
 
@@ -287,5 +288,21 @@ public class InfectionData {
         this.updateActiveCases();
         this.updateNewCases();
         this.updateSevenDaysIncidence();
+    }
+
+    public void setPopulationAlreadyHadFirstInfection(int populationAlreadyHadFirstInfection) {
+        this.populationAlreadyHadFirstInfection = populationAlreadyHadFirstInfection;
+    }
+
+    public void setPopulationLeftFirstInfection(int populationLeftFirstInfection) {
+        this.populationLeftFirstInfection = populationLeftFirstInfection;
+    }
+
+    public boolean isNewVirus(){
+        return newVirus;
+    }
+
+    public void setNewVirus(boolean newVirus) {
+        this.newVirus = newVirus;
     }
 }

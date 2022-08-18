@@ -16,7 +16,7 @@ import static com.codewithdani.models.actions.self.Distancing.SOCIAL_DISTANCING_
 public class Simulation {
     private String id = UUID.randomUUID().toString();
 
-    int sleepTime = 2000;
+    int sleepTime = 3000;
     boolean simulationPause = false;
     int day = 0;
     Country simulatedCountry;
@@ -63,6 +63,9 @@ public class Simulation {
                 }
                 restrictionCalculations(Arrays.asList(simulatedCountry.getStates()));
 
+                // change virus over the days
+                virusEvolution(currentDay, simulatedCountry);
+
                 // run the simulation for every state of germany
                 for (State currentTestedState : simulatedCountry.getStates()) {
                     // Update the state information
@@ -82,12 +85,9 @@ public class Simulation {
                         vaccinationHandling(currentDay, city);
                         medicineHandling(currentDay);
 
-                        // change virus over the days
-                        virusEvolution(currentDay, simulatedCountry);
-
                         city.getInfectionData().calculateAndSetInfectionRatio();
 
-                        int nextDayInfections = city.calculateNextDayInfections(currentDay, currentTestedState.getStateInfectionRatio(), data, random, this.getSimulatedCountry().getMeasure());
+                        int nextDayInfections = city.calculateNextDayInfections(currentTestedState.getStateInfectionRatio(), data, random, this.getSimulatedCountry().getMeasure());
 
                         city.getInfectionData().addNewEntryToHistory(nextDayInfections, simulatedCountry);
                     }
@@ -109,7 +109,7 @@ public class Simulation {
                 }
 
                 // end the pandemic + logging
-                if (checkIfEveryCityHasNoNewInfections(simulatedCountry) && this.day > 10) {
+                if (checkIfEveryCityHasNoNewInfections(simulatedCountry) && this.day > 10 && "OMICRON".equals(simulatedCountry.getCityByName("Erfurt").getInfectionData().getCurrentVirus().name())) {
                     simulatedCountry.setEpidemicEnded(true);
                     System.out.println("Pandemie beendet an Tag: " + currentDay);
 
@@ -123,7 +123,6 @@ public class Simulation {
     }
 
     private void loadCountryOrCreateGermanyFromTemplate() throws IOException {
-        // check if a json file of a custom country already exists or create new from template (germany)
         if (SimulationJsonHandler.checkIfCountryJsonExists("germany")) {
             simulatedCountry = SimulationJsonHandler.importCountryFromJson("germany");
         } else {
@@ -202,19 +201,27 @@ public class Simulation {
     }
 
     static void virusEvolution(int day, Country simulatedCountry){
-        int amountOfActiveAlphaDays = 108;  // 01.09.2020 (alpha) -> 18.12.2020 (beta) | currently hard cut TODO Soft transition
-        int amountOfActiveBetaDays  = 195;  // (beta) -> (delta)
-        int amountOfActiveDeltaDays = 148;  // (delta) -> (omicron)
+        int amountOfActiveAlphaDays = 28;
+        int amountOfActiveBetaDays  = 19;
+        int amountOfActiveDeltaDays = 26;
+
+        String currentVirusName = simulatedCountry.getCityByName("Erfurt").getInfectionData().getCurrentVirus().name();
 
         // change virus after the 108th day (3 Months change from alpha -> beta)
-        if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays + amountOfActiveDeltaDays){
-            simulatedCountry.setCurrentVirus(Virus.OMICRON);
+        if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays + amountOfActiveDeltaDays && currentVirusName.equals("DELTA")){
+            simulatedCountry.updateAllCityVirus(Virus.OMICRON);
+            simulatedCountry.resetAlreadyOneInfectionData();
+            System.out.println("Neues Virus: " + Virus.OMICRON.name());
         }
-        else if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays){
-            simulatedCountry.setCurrentVirus(Virus.DELTA);
+        else if (day > amountOfActiveAlphaDays + amountOfActiveBetaDays && currentVirusName.equals("BETA")){
+            simulatedCountry.updateAllCityVirus(Virus.DELTA);
+            simulatedCountry.resetAlreadyOneInfectionData();
+            System.out.println("Neues Virus: " + Virus.DELTA.name());
         }
-        else if (day > amountOfActiveAlphaDays){
-            simulatedCountry.setCurrentVirus(Virus.BETA);
+        else if (day > amountOfActiveAlphaDays && currentVirusName.equals("ALPHA")){
+            simulatedCountry.updateAllCityVirus(Virus.BETA);
+            simulatedCountry.resetAlreadyOneInfectionData();
+            System.out.println("Neues Virus: " + Virus.BETA.name());
         }
     }
 
