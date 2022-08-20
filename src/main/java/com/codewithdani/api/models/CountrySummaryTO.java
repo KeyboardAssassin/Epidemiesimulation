@@ -13,6 +13,8 @@ public class CountrySummaryTO {
     private final boolean medicationDeveloped;
     private final boolean medicationStarted;
     private final boolean simulationEnded;
+    private final String currentVirusName;
+    private final double currentVirusLethality;
 
     public CountrySummaryTO(Country country) {
         incidence = country.getIncidenceAsString();
@@ -24,6 +26,8 @@ public class CountrySummaryTO {
         vaccinationStarted = country.getMeasure().getVaccination().isVaccinationStarted();
         medicationStarted = country.getMeasure().getMedicine().isMedicationStarted();
         simulationEnded = country.isEpidemicEnded();
+        currentVirusName = country.getCurrentVirus().name();
+        currentVirusLethality = Math.round((country.getCurrentVirus().getMortalityRate() * 100) * 100.0) / 100.0;
     }
 
     public String getIncidence() {
@@ -60,5 +64,13 @@ public class CountrySummaryTO {
 
     public boolean isSimulationEnded() {
         return simulationEnded;
+    }
+
+    public String getCurrentVirusName() {
+        return currentVirusName;
+    }
+
+    public double getCurrentVirusLethality() {
+        return currentVirusLethality;
     }
 }

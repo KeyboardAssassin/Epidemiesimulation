@@ -17,6 +17,7 @@ public class Country {
     private int newInfections;
     private int newDeathCases;
     private int countryTotalPopulation;
+    private Virus currentVirus = Virus.ALPHA;
     private boolean socialDistancingActivated;
     private boolean epidemicEnded = false;
     public Country(String name) {
@@ -177,6 +178,7 @@ public class Country {
     }
 
     public void updateAllCityVirus(Virus virus){
+        this.currentVirus = virus;
         for (State state: states) {
             for (City city: state.getCities()) {
                 city.getInfectionData().setCurrentVirus(virus);
@@ -259,5 +261,9 @@ public class Country {
                 city.getInfectionData().setPopulationLeftFirstInfection(city.getPopulation());
             }
         }
+    }
+
+    public Virus getCurrentVirus() {
+        return currentVirus;
     }
 }
