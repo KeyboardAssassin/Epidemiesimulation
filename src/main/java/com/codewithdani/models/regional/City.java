@@ -130,8 +130,8 @@ public class City {
         return obedience;
     }
 
-    public void setContactRestrictions(double contactRestrictionsOfMotherState) {
-        this.contactRestrictions = contactRestrictionsOfMotherState;
+    public void setContactRestrictions(double restrictions) {
+        this.contactRestrictions = restrictions;
     }
 
     public double getContactRestrictions() {

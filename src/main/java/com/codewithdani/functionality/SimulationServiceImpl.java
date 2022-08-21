@@ -98,6 +98,9 @@ public class SimulationServiceImpl implements SimulationService {
             System.out.println(e.getMessage());
         }
         return null;
+
+
+
     }
 
     @Override
@@ -111,7 +114,13 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public CountrySummaryTO getCountrySummary(String uuid){
         Simulation simulation = getSimulationByUuidOrError(uuid);
-        return new CountrySummaryTO(simulation.getSimulatedCountry());
+        CountrySummaryTO summary = new CountrySummaryTO(simulation.getSimulatedCountry());
+
+        if (summary != null){
+            return summary;
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "uuid with id " + uuid + " does not exist!");
     }
 
     @Override

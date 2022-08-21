@@ -5,7 +5,6 @@ import com.codewithdani.functionality.SimulationService;
 import com.codewithdani.api.models.RegionIncidenceReportTO;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

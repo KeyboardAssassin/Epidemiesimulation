@@ -147,8 +147,8 @@ public class SimulationJsonHandler {
         List<City> citiesOfMecklenburgvorpommern    = List.of(schwerin, rostock);
         List<City> citiesOfSachsenanhalt            = List.of(magdeburg, halle);
 
-        State thuringen             = new State("Thüringen", citiesOfThuringen);
         State bayern                = new State("Bayern", citiesOfBayern);
+        State thuringen             = new State("Thüringen", citiesOfThuringen);
         State hessen                = new State("Hessen", citiesOfHessen);
         State badenWurttemberg      = new State("Baden-Württemberg", citiesOfBadenwurttemberg);
         State sachsen               = new State("Sachsen", citiesOfSachsen);
