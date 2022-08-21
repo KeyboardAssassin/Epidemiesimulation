@@ -61,7 +61,7 @@ On Linux/Mac it is pretty similar.
 java -jar build\libs\corona-simulation.jar
 ```
 
-## Usage of the API`enter code here`
+## Usage of the API
 ![Example Requests](https://i.ibb.co/0DxjMvR/rsz-carbon.png)
 
 All usable requests can be found at the playground.http
