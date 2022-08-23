@@ -6,7 +6,6 @@ import com.codewithdani.api.models.CitySummaryTO;
 import com.codewithdani.api.models.RegionIncidenceReportTO;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public interface SimulationService {

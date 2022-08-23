@@ -97,10 +97,7 @@ public class SimulationServiceImpl implements SimulationService {
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
-        return null;
-
-
-
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not able to provide list with incidences of simulation with uuid " + uuid);
     }
 
     @Override

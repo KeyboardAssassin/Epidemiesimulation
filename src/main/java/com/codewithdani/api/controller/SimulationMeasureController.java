@@ -33,17 +33,17 @@ public class SimulationMeasureController {
     }
 
     @GetMapping("/{uuid}/measure/contactrestrictions")
-    public void activateContactRestrictions(@RequestParam(value = "type") String type, @RequestParam(value = "name") String name, @RequestParam(value = "amountofdays") int amountOfDays, @PathVariable(value = "uuid") String uuid){
+    public void activateSocialDistancing(@RequestParam(value = "type") String type, @RequestParam(value = "name") String name, @RequestParam(value = "amountofdays") int amountOfDays, @PathVariable(value = "uuid") String uuid){
         simulationService.activateContactRestrictions(type, name, amountOfDays, uuid);
     }
 
     @PutMapping("/{uuid}/measure/socialdistancing")
-    public void activateContactRestrictions(@PathVariable(value = "uuid") String uuid){
+    public void activateSocialDistancing(@PathVariable(value = "uuid") String uuid){
         simulationService.toggleSocialDistancing(uuid, true);
     }
 
     @DeleteMapping("/{uuid}/measure/socialdistancing")
-    public void deactivateContactRestrictions(@PathVariable(value = "uuid") String uuid){
+    public void deactivateSocialDistancing(@PathVariable(value = "uuid") String uuid){
         simulationService.toggleSocialDistancing(uuid, false);
     }
 
