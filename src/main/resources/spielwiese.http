@@ -1,14 +1,72 @@
 ### Startsimulation
-GET localhost:3000/startsimulation?amountOfSimulations=1
+GET localhost:3000/api/simulation/?amountofsimulations=1
+
+### Get a list of all running simulations
+GET localhost:3000/api/simulation/
 
 ### Change Speed
-GET localhost:3000/changespeed
+GET localhost:3000/api/simulation/:uuid/changespeed?speed=100
 
-### Get incidence by state name
-GET localhost:3000/getincidenceByState?statename="bayern"
+### Get the current day
+GET localhost:3000/api/simulation/:uuid/currentday
+
+### Pause or resume the simulation
+GET localhost:3000/api/simulation/:uuid/pause
+
+### Delete a session (thread) by a uuid
+DELETE localhost:3000/api/simulation/:uuid/
 
 ### Get incidence by city name
-GET localhost:3000/getincidence?cityname="erfurt"
+GET localhost:3000/api/simulation/:uuid/city/incidence?cityname=erfurt
 
-### Get a city summary
-GET localhost:3000/getdetailed?cityname="erfurt"
+### Get a detailed city summary
+GET localhost:3000/api/simulation/:uuid/city/detailed/?cityname=erfurt
+
+### Get incidence by state name
+GET localhost:3000/api/simulation/:uuid/state/incidence?statename=bayern
+
+### Get a list of every state with the incidence
+GET localhost:3000/api/simulation/:uuid/country/incidenceofeverystate
+
+### Get a list of every city with the incidence
+GET localhost:3000/api/simulation/:uuid/country/incidenceofeverycity
+
+### Get a country summary
+GET localhost:3000/api/simulation/:uuid/country/summary
+
+### Get the obedience of the country
+GET localhost:3000/api/simulation/:uuid/country/obedience
+
+### Start vaccination development
+PUT localhost:3000/api/simulation/:uuid/measure/vaccinationdevelopment
+
+### Start medication development
+PUT localhost:3000/api/simulation/:uuid/measure/medicationdevelopment
+
+### Start vaccination campaign
+PUT localhost:3000/api/simulation/:uuid/measure/vaccination
+
+### Start medication usage
+PUT localhost:3000/api/simulation/:uuid/measure/medication
+
+### Activate contact restrictions
+GET localhost:3000/api/simulation/:uuid/measure/contactrestrictions?type=state&name=bayern&amountofdays=10
+
+### Activate social distancing
+PUT localhost:3000/api/simulation/:uuid/measure/socialdistancing
+
+### Deactivate social distancing
+DELETE localhost:3000/api/simulation/:uuid/measure/socialdistancing
+
+### Deactivate country restrictions
+DELETE localhost:3000/api/simulation/:uuid/measure/countryrestrictions
+
+### Deactivate state restrictions
+DELETE localhost:3000/api/simulation/:uuid/measure/staterestrictions?name=bayern
+
+### Deactivate city restrictions
+DELETE localhost:3000/api/simulation/:uuid/measure/cityrestrictions?name=erfurt
+
+
+
+
