@@ -1,15 +1,15 @@
 
-# ![Banner](https://i.ibb.co/89XDJFZ/Epidemiesimulation-Backend.png)
+# ![Banner](https://i.ibb.co/1MmG2Jk/Backend.png)
 ## Konzeption und Implementierung einer Epidemiesimulation
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger) ![enter image description here](https://img.shields.io/github/last-commit/keyboardassassin/Epidemiesimulation)
+![Last Commit](https://img.shields.io/github/last-commit/keyboardassassin/Epidemiesimulation)
 
-Hierbei handelt es sich um eine interaktive Epidemiesimulation, bei welcher der Nutzer Maßnahmen zur Eindämmung dynamisch selbst wählen kann.
+This is an interactive epidemic simulation in which the user can dynamically choose containment measures himself.
 
-- Entwicklung mit Java 17 (17.0.3)
-- Gradle Projektstruktur mit externen Libraries (und JUnit Testing)
-- Betreut durch Herrn. Prof. Dr. Jörg Sahm & Frau. Anja Haußen
-- Darstellung/Interaktion im Browser durch Vue.js ([Frontend](https://github.com/KeyboardAssassin/Corona-Simulation-Frontend))
+- Development with Java 17 (17.0.3)
+- Gradle project structure with external libraries (and JUnit testing)
+- Supervised by Mr. Prof. Dr. Jörg Sahm & Mrs. Math. Dipl. Anja Haussen
+- Display/interaction in the browser by Vue.js ([Frontend](https://github.com/KeyboardAssassin/Corona-Simulation-Frontend))
 
 ## Key Features
 
@@ -62,6 +62,6 @@ java -jar build\libs\corona-simulation.jar
 ```
 
 ## Usage of the API
-![Example Requests](https://i.ibb.co/0DxjMvR/rsz-carbon.png)
+![Example Requests](https://i.ibb.co/s2c7GvN/carbon-2.png)
 
 All usable requests can be found at the playground.http
