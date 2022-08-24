@@ -4,6 +4,8 @@ import com.codewithdani.util.SimulationUtils;
 import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.threats.Virus;
 
+import java.util.NoSuchElementException;
+
 import static com.codewithdani.models.actions.self.Distancing.SOCIAL_DISTANCING_VALUE;
 
 public class Country {
@@ -48,18 +50,14 @@ public class Country {
              if (city.getName().equalsIgnoreCase(name)) return city;
             }
         }
-        // TODO GEFAHR
-        return null;
+        throw new NoSuchElementException("Es existiert keine Stadt mit dem Namen: " + name);
     }
-
-
 
     public State getStateByName(String name){
         for (State state : states){
             if (state.getName().equalsIgnoreCase(name)) return state;
         }
-        // TODO Ebenfalls
-        return null;
+        throw new NoSuchElementException("Es existiert kein Bundesland mit dem Namen: " + name);
     }
 
     public Measure getMeasure() {
@@ -225,7 +223,7 @@ public class Country {
 
     public void resetAllRestrictions(){
         for (State state: states) {
-            state.deactivateRestrictions();
+            state.deactivateRestrictionsOnStateLevel();
             for (City city: state.getCities()) {
                 deactivateRestrictions(city);
             }
@@ -234,7 +232,7 @@ public class Country {
 
     public void resetOneStateRestrictions(String stateName){
         // deactivate state restrictions
-        getStateByName(stateName).deactivateRestrictions();
+        getStateByName(stateName).deactivateRestrictionsOnStateLevel();
 
         // deactivate restrictions of every city in that state
         for (City city: this.getStateByName(stateName).getCities()) {

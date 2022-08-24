@@ -3,6 +3,7 @@ package com.codewithdani.models.regional;
 import java.util.List;
 
 import static com.codewithdani.models.actions.government.Restriction.CONTACT_RESTRICTIONS_VALUE;
+import static com.codewithdani.models.actions.self.Distancing.SOCIAL_DISTANCING_VALUE;
 
 public class State {
     private final String name;
@@ -132,8 +133,17 @@ public class State {
         this.updateAllCitiesContactRestrictions(CONTACT_RESTRICTIONS_VALUE);
     }
 
-    public void deactivateRestrictions(){
+    public void deactivateRestrictionsOnStateLevel(){
         setContactRestrictions(0);
         setContactRestrictionDuration(0);
+    }
+
+    public void resetStateAndEveryCityFromRestrictions(boolean socialDistancingActivated){
+        int contactRestrictions = 0;
+        if (socialDistancingActivated) contactRestrictions = SOCIAL_DISTANCING_VALUE;
+
+        this.setContactRestrictionDuration(0);
+        this.setContactRestrictions(contactRestrictions);
+        this.updateAllCitiesContactRestrictions(contactRestrictions);
     }
 }

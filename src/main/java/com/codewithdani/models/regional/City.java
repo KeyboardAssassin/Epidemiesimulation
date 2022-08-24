@@ -7,6 +7,7 @@ import com.codewithdani.models.data.InfectionData;
 import java.util.Random;
 
 import static com.codewithdani.models.actions.government.Restriction.CONTACT_RESTRICTIONS_VALUE;
+import static com.codewithdani.models.actions.self.Distancing.SOCIAL_DISTANCING_VALUE;
 
 public class City {
     private final String name;
@@ -175,5 +176,13 @@ public class City {
 
     public void createInfectionData(){
         this.infectionData = new InfectionData(this, population);
+    }
+
+    public void resetCityFromRestrictions(boolean socialDistancingActivated){
+        int contactRestrictions = 0;
+        if (socialDistancingActivated) contactRestrictions = SOCIAL_DISTANCING_VALUE;
+
+        this.setContactRestrictionDuration(0);
+        this.setContactRestrictions(contactRestrictions);
     }
 }
