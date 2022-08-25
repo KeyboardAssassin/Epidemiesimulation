@@ -71,12 +71,9 @@ public class InfectionData {
     }
 
     public void updateNewCases() {
-        // go through every element backwards and set the first found at member variable newCase
-        for (int elementOfHistory = 6; elementOfHistory > 0; elementOfHistory--) {
-            if (caseHistory[elementOfHistory] != NOT_INITIALISED) {
-                this.setNewCases(caseHistory[elementOfHistory]);
-                return;
-            }
+        // element with index 0 stores the newest infections
+        if (caseHistory[0] != NOT_INITIALISED) {
+            this.setNewCases(caseHistory[0]);
         }
     }
 
@@ -102,12 +99,12 @@ public class InfectionData {
         this.updateRValue(amountOfCases);
 
         //  shift every element and add new cases at the first
-        caseHistory[1] = caseHistory[0];
-        caseHistory[2] = caseHistory[1];
-        caseHistory[3] = caseHistory[2];
-        caseHistory[4] = caseHistory[3];
-        caseHistory[5] = caseHistory[4];
         caseHistory[6] = caseHistory[5];
+        caseHistory[5] = caseHistory[4];
+        caseHistory[4] = caseHistory[3];
+        caseHistory[3] = caseHistory[2];
+        caseHistory[2] = caseHistory[1];
+        caseHistory[1] = caseHistory[0];
 
         // set the newest record
         caseHistory[0] = amountOfCases;

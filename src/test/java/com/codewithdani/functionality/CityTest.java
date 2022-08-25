@@ -43,10 +43,8 @@ public class CityTest {
         testCity.getInfectionData().addNewEntryToHistory(100, testCountry);
         testCity.getInfectionData().addNewEntryToHistory(500, testCountry);
 
-        testCity.getInfectionData().updateInfectionData();
-
-        assertEquals(10,  testCity.getInfectionData().getEntryFromHistory(1));
+        assertEquals(10,  testCity.getInfectionData().getEntryFromHistory(3));
         assertEquals(100, testCity.getInfectionData().getEntryFromHistory(2));
-        assertEquals(500, testCity.getInfectionData().getEntryFromHistory(3));
+        assertEquals(500, testCity.getInfectionData().getEntryFromHistory(1));
     }
 }
