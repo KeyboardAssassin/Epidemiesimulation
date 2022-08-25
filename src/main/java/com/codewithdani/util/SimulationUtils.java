@@ -15,11 +15,11 @@ public class SimulationUtils {
     }
 
     // TODO Hier hin auslagern?
-    public double calculateRValue(City[] cities){
+    public double calculateRValue(City[] cities, int statePopulation){
         return 0.0;
     }
 
-    public double calculateRValue(State[] states){
+    public double calculateRValue(State[] states, int countryPopulation){
         return 0.0;
     }
 }

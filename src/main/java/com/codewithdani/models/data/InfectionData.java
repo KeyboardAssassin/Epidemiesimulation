@@ -43,7 +43,7 @@ public class InfectionData {
     }
 
     public void updateSevenDaysIncidence(){
-        this.sevenDaysIncidence = (getTotalActiveCases() / thisCity.getPopulation()) * 100000;
+        this.sevenDaysIncidence = ((double)getTotalActiveCases() / thisCity.getPopulation()) * 100000;
     }
 
     public double getSevenDaysIncidence() {
@@ -216,8 +216,8 @@ public class InfectionData {
         // (new) elements this day new cases, 0, 1, 2
         // (old) elements 3, 4, 5, 6 vs
         if (caseHistory[6] != NOT_INITIALISED) {
-            double newValue = (amountOfCases + caseHistory[0] + caseHistory[1] + caseHistory[2]) / 4;
-            double oldValue = (caseHistory[3] + caseHistory[4] + caseHistory[5] + caseHistory[6]) / 4;
+            double newValue = (amountOfCases + caseHistory[0] + caseHistory[1] + caseHistory[2]) / 4d;
+            double oldValue = (caseHistory[3] + caseHistory[4] + caseHistory[5] + caseHistory[6]) / 4d;
 
             setRValue(newValue / oldValue);
         }
@@ -254,8 +254,14 @@ public class InfectionData {
         this.currentVirus = currentVirus;
     }
 
-    public void addToVaccinationProportion(float vaccinationGrowth) {
+    public void addToVaccinationProportion(double vaccinationGrowth) {
         if (this.vaccinationProportion + vaccinationGrowth < 1){
+
+            if (thisCity.getName().equalsIgnoreCase("erfurt")){
+                System.out.println("Heute geimpft: " + vaccinationGrowth);
+                System.out.println("Gesamtquote: " + vaccinationProportion);
+            }
+
             this.vaccinationProportion += vaccinationGrowth;
         }
         else {

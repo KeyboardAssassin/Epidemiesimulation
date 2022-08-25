@@ -56,28 +56,27 @@ public class City {
             return (random.nextInt(MAX_FIRST_DAY_INFECTED_PEOPLE - MIN_FIRST_DAY_INFECTED_PEOPLE) + MIN_FIRST_DAY_INFECTED_PEOPLE);
         }
 
-        // Probability between 0% and 20% depending on the density of the city (min/max: city with lowest/highest density)
+        // probability between 0% and 20% depending on the density of the city (min/max: city with lowest/highest density)
         double normalizedDensity = (this.populationDensity - lowestCityDensity) / data.getDifferenceBetweenHighestAndLowestDensity();// Densities Cottbus and München (min/max)
         double populationDensityProbability =  (((normalizedDensity * 2) - 1) * populationDensityModifier * densityWeight) + (1 + densityOffset); // 4790 Density (München) equals factor of 20% = 0.2
 
-        // Probability depending on the proportion of healed or vaccinated cases to the total population
+        // probability depending on the proportion of healed or vaccinated cases to the total population
         // every person who had the infection at least 1 time is 10% more protected
-        // Example: (10.000 / 100000) * 0.1 + (1 - 0.1) => 0.99 (1% less probability of infection)
+        // example: (10.000 / 100000) * 0.1 + (1 - 0.1) => 0.99 (1% less probability of infection)
         double decreasingProbabilityGrowingRateOfCuredCases = (((this.getInfectionData().getPopulationLeftFirstInfection() / (double)population) * protectionAfterFirstInfection) + (1 - protectionAfterFirstInfection));
 
-        // Average amount of People a person meets every day
+        // average amount of People a person meets every day
         double amountOfAveragePeopleMeetings = MIN_AMOUNT_OF_MEETINGS_PER_DAY + (MAX_AMOUNT_OF_MEETINGS_PER_DAY - MIN_AMOUNT_OF_MEETINGS_PER_DAY) * random.nextDouble();
         amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, this.contactRestrictions) * this.getObedience()));
 
-        // Probability someone in the 7 days history infects someone
+        // probability someone in the 7 days history infects someone
         double infectingCases = this.getInfectionData().calculateActiveCasesInfectingSomeone();
 
         int amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain = this.getInfectionData().getHealedHistory().calculateProbabilityOfAnotherInfection();
 
         double vaccinationProtection = measure.getVaccination().getVaccinationProtection();
 
-        // TODO Proportion zwischen 0 (0) und 1 (100%)
-        // Protection zwischen 0.9 - 1
+        // multiplier between 0.9 - 1
         double vaccinationProtectionRatio = 1 - (this.getInfectionData().getVaccinationProportion() * vaccinationProtection);
 
         // TODO newFirstInfections sind mehr als totalNewInfections

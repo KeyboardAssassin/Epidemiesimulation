@@ -16,7 +16,7 @@ public class SimulationJsonHandler {
     private static final String PATH = "/Users/Dani/Desktop/germany.json";
 
 
-    public static Country importCountryFromJson(String countryName) throws IOException {
+    public static Country importCountryFromJson(String countryName) {
         Gson gson = new Gson();
         File filePath = new File(Paths.get(countryName + ".json").toString());
         Country country;
@@ -35,7 +35,7 @@ public class SimulationJsonHandler {
         }
         catch (Exception e){
             System.out.println("Fehler beim importieren aus einer json Datei!");
-            // TODO DELETE AND CREATE NEW JSON?
+            System.out.println("Erstelle Deutschland aus der Vorlage!");
         }
 
         return createPreExistingGermany();
@@ -62,12 +62,12 @@ public class SimulationJsonHandler {
         }
     }
 
-    public static Country createPreExistingGermany() throws IOException {
+    public static Country createPreExistingGermany() {
         File filePath = new File(Paths.get("germany.json").toString());
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileWriter writer;
 
-        // cities
+        // Cities
         // Bayern
         City ingolstadt = new City("Ingolstadt", 136981, 1027);
         City munchen = new City("München", 1472000, 4790);

@@ -7,7 +7,7 @@ public class Vaccination {
     private boolean vaccinationApproved = false;
     private boolean vaccinationStarted = false;
     private static final int DAYS_OF_VACCINATION_DEVELOPMENT = 4;
-    private double vaccinationProtection = 0.9;
+    private double vaccinationProtection = 0.1; // 10% protection
 
     public void setVaccinationApproved(boolean vaccinationApproved) {
         this.vaccinationApproved = vaccinationApproved;
@@ -27,16 +27,15 @@ public class Vaccination {
 
     public void updateVaccination(City city){
         // TODO final variables in interface?
-        float maxVaccinatedOnOneDay = 0.08f;
-        float amountOfDecrease = 0.01f;
+        float maxVaccinatedOnOneDay = 0.008f;
+        float amountOfDecrease = 0.001f;
 
-        double vaccinationDisobedienceExponentialMultiplier = 1; // wie schwierig ist es Leute vom Impfen zu überzeugen? e.g. 0 = egal, ob die Leute auf dich hören, lassen sie sich impfen (äußerst Positiv) 1 = neutrale Einstellung - Alles über 1 ist negativ
-
-        float ratioOfVaccination = city.getInfectionData().getVaccinationProportion();
-        ratioOfVaccination += maxVaccinatedOnOneDay * Math.pow(city.getObedience(), vaccinationDisobedienceExponentialMultiplier);
+        // full maxVaccinatedOnOneDay if no one is vaccinated - will get lower if more people get vaccinated
+        float vaccinationProportionThisDay = (1 - city.getInfectionData().getVaccinationProportion()) * maxVaccinatedOnOneDay;
+        vaccinationProportionThisDay *= city.getObedience();
 
         city.getInfectionData().removeVaccinationProportion(amountOfDecrease);
-        city.getInfectionData().addToVaccinationProportion(ratioOfVaccination);
+        city.getInfectionData().addToVaccinationProportion(vaccinationProportionThisDay);
     }
 
     public boolean isVaccinationStarted() {

@@ -69,7 +69,7 @@ public class State {
 
     private void updateRValue(){
         double newRValue = 0;
-        for (City city: this.getCities()) {
+        for (City city: cities) {
             newRValue += city.getInfectionData().getRValue() *  city.getPopulation() / getTotalPopulation();
         }
         this.rValue = newRValue;

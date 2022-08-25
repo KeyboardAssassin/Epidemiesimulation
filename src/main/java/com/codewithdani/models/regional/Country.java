@@ -44,20 +44,20 @@ public class Country {
         return states;
     }
 
-    public City getCityByName(String name){
+    public City getCityByName(String cityName){
         for (State state : states){
             for (City city : state.getCities()){
-             if (city.getName().equalsIgnoreCase(name)) return city;
+             if (city.getName().equalsIgnoreCase(cityName)) return city;
             }
         }
-        throw new NoSuchElementException("Es existiert keine Stadt mit dem Namen: " + name);
+        throw new NoSuchElementException("Es existiert keine Stadt mit dem Namen: " + cityName);
     }
 
-    public State getStateByName(String name){
+    public State getStateByName(String stateName){
         for (State state : states){
-            if (state.getName().equalsIgnoreCase(name)) return state;
+            if (state.getName().equalsIgnoreCase(stateName)) return state;
         }
-        throw new NoSuchElementException("Es existiert kein Bundesland mit dem Namen: " + name);
+        throw new NoSuchElementException("Es existiert kein Bundesland mit dem Namen: " + stateName);
     }
 
     public Measure getMeasure() {
@@ -132,7 +132,7 @@ public class Country {
 
         // outputs the median value of a requested value
         return switch (type) {
-            case "incidence" -> (sumOfAllCitiesNewInfections7Days / this.getCountryTotalPopulation()) * 100000;
+            case "incidence" -> (sumOfAllCitiesNewInfections7Days / countryTotalPopulation) * 100000;
             case "newcases"  -> sumOfAllNewInfections;
             case "deadcases" -> sumOfAllNewDeathCases;
             default -> -1.0;
@@ -141,8 +141,8 @@ public class Country {
 
     private void updateRValue(){
         double rValue = 0;
-            for (State state: this.getStates()) {
-                rValue += state.getRValue() * state.getTotalPopulation() / this.getCountryTotalPopulation();
+            for (State state: states) {
+                rValue += state.getRValue() * state.getTotalPopulation() / countryTotalPopulation;
             }
         this.rValue = rValue;
     }
