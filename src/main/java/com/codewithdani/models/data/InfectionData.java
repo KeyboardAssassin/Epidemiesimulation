@@ -6,8 +6,12 @@ import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.threats.Virus;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class InfectionData {
+    public static final int MAX_HISTORY_DAYS = 7;
     private int activeCases;
     private int newCases;
     private int populationLeftFirstInfection;
@@ -19,7 +23,7 @@ public class InfectionData {
     private int currentDayDeadCases;
     private double sevenDaysIncidence = 0;
     private double rValue;
-    private int[] caseHistory;
+    private LinkedList<Integer> caseHistory = new LinkedList<>();
     private HealedHistory healedHistory;
     private Virus currentVirus;
     private boolean newVirus = true;
@@ -34,7 +38,7 @@ public class InfectionData {
         this.populationLeftFirstInfection = population;
         this.sevenDaysIncidence = 0.0;
         this.rValue = 0.0;
-        this.caseHistory = new int[]{NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED, NOT_INITIALISED};
+        this.caseHistory.addAll(IntStream.range(0, MAX_HISTORY_DAYS).mapToObj(x -> NOT_INITIALISED).toList());
         this.healedHistory = new HealedHistory();
         this.currentVirus = Virus.ALPHA;
         this.vaccinationProportion = 0.0f;
@@ -51,7 +55,7 @@ public class InfectionData {
     }
 
     public int getTotalActiveCases(){
-        return Arrays.stream(caseHistory).filter(x -> x != -1).sum();
+        return caseHistory.stream().filter(x -> x != NOT_INITIALISED).mapToInt(Integer::intValue).sum();
     }
 
     public void updateActiveCases(){
@@ -63,7 +67,7 @@ public class InfectionData {
     }
 
     public void setHistoryDay(int day, int value){
-        this.caseHistory[day - 1] = value;
+        caseHistory.set(day -1, value);
     }
 
     public void setNewCases(int newCases) {
@@ -72,8 +76,8 @@ public class InfectionData {
 
     public void updateNewCases() {
         // element with index 0 stores the newest infections
-        if (caseHistory[0] != NOT_INITIALISED) {
-            this.setNewCases(caseHistory[0]);
+        if (caseHistory.getFirst() != NOT_INITIALISED) {
+            this.setNewCases(caseHistory.getFirst());
         }
     }
 
@@ -87,27 +91,22 @@ public class InfectionData {
 
         // update Deaths & Healed Cases
         this.updateDeadCases(deadCasesAfterMedicine);
-        this.updateHealedCases((int)(caseHistory[0] * (1 - currentVirus.getMortalityRate())) + healedThroughMedicine);
+        this.updateHealedCases((int)(caseHistory.getFirst() * (1 - currentVirus.getMortalityRate())) + healedThroughMedicine);
         thisCity.removeFromPopulation(deadCasesAfterMedicine);
 
-        // todo smartere Lösung finden
         // move the oldest entry in the case history into the healed history
-        if (caseHistory[6] != NOT_INITIALISED){
-            healedHistory.addEntry(caseHistory[6]);
+        if (caseHistory.size() == MAX_HISTORY_DAYS){
+            healedHistory.addEntry(caseHistory.getLast());
         }
 
         this.updateRValue(amountOfCases);
 
-        //  shift every element and add new cases at the first
-        caseHistory[6] = caseHistory[5];
-        caseHistory[5] = caseHistory[4];
-        caseHistory[4] = caseHistory[3];
-        caseHistory[3] = caseHistory[2];
-        caseHistory[2] = caseHistory[1];
-        caseHistory[1] = caseHistory[0];
-
         // set the newest record
-        caseHistory[0] = amountOfCases;
+        caseHistory.addFirst(amountOfCases);
+
+        if (caseHistory.size() > MAX_HISTORY_DAYS) {
+            caseHistory.removeLast();
+        }
 
 
         this.setNewCases(amountOfCases);
@@ -120,9 +119,9 @@ public class InfectionData {
     }
 
     public int calculateDeaths(){
-        if (caseHistory[6] != NOT_INITIALISED){
+        if (caseHistory.getLast() != NOT_INITIALISED){
             // return calculated deaths
-            return (int)(caseHistory[6] * currentVirus.getMortalityRate());
+            return (int)(caseHistory.getLast() * currentVirus.getMortalityRate());
         }
         else{
             return 0;
@@ -208,13 +207,14 @@ public class InfectionData {
     }
 
     public void updateRValue(int amountOfCases){
+        double amountOfDaysDivided = 4d;
         // calculates rValue if 7 days history is filled
         // comparison between smoothened 4 days mean
         // (new) elements this day new cases, 0, 1, 2
         // (old) elements 3, 4, 5, 6 vs
-        if (caseHistory[6] != NOT_INITIALISED) {
-            double newValue = (amountOfCases + caseHistory[0] + caseHistory[1] + caseHistory[2]) / 4d;
-            double oldValue = (caseHistory[3] + caseHistory[4] + caseHistory[5] + caseHistory[6]) / 4d;
+        if (caseHistory.getLast() != NOT_INITIALISED) {
+            double newValue = (amountOfCases + caseHistory.get(0) + caseHistory.get(1) + caseHistory.get(2)) / amountOfDaysDivided;
+            double oldValue = (caseHistory.get(3) + caseHistory.get(4) + caseHistory.get(5) + caseHistory.get(6)) / amountOfDaysDivided;
 
             setRValue(newValue / oldValue);
         }
@@ -225,7 +225,7 @@ public class InfectionData {
     }
 
     public int getEntryFromHistory(int day){
-        return caseHistory[day - 1];
+        return caseHistory.get(day - 1);
     }
 
     public double calculateActiveCasesInfectingSomeone(){
@@ -235,9 +235,9 @@ public class InfectionData {
         double[] infectionProbList = this.getCurrentVirus().getProbabilityListInfection();
 
         // 10% probability on day 7 || 20% probability on day 6
-        for(int elementInArray = 0; elementInArray <= this.caseHistory.length - 1; elementInArray++) {
-            if (this.caseHistory[elementInArray] != NOT_INITIALISED) {
-                infectingRate += this.caseHistory[elementInArray] * infectionProbList[elementInArray];
+        for(int elementInArray = 0; elementInArray <= this.caseHistory.size() - 1; elementInArray++) {
+            if (this.caseHistory.get(elementInArray) != NOT_INITIALISED) {
+                infectingRate += this.caseHistory.get(elementInArray) * infectionProbList[elementInArray];
             }
         }
         return infectingRate;

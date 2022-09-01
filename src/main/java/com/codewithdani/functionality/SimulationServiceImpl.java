@@ -70,7 +70,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public String getIncidenceByState(String stateName, String uuid) {
-        return SimulationUtils.convertIncidenceToStringWith2Digits(getSimulationByUuidOrError(uuid).getSimulatedCountry().getStateByName(stateName).getSevenDaysIncidence());
+        return SimulationUtils.convertToStringWith2Digits(getSimulationByUuidOrError(uuid).getSimulatedCountry().getStateByName(stateName).getSevenDaysIncidence());
     }
 
     @Override

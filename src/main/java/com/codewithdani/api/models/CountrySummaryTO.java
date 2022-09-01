@@ -1,6 +1,7 @@
 package com.codewithdani.api.models;
 
 import com.codewithdani.models.regional.Country;
+import com.codewithdani.util.SimulationUtils;
 
 public class CountrySummaryTO {
 
@@ -17,8 +18,8 @@ public class CountrySummaryTO {
     private final double currentVirusLethality;
 
     public CountrySummaryTO(Country country) {
-        incidence = country.getIncidenceAsString();
-        rValue = country.getRValueAsString();
+        incidence = SimulationUtils.convertToStringWith2Digits(country.getIncidence());
+        rValue = SimulationUtils.convertToStringWith2Digits(country.getRValue());
         newInfections = country.getNewInfections();
         newDeathCases = country.getNewDeathCases();
         vaccinationDeveloped = country.getMeasure().getVaccination().isVaccinationApproved();

@@ -3,11 +3,15 @@ package com.codewithdani.models.actions.government;
 import com.codewithdani.models.regional.City;
 
 public class Vaccination {
-    private int dayOfDevelopmentStart = -1; // TODO: Decide if countdown is sufficient 90 days left -> 89 days left
+    private final static int NOT_INITIALISED = -1;
+    private int dayOfDevelopmentStart = NOT_INITIALISED;
     private boolean vaccinationApproved = false;
     private boolean vaccinationStarted = false;
     private static final int DAYS_OF_VACCINATION_DEVELOPMENT = 4;
-    private double vaccinationProtection = 0.1; // 10% protection
+    private double VACCINATION_PROTECTION = 0.1; // 10% protection
+    private final float MAX_VACCINATED_ON_ONE_DAY = 0.008f;
+    private final float AMOUNT_OF_VACCINATION_DECREASE_ON_ONE_DAY = 0.001f;
+
 
     public void setVaccinationApproved(boolean vaccinationApproved) {
         this.vaccinationApproved = vaccinationApproved;
@@ -18,7 +22,7 @@ public class Vaccination {
     }
 
     public void checkIfVaccinationIsDeveloped(int currentDay){
-        if (currentDay > (dayOfDevelopmentStart + DAYS_OF_VACCINATION_DEVELOPMENT) && dayOfDevelopmentStart != -1) setVaccinationApproved(true);
+        if (currentDay > (dayOfDevelopmentStart + DAYS_OF_VACCINATION_DEVELOPMENT) && dayOfDevelopmentStart != NOT_INITIALISED) setVaccinationApproved(true);
     }
 
     public boolean isVaccinationApproved() {
@@ -26,15 +30,11 @@ public class Vaccination {
     }
 
     public void updateVaccination(City city){
-        // TODO final variables in interface?
-        float maxVaccinatedOnOneDay = 0.008f;
-        float amountOfDecrease = 0.001f;
-
         // full maxVaccinatedOnOneDay if no one is vaccinated - will get lower if more people get vaccinated
-        float vaccinationProportionThisDay = (1 - city.getInfectionData().getVaccinationProportion()) * maxVaccinatedOnOneDay;
+        float vaccinationProportionThisDay = (1 - city.getInfectionData().getVaccinationProportion()) * MAX_VACCINATED_ON_ONE_DAY;
         vaccinationProportionThisDay *= city.getObedience();
 
-        city.getInfectionData().removeVaccinationProportion(amountOfDecrease);
+        city.getInfectionData().removeVaccinationProportion(AMOUNT_OF_VACCINATION_DECREASE_ON_ONE_DAY);
         city.getInfectionData().addToVaccinationProportion(vaccinationProportionThisDay);
     }
 
@@ -47,6 +47,6 @@ public class Vaccination {
     }
 
     public double getVaccinationProtection() {
-        return vaccinationProtection;
+        return VACCINATION_PROTECTION;
     }
 }

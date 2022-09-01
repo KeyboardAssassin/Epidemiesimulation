@@ -68,16 +68,6 @@ public class Country {
         return incidence;
     }
 
-    public String getIncidenceAsString(){
-        double totalIncidence = this.getIncidence();
-        return SimulationUtils.convertIncidenceToStringWith2Digits(totalIncidence);
-    }
-
-    // TODO Redundant otra vez?
-    public String getRValueAsString(){
-        double rValue = this.getRValue();
-        return SimulationUtils.convertIncidenceToStringWith2Digits(rValue);
-    }
     public double getRValue() {
         return rValue;
     }

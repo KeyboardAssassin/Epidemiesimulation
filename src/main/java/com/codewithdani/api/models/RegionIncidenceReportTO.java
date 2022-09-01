@@ -10,11 +10,11 @@ public class RegionIncidenceReportTO {
 
     public RegionIncidenceReportTO(City city) {
         this.name = city.getName();
-        this.incidence = SimulationUtils.convertIncidenceToStringWith2Digits(city.getInfectionData().getSevenDaysIncidence());
+        this.incidence = SimulationUtils.convertToStringWith2Digits(city.getInfectionData().getSevenDaysIncidence());
     }
     public RegionIncidenceReportTO(State state) {
         this.name = state.getName();
-        this.incidence = SimulationUtils.convertIncidenceToStringWith2Digits(state.getSevenDaysIncidence());
+        this.incidence = SimulationUtils.convertToStringWith2Digits(state.getSevenDaysIncidence());
     }
 
     public String getName() {
