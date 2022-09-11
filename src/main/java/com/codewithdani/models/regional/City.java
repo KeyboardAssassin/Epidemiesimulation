@@ -14,7 +14,7 @@ public class City {
     private final int populationDensity;
     private int population;
     private double obedience = 1;
-    private double contactRestrictions = 1;
+    private double contactRestrictions = 0;
     private int contactRestrictionsDaysLeft;
     private transient InfectionData infectionData;
 
@@ -23,8 +23,8 @@ public class City {
     private static final double MAX_AMOUNT_OF_MEETINGS_PER_DAY = 2.3;
 
     // min and max amount of infected people for the first day (random)
-    private static final int MIN_FIRST_DAY_INFECTED_PEOPLE = 4;
-    private static final int MAX_FIRST_DAY_INFECTED_PEOPLE = 7;
+    private static final int MIN_FIRST_DAY_INFECTED_PEOPLE = 6;
+    private static final int MAX_FIRST_DAY_INFECTED_PEOPLE = 6;
 
     // min and max obedience
     private static final double MIN_OBEDIENCE = 0.01;
@@ -42,7 +42,8 @@ public class City {
         return name;
     }
 
-    public int calculateNextDayInfections(double stateInfectionRatio, Data data, Random random, Measure measure){
+    public int calculateNextDayInfections(double stateInfectionRatio, Data data, Measure measure){
+        Random random = new Random();
         int lowestCityDensity = data.getLowestCityDensity();
         double populationDensityModifier = 0.2; // + Boost for the largest city and - brake for the smallest city
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
@@ -50,14 +51,21 @@ public class City {
         double densityOffset = 0; // offset 0 = no offset, 0.1 moves the bounds of the highest and smallest city
         double densityWeight = 1; // increases the importance of this factor
 
+        int newVirusBoostBoundary = 48;
+
         // first day
-        if (infectionData.isNewVirus() && infectionData.getSevenDaysIncidence() == 0){
+        if (infectionData.isNewVirus() && infectionData.getSevenDaysIncidence() < newVirusBoostBoundary){
             infectionData.setNewVirus(false);
-            return (random.nextInt(MAX_FIRST_DAY_INFECTED_PEOPLE - MIN_FIRST_DAY_INFECTED_PEOPLE) + MIN_FIRST_DAY_INFECTED_PEOPLE);
+
+            int infections = (MIN_FIRST_DAY_INFECTED_PEOPLE + (MAX_FIRST_DAY_INFECTED_PEOPLE - MIN_FIRST_DAY_INFECTED_PEOPLE) * random.nextInt());
+            this.getInfectionData().setFirstNewCases(infections);
+            this.getInfectionData().setTotalNewCases(infections);
+
+            return infections;
         }
 
         // probability between 0% and 20% depending on the density of the city (min/max: city with lowest/highest density)
-        double normalizedDensity = (this.populationDensity - lowestCityDensity) / data.getDifferenceBetweenHighestAndLowestDensity();// Densities Cottbus and München (min/max)
+        double normalizedDensity = (this.populationDensity - lowestCityDensity) / (double)data.getDifferenceBetweenHighestAndLowestDensity();// Densities Cottbus and München (min/max)
         double populationDensityProbability =  (((normalizedDensity * 2) - 1) * populationDensityModifier * densityWeight) + (1 + densityOffset); // 4790 Density (München) equals factor of 20% = 0.2
 
         // probability depending on the proportion of healed or vaccinated cases to the total population
@@ -65,44 +73,64 @@ public class City {
         // example: (10.000 / 100000) * 0.1 + (1 - 0.1) => 0.99 (1% less probability of infection)
         double decreasingProbabilityGrowingRateOfCuredCases = (((this.getInfectionData().getPopulationLeftFirstInfection() / (double)population) * protectionAfterFirstInfection) + (1 - protectionAfterFirstInfection));
 
+        int infectingCasesFromHealedHistory = this.getInfectionData().getHealedHistory().calculateProbabilityOfAnotherInfection();
+        double activeOrHealedFactor = ((double)(this.population - this.getInfectionData().getTotalActiveCases() - this.infectionData.getHealedHistory().getAmountOfHealedCases() + infectingCasesFromHealedHistory) / (double)this.population);
+        if (activeOrHealedFactor < 0) activeOrHealedFactor = 0;
+
         // average amount of People a person meets every day
-        double amountOfAveragePeopleMeetings = MIN_AMOUNT_OF_MEETINGS_PER_DAY + (MAX_AMOUNT_OF_MEETINGS_PER_DAY - MIN_AMOUNT_OF_MEETINGS_PER_DAY) * random.nextDouble();
-        amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, this.contactRestrictions) * this.getObedience()));
+        double amountOfAveragePeopleMeetings = (MIN_AMOUNT_OF_MEETINGS_PER_DAY + (MAX_AMOUNT_OF_MEETINGS_PER_DAY - MIN_AMOUNT_OF_MEETINGS_PER_DAY) * random.nextDouble()) * activeOrHealedFactor;
+        amountOfAveragePeopleMeetings *= (1 / (Math.pow(2, this.contactRestrictions * this.getObedience())));
 
         // probability someone in the 7 days history infects someone
-        double infectingCases = this.getInfectionData().calculateActiveCasesInfectingSomeone();
-
-        int amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain = this.getInfectionData().getHealedHistory().calculateProbabilityOfAnotherInfection();
+        double infectingCasesFromActiveHistory = this.getInfectionData().calculateActiveCasesInfectingSomeone();
 
         double vaccinationProtection = measure.getVaccination().getVaccinationProtection();
 
         // multiplier between 0.9 - 1
         double vaccinationProtectionRatio = 1 - (this.getInfectionData().getVaccinationProportion() * vaccinationProtection);
 
-        // TODO newFirstInfections sind mehr als totalNewInfections
         // calculation of the infections for the current day of the infection
-        int totalMeetingsWithInfectedPeople = (int)((infectingCases * amountOfAveragePeopleMeetings) * ((double)this.getInfectionData().getPopulationLeftFirstInfection() / (double)this.population));
+        int totalNewInfections = (int)(infectingCasesFromActiveHistory * amountOfAveragePeopleMeetings * populationDensityProbability * vaccinationProtectionRatio * decreasingProbabilityGrowingRateOfCuredCases);
 
-        int newFirstInfections = (int)(totalMeetingsWithInfectedPeople * populationDensityProbability * vaccinationProtectionRatio);
-        this.getInfectionData().addPopulationAlreadyHadFirstInfection(newFirstInfections);
-        this.getInfectionData().removePopulationLeftFirstInfection(newFirstInfections);
+        double firstInfectionsRatio = (double)this.getInfectionData().getPopulationLeftFirstInfection()   / (double)this.population;
 
-        int totalNewInfections = newFirstInfections + (int)(amountOfPeopleWithAlreadyOneInfectionThatCouldBeInfectedAgain * vaccinationProtectionRatio * decreasingProbabilityGrowingRateOfCuredCases);
+        // new first infections and new second (or third infection)
+        int firstInfections      = (int)((totalNewInfections * (firstInfectionsRatio)));
+        int secondInfections     = (totalNewInfections - firstInfections);
 
-        // add infections depending on the ratio of infectedCases (city) and totalPopulation to the state it belongs to
-        // the less the infection ratio the more chance of an outbreak
-        int additionalOutBreakTotalInfections = (int)((totalNewInfections + 1) * (getFactorBetweenStateAndCity(totalNewInfections, stateInfectionRatio)  / 10) + 1 );
+        // occasionally hotspot outbreak
+        if (firstInfections + secondInfections == 0 && infectionData.getSevenDaysIncidence() == 0){
+            // add infections depending on the ratio of infectedCases (city) and totalPopulation to the state it belongs to
+            // the less the infection ratio the more chance of an outbreak
+            int additionalOutBreakTotalInfections = (int)((secondInfections + 1) * (getFactorBetweenStateAndCity(secondInfections, stateInfectionRatio)  / 10) + 1 );
+            firstInfections+= additionalOutBreakTotalInfections;
+        }
 
-        if (newFirstInfections  > this.getInfectionData().getPopulationLeftFirstInfection()) {
-            this.getInfectionData().setFirstInfectionNewCases(this.getInfectionData().getPopulationLeftFirstInfection());
+        this.getInfectionData().addPopulationAlreadyHadFirstInfection(firstInfections);
+        this.getInfectionData().removePopulationLeftFirstInfection(firstInfections);
+
+        if (firstInfections > this.getInfectionData().getPopulationLeftFirstInfection()) {
+            this.getInfectionData().setFirstNewCases(this.getInfectionData().getPopulationLeftFirstInfection());
         }
         else {
-            this.getInfectionData().setFirstInfectionNewCases(newFirstInfections);
-            this.getInfectionData().setTotalNewCases(totalNewInfections + additionalOutBreakTotalInfections);
+            this.getInfectionData().setFirstNewCases(firstInfections);
+            this.getInfectionData().setTotalNewCases(secondInfections + firstInfections);
         }
 
+        if (name.equalsIgnoreCase("münchen") || name.equalsIgnoreCase("berlin")){
+            //System.out.println("_____________________");
+            //System.out.println("Stadt: " + name);
+            //System.out.println("Einwohnerzahl: " + population);
+            //System.out.println("Erstinfektionen des Tages: " + firstInfections);
+            //System.out.println("Zweitinfektionen des Tages: " + secondInfections);
+            //System.out.println("Gesamtinfektionen ausstehend: " + this.getInfectionData().getPopulationLeftFirstInfection());
+            //System.out.println("Gesamtinfektionen gehabt: " + this.getInfectionData().getPopulationAlreadyHadFirstInfection());
+            //System.out.println("Aktuell infiziert: " + this.getInfectionData().getTotalActiveCases());
+            //System.out.println("_____________________");
+            //System.out.println("density prob: " + populationDensityProbability);
+        }
 
-        return totalNewInfections + additionalOutBreakTotalInfections;
+         return secondInfections + firstInfections;
     }
 
     public double getFactorBetweenStateAndCity(int totalNewInfections, double stateInfectionRatio){
@@ -183,5 +211,9 @@ public class City {
 
         this.setContactRestrictionDuration(0);
         this.setContactRestrictions(contactRestrictions);
+    }
+
+    public void setObedience(double obedience) {
+        this.obedience = obedience;
     }
 }

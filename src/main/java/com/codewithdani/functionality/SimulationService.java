@@ -20,7 +20,7 @@ public interface SimulationService {
 
 
     /**
-     * Method to get all Simulationsids with timestamp of creation
+     * Method to get all simulationsids with timestamp of creation
      *
      * @return list with uuid + timestamp
      */
@@ -53,7 +53,7 @@ public interface SimulationService {
      * @param type         - type on which level the restrictions should be activated "country" - "state" - "city"
      * @param name         - name of the state or city
      * @param amountOfDays - How many days the restriction should last
-     * @param uuid
+     * @param uuid         - UUID of the target simulation
      */
     void activateContactRestrictions(String type, String name, int amountOfDays, String uuid);
 
@@ -75,7 +75,7 @@ public interface SimulationService {
      * Method to get the incidence of a state
      *
      * @param stateName - name of the requested state
-     * @param uuid
+     * @param uuid      - UUID of the target simulation
      * @return incidence (member variable) of the state
      */
     String getIncidenceByState(String stateName, String uuid);
@@ -84,7 +84,7 @@ public interface SimulationService {
      * Method to get the incidence of a city
      *
      * @param cityName - name of the requested city
-     * @param uuid
+     * @param uuid     - UUID of the target simulation
      * @return incidence (member variable) of the city
      */
     double getIncidence(String cityName, String uuid);
@@ -93,7 +93,7 @@ public interface SimulationService {
      * Method to change the speed of the simulation (how fast new days begin)
      *
      * @param speed - speed value (the greater the value the longer the waiting time between days)
-     * @param uuid
+     * @param uuid  - UUID of the target simulation
      */
     void changeSpeed(int speed, String uuid);
 

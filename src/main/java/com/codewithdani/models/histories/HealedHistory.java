@@ -2,6 +2,8 @@ package com.codewithdani.models.histories;
 
 import java.util.LinkedList;
 
+import static com.codewithdani.models.data.InfectionData.NOT_INITIALISED;
+
 public class HealedHistory {
     public static final int MAX_HISTORY_DAYS = 30;
     private LinkedList<Integer> history = new LinkedList<>();
@@ -24,5 +26,9 @@ public class HealedHistory {
         }
 
         return (int)amountOfPeopleCouldBeInfectedAgain;
+    }
+
+    public int getAmountOfHealedCases(){
+        return history.stream().filter(x -> x != NOT_INITIALISED).mapToInt(Integer::intValue).sum();
     }
 }

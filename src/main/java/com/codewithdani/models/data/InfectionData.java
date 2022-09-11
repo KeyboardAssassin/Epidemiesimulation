@@ -5,18 +5,15 @@ import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.threats.Virus;
 
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class InfectionData {
     public static final int MAX_HISTORY_DAYS = 7;
     private int activeCases;
-    private int newCases;
     private int populationLeftFirstInfection;
     private int populationAlreadyHadFirstInfection = 0;
-    private int fristInfectionNewCases;
+    private int firstNewCases;
     private int totalNewCases;
     private int healedCases;
     private int totalDeadCases;
@@ -70,20 +67,7 @@ public class InfectionData {
         caseHistory.set(day -1, value);
     }
 
-    public void setNewCases(int newCases) {
-        this.newCases = newCases;
-    }
-
-    public void updateNewCases() {
-        // element with index 0 stores the newest infections
-        if (caseHistory.getFirst() != NOT_INITIALISED) {
-            this.setNewCases(caseHistory.getFirst());
-        }
-    }
-
     public void addNewEntryToHistory(int amountOfCases, Country country){
-        int amountOfFirstCases = this.getFristInfectionNewCases();
-
         // calculate Deaths
         int deadCasesWithOutMedicine = this.calculateDeaths();
         int deadCasesAfterMedicine = this.tryToHealWithMedicine(country, deadCasesWithOutMedicine);
@@ -107,15 +91,11 @@ public class InfectionData {
         if (caseHistory.size() > MAX_HISTORY_DAYS) {
             caseHistory.removeLast();
         }
-
-
-        this.setNewCases(amountOfCases);
-        this.updatePopulationLeftToInfect(amountOfFirstCases);
         this.updateInfectionData();
     }
 
-    public int getFristInfectionNewCases() {
-        return fristInfectionNewCases;
+    public int getFirstNewCases() {
+        return firstNewCases;
     }
 
     public int calculateDeaths(){
@@ -166,24 +146,24 @@ public class InfectionData {
         return currentDayDeadCases;
     }
 
-    public void updatePopulationLeftToInfect(int amountOfFirstCases){
-        this.populationLeftFirstInfection = populationLeftFirstInfection - amountOfFirstCases;
-    }
-
     public int getPopulationLeftFirstInfection() {
         return populationLeftFirstInfection;
     }
 
     public void removePopulationLeftFirstInfection(int amountOfInfections){
-        this.populationLeftFirstInfection -= amountOfInfections;
+        if (populationLeftFirstInfection - amountOfInfections < 0){
+            populationLeftFirstInfection = 0;
+        }else{
+            this.populationLeftFirstInfection -= amountOfInfections;
+        }
     }
 
     public void addPopulationAlreadyHadFirstInfection(int amountOfInfections){
         this.populationAlreadyHadFirstInfection += amountOfInfections;
     }
 
-    public void setFirstInfectionNewCases(int fristInfectionNewCases) {
-        this.fristInfectionNewCases = fristInfectionNewCases;
+    public void setFirstNewCases(int fristInfectionNewCases) {
+        this.firstNewCases = fristInfectionNewCases;
     }
 
     public void setTotalNewCases(int totalNewCases) {
@@ -216,7 +196,11 @@ public class InfectionData {
             double newValue = (amountOfCases + caseHistory.get(0) + caseHistory.get(1) + caseHistory.get(2)) / amountOfDaysDivided;
             double oldValue = (caseHistory.get(3) + caseHistory.get(4) + caseHistory.get(5) + caseHistory.get(6)) / amountOfDaysDivided;
 
-            setRValue(newValue / oldValue);
+            if (oldValue == 0){
+                setRValue(0);
+            }else {
+                setRValue(newValue / oldValue);
+            }
         }
         // if no day is filled or the second entry is 0 (cannot be divided by 0)
         else {
@@ -253,12 +237,6 @@ public class InfectionData {
 
     public void addToVaccinationProportion(double vaccinationGrowth) {
         if (this.vaccinationProportion + vaccinationGrowth < 1){
-
-            if (thisCity.getName().equalsIgnoreCase("erfurt")){
-                System.out.println("Heute geimpft: " + vaccinationGrowth);
-                System.out.println("Gesamtquote: " + vaccinationProportion);
-            }
-
             this.vaccinationProportion += vaccinationGrowth;
         }
         else {
@@ -289,7 +267,6 @@ public class InfectionData {
 
     public void updateInfectionData(){
         this.updateActiveCases();
-        this.updateNewCases();
         this.updateSevenDaysIncidence();
     }
 
@@ -307,5 +284,9 @@ public class InfectionData {
 
     public void setNewVirus(boolean newVirus) {
         this.newVirus = newVirus;
+    }
+
+    public int getPopulationAlreadyHadFirstInfection() {
+        return populationAlreadyHadFirstInfection;
     }
 }

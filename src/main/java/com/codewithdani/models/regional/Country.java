@@ -1,6 +1,5 @@
 package com.codewithdani.models.regional;
 
-import com.codewithdani.util.SimulationUtils;
 import com.codewithdani.models.actions.Measure;
 import com.codewithdani.models.threats.Virus;
 
@@ -115,7 +114,7 @@ public class Country {
             for(City city : state.getCities()){
                 sumOfAllCitiesNewInfections7Days += city.getInfectionData().getTotalActiveCases();
                 // TODO richtige membervariable? Oder braucht es noch eine new cases
-                sumOfAllNewInfections += city.getInfectionData().getFristInfectionNewCases();
+                sumOfAllNewInfections += city.getInfectionData().getFirstNewCases();
                 sumOfAllNewDeathCases += city.getInfectionData().getCurrentDayDeadCases();
             }
         }
@@ -245,8 +244,9 @@ public class Country {
     public void resetAlreadyOneInfectionData(){
         for (State state: this.getStates()) {
             for (City city: state.getCities()) {
-                city.getInfectionData().setPopulationAlreadyHadFirstInfection(0);
-                city.getInfectionData().setPopulationLeftFirstInfection(city.getPopulation());
+                int casesInActiveOrHealedHistory = city.getInfectionData().getTotalActiveCases() + city.getInfectionData().getHealedHistory().getAmountOfHealedCases();
+                city.getInfectionData().setPopulationAlreadyHadFirstInfection(casesInActiveOrHealedHistory);
+                city.getInfectionData().setPopulationLeftFirstInfection(city.getPopulation() - casesInActiveOrHealedHistory);
             }
         }
     }

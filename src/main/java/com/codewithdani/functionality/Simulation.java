@@ -11,8 +11,6 @@ import com.codewithdani.models.threats.Virus;
 import java.io.IOException;
 import java.util.*;
 
-import static com.codewithdani.models.actions.self.Distancing.SOCIAL_DISTANCING_VALUE;
-
 public class Simulation {
     private String id = UUID.randomUUID().toString();
 
@@ -22,9 +20,6 @@ public class Simulation {
     Country simulatedCountry;
     // Data class
     Data data = new Data();
-
-    Random random = new Random();
-
     boolean stopSimulation = false;
 
     Date creationDate = Calendar.getInstance().getTime();
@@ -79,7 +74,6 @@ public class Simulation {
                     currentTestedState.calculateAndSetInfectedPopulation();
                     currentTestedState.calculateAndSetInfectionRatio();
 
-
                     for (City city : currentTestedState.getCities()) {// try to vaccinate people if the vaccination is developed and the vaccination campaign started
                         // Usage of Vaccination & Medicine
                         vaccinationHandling(currentDay, city);
@@ -87,20 +81,17 @@ public class Simulation {
 
                         city.getInfectionData().calculateAndSetInfectionRatio();
 
-                        int nextDayInfections = city.calculateNextDayInfections(currentTestedState.getStateInfectionRatio(), data, random, this.getSimulatedCountry().getMeasure());
+                        int nextDayInfections = city.calculateNextDayInfections(currentTestedState.getStateInfectionRatio(), data, this.getSimulatedCountry().getMeasure());
 
                         city.getInfectionData().addNewEntryToHistory(nextDayInfections, simulatedCountry);
                     }
-
                     // Update median obedience of all cities onto the state
                     currentTestedState.updateObedience();
-
                 }
                 // Logging of every day if wanted
                 System.out.println(getId() + " Tag: " + currentDay + " abgeschlossen!");
 
                 this.getSimulatedCountry().updateData();
-
 
                 try {
                     Thread.sleep(sleepTime);
@@ -109,7 +100,7 @@ public class Simulation {
                 }
 
                 // end the pandemic + logging
-                if (checkIfEveryCityHasNoNewInfections(simulatedCountry) && this.day > 10 && "OMICRON".equals(simulatedCountry.getCityByName("Erfurt").getInfectionData().getCurrentVirus().name())) {
+                if (checkIfEveryCityHasNoNewInfections(simulatedCountry) && "OMICRON".equals(simulatedCountry.getCityByName("Erfurt").getInfectionData().getCurrentVirus().name())) {
                     simulatedCountry.setEpidemicEnded(true);
                     System.out.println("Pandemie beendet an Tag: " + currentDay);
 
@@ -118,6 +109,7 @@ public class Simulation {
                 }
             }
         }
+        simulatedCountry.setEpidemicEnded(true);
         System.out.println();
         System.out.println("Durchschnittliche Dauer einer Pandemie: " + averagePandemicTime / amountOfSimulations + " Tage");
     }
@@ -153,7 +145,7 @@ public class Simulation {
         // if restrictions ends then reset it to 0
         for (State state : states) {
             int daysOfStateRestrictionsLeft = state.getContactRestrictionsDaysLeft();
-            double obedienceLostPerDay = 0.08;
+            double obedienceLostPerDay = 0.05;
             double obedienceGainPerDay = 0.02;
 
             // state restrictions handling
@@ -191,9 +183,9 @@ public class Simulation {
     }
 
     static void virusEvolution(int day, Country simulatedCountry){
-        int amountOfActiveAlphaDays = 28;
-        int amountOfActiveBetaDays  = 19;
-        int amountOfActiveDeltaDays = 26;
+        int amountOfActiveAlphaDays = 50;
+        int amountOfActiveBetaDays  = 90;
+        int amountOfActiveDeltaDays = 45;
 
         String currentVirusName = simulatedCountry.getCityByName("Erfurt").getInfectionData().getCurrentVirus().name();
 
