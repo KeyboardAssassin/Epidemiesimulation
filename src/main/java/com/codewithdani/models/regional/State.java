@@ -139,7 +139,7 @@ public class State {
     }
 
     public void resetStateAndEveryCityFromRestrictions(boolean socialDistancingActivated){
-        int contactRestrictions = 0;
+        double contactRestrictions = 0;
         if (socialDistancingActivated) contactRestrictions = SOCIAL_DISTANCING_VALUE;
 
         this.setContactRestrictionDuration(0);

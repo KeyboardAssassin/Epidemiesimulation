@@ -218,7 +218,7 @@ public class InfectionData {
         // risks over the days to infect someone
         double[] infectionProbList = this.getCurrentVirus().getProbabilityListInfection();
 
-        // 10% probability on day 7 || 20% probability on day 6
+        // combine every element with its probability of transmission
         for(int elementInArray = 0; elementInArray <= this.caseHistory.size() - 1; elementInArray++) {
             if (this.caseHistory.get(elementInArray) != NOT_INITIALISED) {
                 infectingRate += this.caseHistory.get(elementInArray) * infectionProbList[elementInArray];

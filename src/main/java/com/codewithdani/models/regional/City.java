@@ -206,7 +206,7 @@ public class City {
     }
 
     public void resetCityFromRestrictions(boolean socialDistancingActivated){
-        int contactRestrictions = 0;
+        double contactRestrictions = 0;
         if (socialDistancingActivated) contactRestrictions = SOCIAL_DISTANCING_VALUE;
 
         this.setContactRestrictionDuration(0);
