@@ -3,7 +3,6 @@ package com.codewithdani.util;
 import com.codewithdani.models.regional.City;
 import com.codewithdani.models.regional.Country;
 import com.codewithdani.models.regional.State;
-import com.codewithdani.models.threats.Virus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
