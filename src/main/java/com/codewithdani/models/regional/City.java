@@ -19,15 +19,15 @@ public class City {
     private transient InfectionData infectionData;
 
     // min and max amount a persons meets other persons per day (random)
-    private static final double MIN_AMOUNT_OF_MEETINGS_PER_DAY = 2.3;
-    private static final double MAX_AMOUNT_OF_MEETINGS_PER_DAY = 2.3;
+    private static final double MIN_AMOUNT_OF_MEETINGS_PER_DAY = 1.9;
+    private static final double MAX_AMOUNT_OF_MEETINGS_PER_DAY = 2.0;
 
     // min and max amount of infected people for the first day (random)
-    private static final int MIN_FIRST_DAY_INFECTED_PEOPLE = 6;
-    private static final int MAX_FIRST_DAY_INFECTED_PEOPLE = 6;
+    private static final int MIN_FIRST_DAY_INFECTED_PEOPLE = 5;
+    private static final int MAX_FIRST_DAY_INFECTED_PEOPLE = 5;
 
     // min and max obedience
-    private static final double MIN_OBEDIENCE = 0.01;
+    private static final double MIN_OBEDIENCE = 0.10;
     private static final double MAX_OBEDIENCE = 1;
 
 
@@ -45,7 +45,7 @@ public class City {
     public int calculateNextDayInfections(double stateInfectionRatio, Data data, Measure measure){
         Random random = new Random();
         int lowestCityDensity = data.getLowestCityDensity();
-        double populationDensityModifier = 0.2; // + Boost for the largest city and - brake for the smallest city
+        double populationDensityModifier = 0.15; // + Boost for the largest city and - brake for the smallest city
         double protectionAfterFirstInfection = 0.1; // 10% more safety if you had the virus 1 time
 
         double densityOffset = 0; // offset 0 = no offset, 0.1 moves the bounds of the highest and smallest city
@@ -117,17 +117,17 @@ public class City {
             this.getInfectionData().setTotalNewCases(secondInfections + firstInfections);
         }
 
-        if (name.equalsIgnoreCase("münchen") || name.equalsIgnoreCase("berlin")){
-            //System.out.println("_____________________");
-            //System.out.println("Stadt: " + name);
-            //System.out.println("Einwohnerzahl: " + population);
-            //System.out.println("Erstinfektionen des Tages: " + firstInfections);
-            //System.out.println("Zweitinfektionen des Tages: " + secondInfections);
-            //System.out.println("Gesamtinfektionen ausstehend: " + this.getInfectionData().getPopulationLeftFirstInfection());
-            //System.out.println("Gesamtinfektionen gehabt: " + this.getInfectionData().getPopulationAlreadyHadFirstInfection());
-            //System.out.println("Aktuell infiziert: " + this.getInfectionData().getTotalActiveCases());
-            //System.out.println("_____________________");
-            //System.out.println("density prob: " + populationDensityProbability);
+        if (name.equalsIgnoreCase("erfurt") || name.equalsIgnoreCase("berlin")){
+            System.out.println("_____________________");
+            System.out.println("Stadt: " + name);
+            System.out.println("Einwohnerzahl: " + population);
+            System.out.println("Erstinfektionen des Tages: " + firstInfections);
+            System.out.println("Zweitinfektionen des Tages: " + secondInfections);
+            System.out.println("Gesamtinfektionen ausstehend: " + this.getInfectionData().getPopulationLeftFirstInfection());
+            System.out.println("Gesamtinfektionen gehabt: " + this.getInfectionData().getPopulationAlreadyHadFirstInfection());
+            System.out.println("Aktuell infiziert: " + this.getInfectionData().getTotalActiveCases());
+            System.out.println("_____________________");
+            System.out.println("density prob: " + populationDensityProbability);
         }
 
          return secondInfections + firstInfections;

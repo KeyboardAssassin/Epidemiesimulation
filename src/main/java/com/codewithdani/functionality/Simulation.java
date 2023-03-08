@@ -145,7 +145,7 @@ public class Simulation {
         // if restrictions ends then reset it to 0
         for (State state : states) {
             int daysOfStateRestrictionsLeft = state.getContactRestrictionsDaysLeft();
-            double obedienceLostPerDay = 0.05;
+            double obedienceLostPerDay = 0.04;
             double obedienceGainPerDay = 0.02;
 
             // state restrictions handling
@@ -183,7 +183,7 @@ public class Simulation {
     }
 
     static void virusEvolution(int day, Country simulatedCountry){
-        int amountOfActiveAlphaDays = 50;
+        int amountOfActiveAlphaDays = 60;
         int amountOfActiveBetaDays  = 90;
         int amountOfActiveDeltaDays = 45;
 
